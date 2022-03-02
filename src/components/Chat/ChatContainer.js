@@ -18,7 +18,6 @@ function ChatContainer(props) {
                 axios.get('http://localhost:8000/api/messages/'+roomId)
                 .then(res => {
                     setMessages(res.data.data.reverse());
-                    // console.log(res.data);
                 })
                 .catch(err => {
                     console.log(err);
@@ -28,7 +27,7 @@ function ChatContainer(props) {
     useEffect(() => {
         // console.log(files);
         if(files !== null) {
-            console.log(111111111111111);
+            // console.log(111111111111111);
             sendMessage();
         }
     }, [files]);
@@ -81,6 +80,7 @@ function ChatContainer(props) {
         console.log(props.room);
         if(props.room.id && props.user.Reducers.user.id) {
             getMessages(props.room.id);
+
         }
     }, [props.room, props.user]);
 
