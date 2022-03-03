@@ -21,21 +21,22 @@ function RoomInviteUserModal(props) {
         }
     };
     React.useEffect(() => {
-      // console.log(checkedInviteUsers);
       if(complete) {
-        axios.post('api/user/invite', {"room" : props.room, "users" : checkedInviteUsers})
+        console.log(complete);
+
+        axios.post('api/user/invite', {"room" : props.room, "user" : props.user.Reducers.user, "inviteUsers" : checkedInviteUsers})
         .then(res => {
-            props.newRoomList(res.data);
+            // props.newRoomList(res.data);
             console.log(res.data);
             setComplete(false);
             setCheckedInviteUsers([]);
         })
         
       }
-    }, [checkedInviteUsers]);
+    }, [checkedInviteUsers, complete]);
 
-    const roomCreate = (e) => {
-      setCheckedInviteUsers([...checkedInviteUsers, props.user.Reducers.user]);
+    const roomInvite = (e) => {
+      // setCheckedInviteUsers([...checkedInviteUsers]);
       setComplete(true);
       props.handleClose(e);
     }
@@ -67,18 +68,23 @@ function RoomInviteUserModal(props) {
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
               <ul>
                 {props.following.map((follow, index) => (
+                  JSON.parse(props.room.users).findIndex(user => user.user_id === follow.id) === -1 ?
                     <li key={index}>{follow.name}<input type="checkbox" id={'check'+index} onChange={e => {
                           changeHandler(e.currentTarget.checked, follow);
                         }}
                         checked={checkedInviteUsers.includes(follow) ? true : false}/>
-                    </li>
+                    </li> : <li key={index}>{follow.name}<input type="checkbox" disabled id={'check'+index} onChange={e => {
+                                  changeHandler(e.currentTarget.checked, follow);
+                                }}
+                                checked={checkedInviteUsers.includes(follow) ? true : false}/>
+                            </li>
                 ))}
             </ul>
             
           </Typography>
           <Typography id="modal-modal-footer" sx={{ mt: 2 }}>
             {/* <hr className="mb-2" /> */}
-            <Button disabled={disabled} onClick={roomCreate} variant="contained" color="button" size="small">{t("lang:COMPLETE")}</Button>
+            <Button disabled={disabled} onClick={roomInvite} variant="contained" color="button" size="small">{t("lang:COMPLETE")}</Button>
             <Button onClick={props.handleClose} variant="contained" color="button" size="small">{t("lang:CANCEL")}</Button>
           </Typography>
         </Box>

@@ -61,10 +61,11 @@ function ChatContainer(props) {
 
     const sendMessage = () => {
         // e.preventDefault();
-        console.log(newMessage === '');
-        if (newMessage == '') {
+        // console.log(newMessage === '');
+        
+        if (newMessage === '') {
             // console.log(files);
-            if(files.length >= 1){
+            if(files && files.length >= 1){
                 // console.log(e.target.files);
                 // return ;
                 // setFiles(e.target.files);
@@ -120,6 +121,10 @@ function ChatContainer(props) {
           }) 
    
     },[]);
+    const onKeyPress = (e) => {
+        if(e.key ==="Enter")
+            sendMessage();
+    }
     
     return (
         <div className="w-full h-full">
@@ -163,7 +168,7 @@ function ChatContainer(props) {
                     <div className='border p-2 w-full flex'>
                         {/* <form className="flex w-full" onSubmit={sendMessage}> */}
                             <input type='file' multiple onChange={e => handleFileInput(e)} />
-                            <input className="w-full border" value={newMessage || ''} onChange={(e) => setNewMessage(e.target.value)} type="text" />
+                            <input className="w-full border" value={newMessage || ''} onKeyPress={onKeyPress} onChange={(e) => setNewMessage(e.target.value)} type="text" />
                             <button onClick={sendMessage} className="border p-3 ">전송</button>
                         {/* </form> */}
                     </div>

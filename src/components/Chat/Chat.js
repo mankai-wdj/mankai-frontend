@@ -41,7 +41,11 @@ function Chat() {
   };
 
     function newRoomList(newRoom) {
-        setRooms([...rooms, newRoom]);
+        console.log(rooms.findIndex(room => room.id === newRoom.id));
+        if(rooms.findIndex(room => room.id === newRoom.id) === -1){
+            setRooms([...rooms, newRoom]);
+        }
+        setCurrentChatRoom(newRoom);
     }
     
     function getRooms(id) {

@@ -67,7 +67,7 @@ function ChatInviteModal(props) {
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
               <ul>
                 {props.following.map((follow, index) => (
-                    <li key={index}>{follow.name}<input type="checkbox" id={'check'+index} onChange={e => {
+                    <li key={follow.id}>{follow.name}<input type="checkbox" id={'check'+index} onChange={e => {
                           changeHandler(e.currentTarget.checked, follow);
                         }}
                         checked={checkedInviteUsers.includes(follow) ? true : false}/>
