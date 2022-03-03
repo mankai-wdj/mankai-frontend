@@ -72,7 +72,7 @@ function Chat() {
     const userName = (types,users) => {
         users = JSON.parse(users);
         // console.log((users));
-        users = users.filter((user, index) => user.user_name !== currentUser.Reducers.user.name);
+        users = users.filter((user, index) => user.user_id !== currentUser.Reducers.user.id);
         if(types === "dm"){
             return users[0].user_name;
         }else {
