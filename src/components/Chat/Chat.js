@@ -66,8 +66,7 @@ function Chat() {
 
     useEffect(() => {
 
-     
-        console.log(rooms);
+        // console.log(rooms);
         // console.log(currentRoom);
     },[rooms, currentRoom]);
 
@@ -89,18 +88,16 @@ function Chat() {
     const deleteRoom = (e) => {
         e.preventDefault();
         setRooms(rooms.filter(room => room.id !== currentRoom.id));
-        // console.log(currentRoom);
-        // console.log(currentUser.Reducers.user);
         handleClose(e);
         axios.post('http://localhost:8000/api/room/check', {"room" : currentRoom, "user_id" : currentUser.Reducers.user.id})
         .then(res => {
-            console.log(res.data);
+            // console.log(res.data);
             
         })
     }
     const selectRoom = (e, room) => {  //room setting room
         e.preventDefault();
-        console.log(room);
+        // console.log(room);
         setCurrentRoom(room);
     }
     const selectChatRoom = (e, room) => {  //chatting room choose
@@ -110,7 +107,7 @@ function Chat() {
     }
     const deleteChatRoom = (e) => {
         e.preventDefault();
-        console.log(11);
+        // console.log(11);
         setCurrentChatRoom({});
     }
     const roomList  = (types) => <ul className='w-full h-full'>

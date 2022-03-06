@@ -7,7 +7,7 @@ function Message({message: msg, user: user}) {
         // console.log(user);
     }, [user]);
     useEffect(() => {
-        console.log(message);
+        // console.log(message);
         
     }, [message]);
     const translation = (msg) => {

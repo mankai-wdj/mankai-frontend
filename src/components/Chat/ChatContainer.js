@@ -37,6 +37,7 @@ function ChatContainer(props) {
     const getMessages = (roomId) => {
                 axios.get('api/messages/'+roomId)
                 .then(res => {
+                    console.log(res.data.data.reverse());
                     setMessages(res.data.data.reverse());
                     // console.log(res.data);
                 })
@@ -59,6 +60,24 @@ function ChatContainer(props) {
         setOpen(true);
     }
 
+    const officalCheck = (user) => {
+        if(user.position === 'offical'){
+            return true;
+        }
+    }
+
+    const transBotChat = () => {
+        let users= JSON.parse(props.room.users);
+        for (let i = 0; i< users.length; i++) {
+            console.log(users[i]);
+            if(users[i].position === 'offical') {
+                axios.post('/api/messageBot/send', {'message' : newMessage, 'room_id' : props.room.id, 'user_id' : users[i].user_id })
+                .then(res => {
+                    console.log(res.data);
+                });
+            }
+        }
+    }
     const sendMessage = () => {
         // e.preventDefault();
         // console.log(newMessage === '');
@@ -98,14 +117,17 @@ function ChatContainer(props) {
             axios.post('/api/message/send', {'message' : newMessage, 'room_id' : props.room.id, 'user_id' :props.user.Reducers.user.id })
             .then(res => {
                 // console.log(res.data);
-                // setMessages([...messages, res.data]);
+                setMessages([...messages, res.data]);
+                transBotChat();
+
             });
+            
             setNewMessage('');
         }
         
     }
     useEffect(() => {
-        console.log(props.room);
+        // console.log(props.room);
         if(props.room.id && props.user.Reducers.user.id) {
             getMessages(props.room.id);
             setFollowing(props.user.Reducers.user.following);
@@ -159,22 +181,21 @@ function ChatContainer(props) {
                     <MenuItem onClick={(e) => {handleClose(e); inviteUser(props.room)}} >invite</MenuItem>
                     <MenuItem onClick={handleClose}>photos</MenuItem>
                 </Menu>
+                <RoomInviteUserModal following={following} room={props.room} open={open} user={props.user} handleClose={handleClose} />
                 <div className="w-full flex flex-col h-full">
                     <div className="chatBody flex flex-col w-full h-full overflow-y-auto">
                     {messages.map((message, index) => (
                         <Message message={message} user={props.user} key={index} />
                     ))}
                     </div>
-                    <div className='border p-2 w-full flex'>
-                        {/* <form className="flex w-full" onSubmit={sendMessage}> */}
+                    {JSON.parse(props.room.users).findIndex(officalCheck) ? <div className='border p-2 w-full flex'>
                             <input type='file' multiple onChange={e => handleFileInput(e)} />
                             <input className="w-full border" value={newMessage || ''} onKeyPress={onKeyPress} onChange={(e) => setNewMessage(e.target.value)} type="text" />
                             <button onClick={sendMessage} className="border p-3 ">전송</button>
-                        {/* </form> */}
-                    </div>
+                    </div> : ''}
                 </div>
             </div> : <div className="bg-blue-100 h-full shadow-xl">메세지를 보내보세요</div>}
-            <RoomInviteUserModal following={following} room={props.room} open={open} user={props.user} handleClose={handleClose} />
         </div>
+        
     );
 }export default ChatContainer;
