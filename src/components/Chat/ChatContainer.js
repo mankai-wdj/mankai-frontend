@@ -20,7 +20,7 @@ function ChatContainer(props) {
     const handleOpen = () => setOpen(true);
     const { t }  = useTranslation(['lang']);
     const [following, setFollowing] = useState([]);
-    
+    const [toUser, setToUser] = useState({});
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
@@ -37,9 +37,8 @@ function ChatContainer(props) {
     const getMessages = (roomId) => {
                 axios.get('api/messages/'+roomId)
                 .then(res => {
-                    console.log(res.data.data.reverse());
+                    // console.log(res.data.data.reverse());
                     setMessages(res.data.data.reverse());
-                    // console.log(res.data);
                 })
                 .catch(err => {
                     console.log(err);
@@ -68,12 +67,13 @@ function ChatContainer(props) {
 
     const transBotChat = () => {
         let users= JSON.parse(props.room.users);
+        // console.log('trans check');
         for (let i = 0; i< users.length; i++) {
-            console.log(users[i]);
             if(users[i].position === 'offical') {
+                // console.log('offical');
                 axios.post('/api/messageBot/send', {'message' : newMessage, 'room_id' : props.room.id, 'user_id' : users[i].user_id })
                 .then(res => {
-                    console.log(res.data);
+                    // console.log('trans complete');
                 });
             }
         }
@@ -92,6 +92,9 @@ function ChatContainer(props) {
                 const formData = new FormData();
                 formData.append('room_id', props.room.id);
                 formData.append('user_id', props.user.Reducers.user.id);
+                for(let i = 0; i< toUser.length; i++){
+                    formData.append('to_users[]', toUser[i]['user_id']);
+                }
                 if(files.length > 1){
                     for(let i = 0; i <files.length; i++ ){
                         formData.append('file[]', files[i]);
@@ -99,9 +102,9 @@ function ChatContainer(props) {
                 }else{
                     formData.append('file', files[0]);
                 }
-                // console.log(files);
-                axios.post('api/message/send', formData, {headers: {'Content-Type': 'multipart/from-data'}}).then(response => {
-                    console.log(response);
+                axios.post('api/message/send', formData, {headers: {'Content-Type': 'multipart/from-data'}}).then(res => {
+                    console.log(res);
+                    setMessages([...messages, res.data]);
                     // getMessages(props.room.id);
                 });
                 setFiles(null);
@@ -114,11 +117,16 @@ function ChatContainer(props) {
         } else {
             
             // setMessages([...messages, {"message": newMessage, "user" : props.user.Reducers.user}]);
-            axios.post('/api/message/send', {'message' : newMessage, 'room_id' : props.room.id, 'user_id' :props.user.Reducers.user.id })
+            let toUsers= [];
+            for(let i = 0; i< toUser.length; i++){
+                toUsers.push(toUser[i]['user_id']);
+            }
+            axios.post('/api/message/send', {'message' : newMessage, 'room_id' : props.room.id, 'to_users' : toUsers, 'user_id' :props.user.Reducers.user.id })
             .then(res => {
                 // console.log(res.data);
                 setMessages([...messages, res.data]);
                 transBotChat();
+                // console.log('message complete');
 
             });
             
@@ -130,19 +138,33 @@ function ChatContainer(props) {
         // console.log(props.room);
         if(props.room.id && props.user.Reducers.user.id) {
             getMessages(props.room.id);
+            // console.log(props.room.id);
             setFollowing(props.user.Reducers.user.following);
+            let toUsers = JSON.parse(props.room.users).filter((user) => {
+            return user.user_id !== props.user.Reducers.user.id;
+            });
+            setToUser(toUsers);
+
+            window.Echo.channel('user.'+props.user.Reducers.user.id).listen('.send-message', (e) => {
+                console.log(e.message);
+                setMessages(messages => ([...messages, e.message]));
+    
+              }) 
         }
+        // console.log(props.room.id == true);
+        
+        
+        
     }, [props.room, props.user]);
 
     useEffect(() => {
-        // console.log(messages);
-        window.Echo.channel('chat').listen('.send-message', (e) => {
-            console.log(e.message);
-            setMessages(messages => ([...messages, e.message]));
+        // console.log(toUser[0]['user_id']);
+    }, [toUser]);
 
-          }) 
-   
-    },[]);
+    useEffect(() => {
+        console.log(messages);
+        
+    }, [messages]);
     const onKeyPress = (e) => {
         if(e.key ==="Enter")
             sendMessage();

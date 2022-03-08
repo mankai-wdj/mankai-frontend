@@ -73,10 +73,8 @@ function RoomInviteUserModal(props) {
                           changeHandler(e.currentTarget.checked, follow);
                         }}
                         checked={checkedInviteUsers.includes(follow) ? true : false}/>
-                    </li> : <li key={index}>{follow.name}<input type="checkbox" disabled id={'check'+index} onChange={e => {
-                                  changeHandler(e.currentTarget.checked, follow);
-                                }}
-                                checked={checkedInviteUsers.includes(follow) ? true : false}/>
+                    </li> : <li key={index}>{follow.name}<input type="checkbox" disabled id={'check'+index} 
+                              />
                             </li>
                 ))}
             </ul>

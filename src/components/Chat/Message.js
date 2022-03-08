@@ -31,7 +31,7 @@ function Message({message: msg, user: user}) {
     }
     return (
         <div>
-            <div onDoubleClick={(e) => translation(message.message)} className={user.Reducers.user.id === message.user.id ? 'flex p-1 mr-2 justify-end' : 'flex p-1 ml-2 justify-start'}>
+            <div onDoubleClick={(e) => translation(message.message)} className={user.Reducers.user.id == message.user_id ? 'flex p-1 mr-2 justify-end' : 'flex p-1 ml-2 justify-start'}>
                 {message.message ?
                     (<><div>{message.message}</div>{message.translation ? <div>{message.translation}</div> : ''}</>) :
                     (message.file.startsWith('[') ? 

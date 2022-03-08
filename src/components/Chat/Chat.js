@@ -40,6 +40,10 @@ function Chat() {
         setOpen(false);
   };
 
+    const changeLastMessage = () => {
+        console.log('sdfsdf');
+    }
+
     function newRoomList(newRoom) {
         console.log(rooms.findIndex(room => room.id === newRoom.id));
         if(rooms.findIndex(room => room.id === newRoom.id) === -1){
@@ -61,6 +65,9 @@ function Chat() {
             getRooms(currentUser.Reducers.user.id);
             setFollowing(currentUser.Reducers.user.following)
             // console.log(following);
+            window.Echo.channel('user.'+currentUser.Reducers.user.id).listen('.send-message', (e) => {
+                console.log(e);  //일단 되는거 확인, 이거는 유저 channel이니깐 메세지만 생각하지말고 할것
+              }) 
         }
     },[currentUser]);
 
@@ -110,10 +117,10 @@ function Chat() {
         // console.log(11);
         setCurrentChatRoom({});
     }
-    const roomList  = (types) => <ul className='w-full h-full'>
+    const roomList  = (types) => <div className='w-full h-full'>
                                     {rooms.map((room, index) => (
                                         
-                                        <li 
+                                        <div 
                                         className={room.type === types ?'room border-b flex w-full p-2 hover:bg-gray-100' : 'hidden'}
                                         id={'room'+index}
                                         onClick={(e) => {selectChatRoom(e, room)}}
@@ -122,7 +129,7 @@ function Chat() {
                                             <div className="room flex w-full justify-between ml-2">
                                                 <div className='room truncate flex flex-col text-left'>
                                                 <div>{room.type ===types  ? (room.title ? room.title : userName(types, room.users)):''} <span className='font-medium'>{types==='group' ? JSON.parse(room.users).length : ''}</span></div>
-                                                <span className="room text-xs ">안녕하세요 안녕하세요</span>
+                                                <span className="room text-xs ">{room.last_message}</span>
                                                 </div>
                                                 <IconButton aria-controls={open1 ? 'basic-menu' : undefined}
                                                             aria-haspopup="true"
@@ -154,10 +161,10 @@ function Chat() {
                                                 <MenuItem onClick={handleClose}>Logout</MenuItem>
                                             </Menu>
                                             </div>
-                                        </li>
+                                        </div>
                                     ))
                                     }
-                                </ul>
+                                </div>
     return (
         <>
         <div className="flex h-screen overflow-hidden">
