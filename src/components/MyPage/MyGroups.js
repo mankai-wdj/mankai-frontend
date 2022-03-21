@@ -4,9 +4,14 @@ import ImageListItem from '@mui/material/ImageListItem';
 import ImageListItemBar from '@mui/material/ImageListItemBar';
 import IconButton from '@mui/material/IconButton';
 import InfoIcon from '@mui/icons-material/Info';
+import { Link } from '@mui/material';
+
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 export default function TitlebarImageList() {
   return (
+    <div>
     <ImageList>
       <ImageListItem key="Subheader" cols={2}>
       </ImageListItem>
@@ -32,6 +37,78 @@ export default function TitlebarImageList() {
         </ImageListItem>
       ))}
     </ImageList>
+    
+    
+    {/* 컴포넌트 */}
+      <div class="w-1/2 bg-white shadow rounded-[20px]">
+            {/* 배경화면 */}
+            <div className=" h-32 overflow-hidden rounded-t-[20px]" >
+                <img className="w-full" src="https://images.unsplash.com/photo-1605379399642-870262d3d051?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80" alt="" />
+            </div>
+            <div class=" ">
+                <div className="text-center px-14">
+                <Link href="/grouppage" underline="none">
+                <h2 class="text-gray-800 text-xl font-bold">그룹명</h2> 
+                </Link>
+                
+                
+                    
+                    <h5 className="text-slate-500 text-sm">멤버 수 : </h5>                               
+                </div>
+                <hr class="mt-6" />
+            </div>
+        </div>
+    {/* 컴포넌트 */}
+
+    
+{/* 메모디자인 1 */}
+	<div className="relative py-3 w-1/3">
+		<div
+			className="absolute inset-0 bg-gradient-to-r from-blue-300 to-blue-600 shadow-lg transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 sm:rounded-3xl">
+		</div>
+		<div className="relative px-4 py-10 bg-white shadow-lg sm:rounded-3xl">
+			<div className="max-w-md mx-auto">
+				<div>
+					<h1 className="text-2xl font-semibold">메모타이틀</h1>
+          <h5>메모내용</h5>
+				</div>
+				<div className="divide-y divide-gray-200">
+					<div className=" text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
+						
+						<div className="relative">
+							<button className=" rounded-md mx-3 px-10 py-1"><EditIcon/></button>
+              <button className=" rounded-md mx-3 py-1"><DeleteIcon/></button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+{/* 메모디자인2 */}
+
+  <div className="py-3 w-1/2">
+    <div className="bg-amber-300 min-w-1xl flex flex-col rounded-xl shadow-lg">
+      <div className="px-12 py-5">
+        <h2 className="text-gray-800 text-2xl font-semibold">메모타이틀</h2>
+      </div>
+      <div className="px-12">
+      <h5 className="">메모내용</h5>
+      </div>
+      <div className="h-20 flex items-center justify-center">
+      
+          <button className="py-3 w-1/2 mx-3 border-2 border-sky-300 rounded-xl ">수정</button>
+          <button className="py-3 w-1/2 mx-3 border-2 border-red-500 rounded-xl ">삭제</button>
+      
+      </div>
+    </div>
+
+  </div>
+
+
+</div>
+    
   );
 }
 

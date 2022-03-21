@@ -1,21 +1,60 @@
 import React, { useState } from "react";
 import Header from "../../admin/layout/Header";
-import Sidebar from "../../admin/layout/Sidebar";
+import GroupBar from "./GroupBar";
 
 
 function GroupPage(){
-    const [sidebarOpen, setSidebarOpen] = useState(false)
+    
     return(
         <div>
         <div className="flex h-screen">
-            <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen}/>
+            
             <div className="relative  flex-col flex-1">
                 {/*  Site header */}
-                <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen}/>
+                <Header/>
                 <div className="w-full">
                     <div className="bg-gray-200 flex relative ">
                         {/* 그룹페이지*/}
-                        그룹페이지 입니다.
+                        
+                        {/* 왼쪽 고정 바 */}
+                        <GroupBar/>
+                        {/* 탭 화면 */}
+
+                        <div className="ml-80">
+                        loremloremloremloremloremloremloremloremloremloremloremloremloremloremloremloreml
+                        oremloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremlo
+                        remloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremlore
+                        mloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremlo
+                        remloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremlore
+                        mloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremlo
+                        remloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremlorem
+                        loremloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremlor
+                        emloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremlore
+                        mloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremlorem
+                        
+                        loremloremloremloremloremloremloremloremloremloremloremloremloremloremloremloreml
+                        oremloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremlo
+                        remloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremlore
+                        mloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremlo
+                        remloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremlore
+                        mloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremlo
+                        remloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremlorem
+                        loremloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremlor
+                        emloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremlore
+                        mloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremlorem
+                        
+                        loremloremloremloremloremloremloremloremloremloremloremloremloremloremloremloreml
+                        oremloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremlo
+                        remloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremlore
+                        mloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremlo
+                        remloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremlore
+                        mloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremlo
+                        remloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremlorem
+                        loremloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremlor
+                        emloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremlore
+                        mloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremlorem
+                        </div>
+
                     </div>
                 </div>
 
