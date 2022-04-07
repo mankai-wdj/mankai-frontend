@@ -17,8 +17,6 @@ import { Box } from '@mui/system';
 import UserMenu from '../admin/header/UserMenu';
 
 
-
-
 function BoardCopy(props)
 {
     const [boardData,setBoardData] = useState(null);
@@ -34,9 +32,9 @@ function BoardCopy(props)
     let array = [];
     const test = ["장성규","박주형","한규민","누구임"];
     
+    
 
     const ModalOpen = () =>{
-        
         setSelectedCategory(categoryList)
         setOpen(true)
     }

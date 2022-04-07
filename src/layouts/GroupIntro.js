@@ -201,7 +201,6 @@ function GroupIntro(props)
                     <GroupEditor content={content} group_intro={props.group.intro} getContent={getContent}></GroupEditor>
                  </Box>
             </Modal>
-
        </div>
     )
 }export default GroupIntro;
