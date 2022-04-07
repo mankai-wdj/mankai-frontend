@@ -13,6 +13,7 @@ function GroupCreateModal(props) {
     const [inputText,setInputText] = useState("");
     const [inputPass,setInputPass] = useState("");
     const [optionSelected,setOptionSelected] = useState("");
+    const [onelineIntro, setonelineIntro] = useState("");
     const user = useSelector(state=>state.Reducers.user);
 
     const options = ["IT","자유","공부","정치","투자","취업"];
@@ -28,6 +29,9 @@ function GroupCreateModal(props) {
     }
     const textHandle = (e) =>{
         setInputText(e.target.value)
+    }
+    const onelineHandle = (e) => {
+        setonelineIntro(e.target.value)
     }
     const passHandle = (e) =>{
         setInputPass(e.target.value)
@@ -45,6 +49,7 @@ function GroupCreateModal(props) {
         formData.append('category',optionSelected);
         formData.append('user_id',user.id);
         formData.append('password',inputPass);
+        formData.append('oneline', onelineIntro);
                 
         axios.post('/api/post/group',formData
         ).then(res=>{
@@ -53,6 +58,16 @@ function GroupCreateModal(props) {
             dispatch({type:"GROUP_LIST"})
         })
     }
+
+    const onelineValidation = () => {
+        let check = /^[A-Za-z0-9_\.\-]+@[A-Za-z0-9\-]+\.[A-Za-z0-9\-]+.{1,80}$/; 
+        if( onelineIntro.length >= 5 ){
+            return false;
+        } else {
+            return !(check.test(onelineIntro));
+        }
+    }
+
 
     return(
         <div>
@@ -63,15 +78,15 @@ function GroupCreateModal(props) {
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
-                <Box className="bg-white w-192 mx-auto mt-10 h-192 rounded-xl p-5 relative">
+                <Box className="bg-white w-192 mx-auto mt-10 h-4/5 rounded-xl p-5 relative">
                     <p className="text-2xl mb-5 font-bold text-center">
                         그룹 만들기
                     </p>
                     
                     <div className="relative mt-5">
                         {preview.length > 1
-                            ?    <img className="w-full h-64 rounded-xl" src={preview} alt="이미지 에러"/>
-                            :    <img className="w-full h-64 " src="https://mankai-bucket.s3-ap-northeast-2.amazonaws.com/images/EjqTKgV5GU3U5cTOuUEGIg6303oAiz2Kfl5vS871.jpg" alt="이미지없음"/>
+                            ?    <img className="w-full h-72 rounded-xl" src={preview} alt="이미지 에러"/>
+                            :    <img className="w-full h-72 rounded-xl " src="https://mankai-bucket.s3-ap-northeast-2.amazonaws.com/images/EjqTKgV5GU3U5cTOuUEGIg6303oAiz2Kfl5vS871.jpg" alt="이미지없음"/>
                         }
                         <div className="absolute w-full top-0 left-0">
 
