@@ -210,7 +210,9 @@ const fileDrop = (e) => {
 
         <Box sx={style}>
         <div className="flex justify-start pb-3">
-            <img src="https://images.pexels.com/photos/3278968/pexels-photo-3278968.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260"
+            <img src={
+              (user) ? (user.profile) : "https://www.taggers.io/common/img/default_profile.png" 
+            }
                 className="h-14 w-14 rounded-full object-cover"
                 alt="username"/>
             <div className="ml-4 mt-2">
@@ -253,7 +255,7 @@ const fileDrop = (e) => {
           multiline 
           maxRows={5}
           id="standard-basic" 
-          label="무슨 생각을 하고 있나요? test" 
+          label="무슨 생각을 하고 있나요?" 
           variant="standard"
           />
       <div>
