@@ -46,6 +46,21 @@ const CHAT_PAGE_NOT = 'CHAT_PAGE_NOT'
 const GET_FOLLOWS_PENDING = 'GET_FOLLOWS_PENDING'
 const GET_FOLLOWS_SUCCESS = 'GET_FOLLOWS_SUCCESS'
 const GET_FOLLOWS_FAILURE = 'GET_FOLLOWS_FAILURE'
+const GET_MEMO_PENDING = 'GET_MEMO_PENDING'
+const GET_MEMO_SUCCESS = 'GET_MEMO_SUCCESS'
+const GET_MEMO_FAILURE = 'GET_MEMO_FAILURE'
+const CHAT_SIDE_OPEN = 'CHAT_SIDE_OPEN'
+const CHAT_SIDE_CLOSE = 'CHAT_SIDE_CLOSE'
+const SET_CHAT_SIDE_DATAS = 'SET_CHAT_SIDE_DATAS'
+const ADD_CHAT_SIDE_FILES = 'ADD_CHAT_SIDE_FILES'
+const ADD_CHAT_SIDE_IMAGES = 'ADD_CHAT_SIDE_IMAGES'
+const ADD_CHAT_SIDE_MEMOS = 'ADD_CHAT_SIDE_MEMOS'
+const CHAT_INVITE_MODAL_OPEN = 'CHAT_INVITE_MODAL_OPEN'
+const CHAT_INVITE_MODAL_CLOSE = 'CHAT_INVITE_MODAL_CLOSE'
+const GET_CURRENT_ROOM_PENDING = 'GET_CURRENT_ROOM_PENDING'
+const GET_CURRENT_ROOM_SUCCESS = 'GET_CURRENT_ROOM_SUCCESS'
+const GET_CURRENT_ROOM_FAILURE = 'GET_CURRENT_ROOM_FAILURE'
+const SET_ROOM_USERS = 'SET_ROOM_USERS'
 const SET_FOLLOWERFOLLOWER = 'SET_FOLLOWERFOLLOWER'
 const TOGGLE_FOLLOWERFOLLOWER = 'TOGGLE_FOLLOWERFOLLOWER'
 const GET_FOLLOWINGS_PENDING = 'GET_FOLLOWINGS_PENDING'
@@ -53,9 +68,6 @@ const GET_FOLLOWINGS_SUCCESS = 'GET_FOLLOWINGS_SUCCESS'
 const GET_FOLLOWINGS_FAILURE = 'GET_FOLLOWINGS_FAILURE'
 const SET_FOLLOWERFOLLOWING = 'SET_FOLLOWERFOLLOWING'
 const DELETE_FOLLOWINGS = 'DELETE_FOLLOWINGS'
-const GET_MEMO_PENDING = 'GET_MEMO_PENDING'
-const GET_MEMO_SUCCESS = 'GET_MEMO_SUCCESS'
-const GET_MEMO_FAILURE = 'GET_MEMO_FAILURE'
 const DELETE_MEMO = 'DELETE_MEMO'
 const UPDATE_MEMO = 'UPDATE_MEMO'
 const BOARD_REALUPDATE = 'BOARD_REALUPDATE'
@@ -80,6 +92,14 @@ const initialState = {
   pending: false,
   error: false,
   noti: null,
+  rooms: null,
+  message: [],
+  currentRoom: null,
+  chat_current_page: 1,
+  chat_inf_handle: true,
+  chat_side: false,
+  chat_invite_modal: false,
+  current_room_users: null,
   boardData:[],
   sideData:"",
   sideLikeData:[],
@@ -410,6 +430,86 @@ export default handleActions(
         get_room_error: true,
       }
     },
+    [ADD_MESSAGE]: (state, action) => {
+      return {
+        ...state,
+        message: [...state.message, action.payload.message],
+      }
+    },
+    [ADD_MESSAGE_REVERSE]: (state, action) => {
+      return {
+        ...state,
+        message: [action.payload.message, ...state.message],
+      }
+    },
+    [ADD_ROOM]: (state, action) => {
+      return {
+        ...state,
+        rooms: [action.payload.room, ...state.rooms],
+      }
+    },
+    [DELETE_ROOM]: (state, action) => {
+      return {
+        ...state,
+        // rooms:[...state.rooms,action.payload.room]
+        rooms: state.rooms.filter((room, index) => {
+          return room.id !== action.payload.room.id
+        }),
+      }
+    },
+    [SET_CURRENT_CHATROOM]: (state, action) => {
+      return {
+        ...state,
+        // rooms:[...state.rooms,action.payload.room]
+        currentRoom: action.payload.room,
+        current_room_users: action.payload.room.users,
+        chat_inf_handle: true,
+      }
+    },
+    [SET_ROOM_UPDATED_AT]: (state, action) => {
+      return {
+        ...state,
+        rooms: [
+          ...state.rooms.filter(room => {
+            if (room.id == action.payload.room_id) {
+              room.updated_at = action.payload.updated_at
+              room.last_message = action.payload.last_message
+            }
+            return room.id == action.payload.room_id
+          }),
+          ...state.rooms.filter(room => {
+            return room.id != action.payload.room_id
+          }),
+        ],
+      }
+    },
+    [SORT_ROOM]: (state, action) => {
+      return {
+        ...state,
+        rooms: action.payload.rooms.sort((a, b) => {
+          return new Date(a.updated_at) - new Date(b.updated_at)
+        }),
+      }
+    },
+    [ADD_CHAT_PAGE]: (state, action) => {
+      return {
+        ...state,
+        chat_current_page: state.chat_current_page + 1,
+      }
+    },
+    [CHAT_PAGE_ONE]: (state, action) => {
+      return {
+        ...state,
+        chat_current_page: 1,
+      }
+    },
+
+    [CHAT_PAGE_NOT]: (state, action) => {
+      return {
+        ...state,
+        chat_inf_handle: false,
+      }
+    },
     [GET_FOLLOWS_PENDING]: (state, action) => {
       return {
         ...state,
@@ -432,6 +532,7 @@ export default handleActions(
         get_follows_error: true,
       }
     },
+  
     [SET_FOLLOWERFOLLOWING] : (state, action) => {
       return {
         ...state,
@@ -532,6 +633,74 @@ export default handleActions(
         memo: [...state.memo, action.payload.memo],
       }
     },
+    [CHAT_SIDE_OPEN]: (state, action) => {
+      return {
+        ...state,
+        chat_side: true,
+      }
+    },
+    [CHAT_SIDE_CLOSE]: (state, action) => {
+      return {
+        ...state,
+        chat_side: false,
+      }
+    },
+    [CHAT_INVITE_MODAL_OPEN]: (state, action) => {
+      return {
+        ...state,
+        chat_invite_modal: true,
+      }
+    },
+    [CHAT_INVITE_MODAL_CLOSE]: (state, action) => {
+      return {
+        ...state,
+        chat_invite_modal: false,
+      }
+    },
+    [SET_CHAT_SIDE_DATAS]: (state, action) => {
+      return {
+        ...state,
+        room_files: action.payload.files,
+        room_images: action.payload.images,
+        room_memos: action.payload.memos,
+      }
+    },
+    [ADD_CHAT_SIDE_FILES]: (state, action) => {
+      return {
+        ...state,
+        room_files: [action.payload.files, ...state.room_files],
+      }
+    },
+    [ADD_CHAT_SIDE_IMAGES]: (state, action) => {
+      return {
+        ...state,
+        room_images: [action.payload.images, ...state.room_images],
+      }
+    },
+    [ADD_CHAT_SIDE_MEMOS]: (state, action) => {
+      return {
+        ...state,
+        room_memos: [action.payload.memos, ...state.room_memos],
+      }
+    },
+    [GET_CURRENT_ROOM_SUCCESS]: (state, action) => {
+      return {
+        ...state,
+        current_room_users: action.payload,
+        rooms: [
+          ...state.rooms.filter(room => {
+            if (room.id == state.currentRoom.id) {
+              room.users = action.payload
+            }
+            return room.id == state.currentRoom.id
+          }),
+          ...state.rooms.filter(room => {
+            return room.id != state.currentRoom.id
+          }),
+        ],
+      }
+    },
+
     [DELETE_MEMO]: (state, action) => {
       return {
         ...state,
