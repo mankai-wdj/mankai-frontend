@@ -205,10 +205,11 @@ function BoardCopy(props)
                 onClose={ModalClose}    
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
+                sx={{ overflow:"scroll" }}
             >
-                <Box className="bg-white w-192 mx-auto mt-10 h-240 rounded-xl p-5 relative">
+                <Box className="bg-white w-192 mx-auto mt-5 h-min rounded-xl p-3 relative">
                     <div className='text-center text-xl'>카테고리 관리 하기</div>
-                    <div className='mt-10 bg-yellow-100 rounded-t-xl py-1 font-bold border-t border-l border-r px-4'>엔터테이먼트,예술</div>    
+                    <div className='mt-5 bg-yellow-100 rounded-t-xl py-1 font-bold border-t border-l border-r px-4'>엔터테이먼트,예술</div>    
                     <div className='flex bg-gray-100 flex-wrap rounded-b-xl pt-4 pb-4 justify-center border'>
                         {art.map((data)=>{
                             return(

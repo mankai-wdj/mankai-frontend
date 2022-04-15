@@ -200,8 +200,9 @@ function GroupIntro(props)
                 onClose={modalClose}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
+                    
             >
-                <Box className="bg-white w-192 mx-auto mt-10 h-240 rounded-xl p-5 relative">
+                <Box className="bg-white w-192 mx-auto mt-10 h-min rounded-xl p-5 relative">
                     <GroupEditor content={content} group_intro={props.group.intro} getContent={getContent}></GroupEditor>
                  </Box>
             </Modal>

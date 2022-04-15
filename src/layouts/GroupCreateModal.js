@@ -105,8 +105,9 @@ function GroupCreateModal(props) {
                 onClose={ModalClose}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
+                sx={{ overflow:"scroll" }}
             >
-                <Box className="bg-white w-192 mx-auto mt-10 h-4/5 rounded-xl p-5 relative">
+                <Box className="bg-white w-192 mx-auto mt-10  h-min rounded-xl p-5 relative">
                     <p className="text-2xl mb-5 font-bold text-center">
                         그룹 만들기
                     </p>
@@ -205,7 +206,7 @@ function GroupCreateModal(props) {
                             )
                         })}
                     </div>
-                    <div className="absolute flex bottom-2 right-10">
+                    <div className=" flex mt-5 justify-end">
                       
                         <div className="mr-2 ">
                             {inputText.length >= 3 && inputPass.length >= 0 && onelineIntro.length >= 5

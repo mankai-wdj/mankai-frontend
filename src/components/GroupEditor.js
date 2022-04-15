@@ -25,7 +25,9 @@ function GroupEditor ({group_intro,content,getContent}){
           plugins: plugins, 
           width: "100%",
           height: "100%",
-          minHeight: "550px",
+          minHeight:"400px",
+          maxHeight: "400px",
+        
           buttonList: [
           //   Default
             ["undo", "redo"],

@@ -151,8 +151,9 @@ function GroupNotice(props){
                 onClose={detailModalClose}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
+                sx={{ overflow:"scroll" }}
             >
-                <Box className="bg-white w-192 mx-auto mt-10 h-240 rounded-xl p-5 relative">
+                <Box className="bg-white w-192 mx-auto mt-5 h-min rounded-xl p-5 relative">
                         <div className="">
                             <p className="px-2 text-xl font-bold mb-2">제목</p>
                             <button onClick={openMemoTitle}>클립보드 보내기</button>
@@ -174,8 +175,9 @@ function GroupNotice(props){
                 onClose={modalClose}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
+                sx={{ overflow:"scroll" }}
             >
-                <Box className="bg-white w-192 mx-auto mt-10 h-240 rounded-xl p-3 relative">
+                <Box className="bg-white w-192 mx-auto mt-5 h-min rounded-xl p-3 relative">
                     <p className="ml-2 mt-2">제목을 입력해주세요! </p>
                     <input type={"text"} className="bg-gray-200 w-full rounded-xl my-3 mb-5 px-4 py-2" onChange={titleHandle}></input>
                     <GroupEditor content={content} getContent={getContent}></GroupEditor>
