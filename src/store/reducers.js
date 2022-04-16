@@ -86,6 +86,10 @@ const MODAL_CLOSE = 'MODAL_CLOSE'
 const GROUP_IN = 'GROUP_IN'
 const GROUP_OUT = 'GROUP_OUT'
 const SET_FOLLOWID = 'SET_FOLLOWID'
+const SET_TO_USERS = 'SET_TO_USERS'
+const SET_CHAT_LIST_INDEX = 'SET_CHAT_LIST_INDEX'
+const SET_CHAT_ROOMS = 'SET_CHAT_ROOMS'
+const SET_NOTI_TOKEN = 'SET_NOTI_TOKEN'
 
 const initialState = {
   user: null,
@@ -105,6 +109,10 @@ const initialState = {
   sideLikeData: [],
   sideImageList: [],
   isOpen: false,
+  to_users : null,
+  chat_list_index : 0,
+  users_country : [],
+  noti_token : null,
 
   likeData: [],
   memoUpdate: [],
@@ -470,7 +478,18 @@ export default handleActions(
           ...state.rooms.filter(room => {
             if (room.id == action.payload.room_id) {
               room.updated_at = action.payload.updated_at
-              room.last_message = action.payload.last_message
+              if(action.payload.type == 'memo') {
+                room.last_message = 'MEMO가 도착했습니다'
+              }else if(action.payload.type == 'file'){
+                if(action.payload.last_message.startsWith('[{')) {
+                  room.last_message = '파일이 도착했습니다'
+                }else {
+                  room.last_message = "사진이 도착했습니다"
+                }
+              }else {
+                room.last_message = action.payload.last_message
+              }
+
             }
             return room.id == action.payload.room_id
           }),
@@ -760,23 +779,6 @@ export default handleActions(
         chat_inf_handle: true,
       }
     },
-    [SET_ROOM_UPDATED_AT]: (state, action) => {
-      return {
-        ...state,
-        rooms: [
-          ...state.rooms.filter(room => {
-            if (room.id == action.payload.room_id) {
-              room.updated_at = action.payload.updated_at
-              room.last_message = action.payload.last_message
-            }
-            return room.id == action.payload.room_id
-          }),
-          ...state.rooms.filter(room => {
-            return room.id != action.payload.room_id
-          }),
-        ],
-      }
-    },
     [SORT_ROOM]: (state, action) => {
       return {
         ...state,
@@ -827,6 +829,30 @@ export default handleActions(
         memoUpdate: [...state.memoUpdate, 1],
       }
     },
+    [SET_TO_USERS]: (state, action) => {
+      return {
+        ...state,
+        to_users : action.payload.toUsers,
+      }
+    },
+    [SET_CHAT_LIST_INDEX]: (state, action) => {
+      return {
+        ...state,
+        chat_list_index : action.payload.index,
+      }
+    },
+    [SET_CHAT_ROOMS]: (state, action) => {
+      return {
+        ...state,
+        rooms : action.payload.rooms,
+      }
+    },
+    [SET_NOTI_TOKEN] : (state, action) => {
+      return {
+        ...state,
+        noti_token : action.payload.noti_token,
+      }
+    }
   },
   initialState
 )

@@ -68,7 +68,7 @@ function ChatDrawer() {
   }
 
   const memoModalOpen = () => {
-    setOpen2(true)
+    setOpen2(true);
   }
   const handleClose = e => {
     e.preventDefault()
@@ -110,10 +110,7 @@ function ChatDrawer() {
               <span className="px-2 py-1 text-sm  text-blue-900  rounded-md ">
                 내 메모
               </span>
-              <button
-                onClick={memoModalOpen}
-                className="ml-auto px-2 py-1 text-sm font-bold text-blue-900 bg-blue-100 border border-transparent rounded-md hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
-              >
+              <button onClick={memoModalOpen} className="ml-auto px-2 py-1 text-sm font-bold text-blue-900 bg-blue-100 border border-transparent rounded-md hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500">
                 보기
               </button>
             </div>

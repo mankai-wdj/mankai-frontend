@@ -3,6 +3,20 @@ import { getFollows } from './getFollows'
 import { getMemo } from './getMemo'
 import { Users } from './getUsers'
 import { getFollowings } from './getFollowings'
+import firebase from 'firebase/app';
+import "firebase/messaging"
+const firebaseConfig = {
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  authDomain: "mankai-project.firebaseapp.com",
+  projectId: "mankai-project",
+  storageBucket: "mankai-project.appspot.com",
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID,
+  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID
+
+};
+firebase.initializeApp(firebaseConfig)
+const firebaseMessaging = firebase.messaging();
 const GET_USER_PENDING = 'GET_USER_PENDING'
 const GET_USER_SUCCESS = 'GET_USER_SUCCESS'
 const GET_USER_FAILURE = 'GET_USER_FAILURE'
@@ -27,6 +41,19 @@ export const User = () => async dispatch => {
       dispatch(getFollows(res.data.id))
       dispatch(getMemo(res.data.id))
       dispatch(getFollowings(res.data.id))
+      firebaseMessaging
+      .requestPermission()
+      .then(() => {
+        console.log('허가!');
+        return firebaseMessaging.getToken(); // 등록 토큰 받기
+      })
+      .then(function (token) {
+        dispatch({type: 'SET_NOTI_TOKEN', payload : {noti_token : token}})
+        console.log(token); //토큰 출력
+      })
+      .catch(function (error) {
+        console.log("FCM Error : ", error);
+      });
       dispatch(Users())
     })
     .catch(err => {

@@ -16,7 +16,8 @@ import Home from './layouts/Home'
 import Empty from './components/Empty'
 import { useSelector, useDispatch } from 'react-redux'
 import { User } from './store/modules/getUser'
-import { ToastContainer } from 'react-toastify'
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 import { Noti } from './store/modules/getNoti'
 import NotiView from './components/NotiView'
 import Dashboard from './components/Dashboard'
@@ -34,7 +35,8 @@ import './css/style.scss'
 import Profile from './components/MyPage/Profile'
 import YouPage from './components/MyPage/YouPage'
 import GroupDetail from './components/GroupDetail'
-
+import firebase from 'firebase/app';
+import "firebase/messaging"
 axios.defaults.baseURL = 'http://localhost:8000/'
 axios.defaults.headers.post['Content-Type'] = 'application/json'
 axios.defaults.headers.post['Accept'] = 'application/json'
@@ -67,11 +69,117 @@ window.Echo = new Echo({
 function App() {
   const token = localStorage.getItem('auth_token')
   const dispatch = useDispatch()
-  if (!token) {
-  } else {
-    dispatch(User())
-    dispatch(Noti())
+  const currentUser = useSelector(state => state.Reducers.user);
+  const firebaseMessaging = firebase.messaging();
+  const currentRoom = useSelector(state => state.Reducers.currentRoom)
+  const notiToken = useSelector(state => state.Reducers.noti_token)
+  useEffect(() => {
+    if(currentUser && notiToken) {
+      const channel = window.Echo.channel('user.' + currentUser.id) // 채팅방 참여
+      .listen('.user-connect', e => {
+        // 여기서 fcm으로 보내주기 방번호 꼭 보내주기
+        if(currentUser.id != e.message.user_id) {
+          axios.post('api/fcm/message', {
+            token : notiToken,
+            body : e.message.message,
+            user_id : e.message.user_id,
+            room_id : e.message.room_id,
+            type : e.message.type,
+            serverKey : process.env.REACT_APP_FIREBASE_SERVER_KEY
+          }).then(res => {
+          })
+        }
+      })
+      return () => {
+        channel.subscription.unbind(
+          channel.eventFormatter.format('.user-connect')
+        )
+      }
+    }
+    
+  }, [currentUser, notiToken]);
+
+  const getCurrentRoom = () => {
+    return currentRoom;
   }
+  const userName = (types, users) => {
+    users = JSON.parse(users)
+    // console.log((users));
+    users = users.filter((user, index) => user.user_id !== currentUser.id)
+    if (types === 'dm') {
+      return users[0].user_name
+    } else {
+      var userNames = ''
+      users = users.map((user, index) =>
+        index !== users.length - 1
+          ? (userNames += user.user_name + ',')
+          : (userNames += user.user_name)
+      )
+      return userNames
+    }
+  }
+  firebaseMessaging.onMessage(function(payload){
+    if(getCurrentRoom() == null || getCurrentRoom().id != JSON.parse(payload.data.room).id) {
+      // console.log(getCurrentRoom().id);
+      const room = JSON.parse(payload.data.room)
+      const sendUser = JSON.parse(payload.data.user)
+      toast(
+        <a href='http://localhost:3000/chat'>
+          <div className='w-full mb-1 font-bold'>{userName(room.type, room.users)}</div>
+          <hr />
+          <div className='flex my-2'>
+            <div className="">
+              {sendUser.profile ? (
+                <img
+                  src={sendUser.profile_photo_url}
+                  alt="Avatar"
+                  className="w-10 h-10 rounded-full"
+                />
+              ) : (
+                <div className="flex items-center justify-center h-10 w-10 rounded-2xl bg-primary300 font-bold uppercase text-xl">
+                  {sendUser.name.substring(0, 1)}
+                </div>
+              )}
+            </div>
+            <div className='flex-col'>
+              <div className="text-left ml-2 my-auto">
+                <span className='font-bold'>{sendUser.name}</span>
+              </div>
+              <div className='text-left ml-2 '>
+                {payload.data.type == 'memo' ? 
+                  JSON.parse(payload.notification.body).memo_title + ' 메모가 도착했습니다'
+                  : payload.data.type == 'file' ?
+                    (payload.notification.body.startsWith('[{') ? '파일이 도착했습니다' : "사진이 도착했습니다")
+                    : payload.notification.body}
+                
+              </div>
+            </div>
+          </div>
+        </a> , 
+        {
+          position: "bottom-right",
+          autoClose: 2000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          });
+      //확인 후 toast 띄워주기
+    }
+  })
+  // useEffect(() => {
+    
+  //   console.log(notiToken);
+  // }, [notiToken]);
+
+  useEffect(() => {
+    if (!token) {
+    } else {
+      dispatch(User())
+      dispatch(Noti())
+    }
+  }, [token]);
   return (
     <Router>
       <ToastContainer />
