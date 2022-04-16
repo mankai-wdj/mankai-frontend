@@ -83,6 +83,7 @@ function Chat() {
               updated_at: e.message.updated_at,
               last_message: e.message.message,
               room_id: e.message.room_id,
+              type : e.message.type
             },
           })
         })
