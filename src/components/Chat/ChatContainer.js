@@ -57,16 +57,15 @@ function ChatContainer() {
   const [sendNewMessage, setSendNewMessage] = useState(null)
   const chatScroll = document.getElementById('scrollableDiv')
 
-  useEffect(() => {
-    if(currentChatRoom) {
-      document.getElementById('scrollableDiv').addEventListener('scroll', handleScroll);
+  // useEffect(() => {
+  //   if(currentChatRoom) {
+  //     document.getElementById('scrollableDiv').addEventListener('scroll', handleScroll);
 
-      return () => {
-        document.getElementById('scrollableDiv').removeEventListener('scroll', handleScroll);
-  
-      }
-    }
-  });
+  //     return () => {
+  //       document.getElementById('scrollableDiv').removeEventListener('scroll', handleScroll);
+  //     }
+  //   }
+  // });
 
   const handleScroll = () => {
     if(document.getElementById('scrollableDiv').scrollTop == 0 ) {
