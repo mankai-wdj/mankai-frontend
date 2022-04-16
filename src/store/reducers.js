@@ -119,13 +119,8 @@ const initialState = {
   likeUpdate: 0,
   likeId: 0,
   groupChange: 0,
-  rooms: null,
-  message: [],
   memo: null,
   follows: null,
-  currentRoom: null,
-  chat_current_page: 1,
-  chat_inf_handle: true,
   isModalOpen: false,
   isGroupChange: 0,
   followId: 0,
@@ -741,74 +736,6 @@ export default handleActions(
             return onememo.id !== action.payload.memo_id
           }),
         ],
-      }
-    },
-
-    [ADD_MESSAGE]: (state, action) => {
-      return {
-        ...state,
-        message: [...state.message, action.payload.message],
-      }
-    },
-    [ADD_MESSAGE_REVERSE]: (state, action) => {
-      return {
-        ...state,
-        message: [action.payload.message, ...state.message],
-      }
-    },
-    [ADD_ROOM]: (state, action) => {
-      return {
-        ...state,
-        rooms: [action.payload.room, ...state.rooms],
-      }
-    },
-    [DELETE_ROOM]: (state, action) => {
-      return {
-        ...state,
-        // rooms:[...state.rooms,action.payload.room]
-        rooms: state.rooms.filter((room, index) => {
-          return room.id !== action.payload.room.id
-        }),
-      }
-    },
-    [SET_CURRENT_CHATROOM]: (state, action) => {
-      return {
-        ...state,
-        // rooms:[...state.rooms,action.payload.room]
-        currentRoom: action.payload.room,
-        chat_inf_handle: true,
-      }
-    },
-    [SORT_ROOM]: (state, action) => {
-      return {
-        ...state,
-        rooms: action.payload.rooms.sort((a, b) => {
-          return new Date(a.updated_at) - new Date(b.updated_at)
-        }),
-      }
-    },
-    [ADD_CHAT_PAGE]: (state, action) => {
-      return {
-        ...state,
-        chat_current_page: state.chat_current_page + 1,
-      }
-    },
-    [CHAT_PAGE_ONE]: (state, action) => {
-      return {
-        ...state,
-        chat_current_page: 1,
-      }
-    },
-    [CHAT_PAGE_NOT]: (state, action) => {
-      return {
-        ...state,
-        chat_inf_handle: false,
-      }
-    },
-    [GROUP_LIST]: (state, action) => {
-      return {
-        ...state,
-        groupChange: state.groupChange + 1,
       }
     },
     [GROUP_IN]: (state, action) => {
