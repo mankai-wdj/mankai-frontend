@@ -8,10 +8,12 @@ import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
 import '../../styles/MyPage.css'
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import Avatar from '@mui/material/Avatar'
 import TextField from '@mui/material/TextField'
 import colors from 'vuetify/lib/util/colors';
 import '../../App.css'
 import axios from 'axios';
+import { convertLength } from '@mui/material/styles/cssUtils';
 
 export default function MyUser() {
   const user = useSelector(state => state.Reducers.user);
@@ -101,11 +103,19 @@ export default function MyUser() {
 
   return (
     <div id='user_page' className='bg-white border-solid rounded-lg p-3 drop-shadow-xl '>
+    {
+      (user)?
+      (user.profile) ?
+      <Avatar src={user.profile} sx={{ borderColor:'black', border:2, m:'auto', width:'200px',height:'200px' }} alt="Avatar"/>
+    :
+    <Avatar sx={{ m:'auto', minWidth:'50%',height:'auto', borderRadius:5 }} alt="Avatar">
+      {(user.name).charAt(0)}
+    </Avatar>
+    : <Avatar src="https://www.taggers.io/common/img/default_profile.png" sx={{ m:'auto', minWidth:'50%',height:'auto' }} alt="Avatar">
+    </Avatar>
+    }
     
-    <img id='cardImg' className="profile_image1"  src={(user) ? (user.profile) : "https://www.taggers.io/common/img/default_profile.png"} alt="Avatar"/>
 
-      {/* 이미지 창 줄여도 유지되게끔 */}
-      {/* YouUser는 되는데 왜.. */}
         <div className="text-2xl mt-5 grid justify-items-center font-black">
           {(user) ? user.name : <Skeleton variant="rectangular" style={{ borderRadius: 4, }} width={150} height={50} />}
           
@@ -126,7 +136,6 @@ export default function MyUser() {
               <EditIcon sx={{ mr:1 }}/>프로필 편집
           </button>
           </div>
-        {/* /profile에 대한 컴포넌트 없애기 */}
 
 
         <Modal
@@ -138,7 +147,7 @@ export default function MyUser() {
         <Box sx={style}>
           <div className = "grid justify-items-center">
           <Typography id="modal-modal-title" variant="h6" component="h2">
-            프로필 변경
+            프로필 편집
           </Typography>
           </div>
           <hr style={{

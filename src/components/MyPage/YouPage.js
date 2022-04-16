@@ -57,7 +57,7 @@ function YouPage({match}) {
                         <div className="bg-gray-200 flex relative ">
 
                             {/* 화면에서 왼쪽 : 내 정보 간략히 보여주는 컴포넌트 */}
-                            <div className="w-1/3 p-3">
+                            <div className="w-1/3 min-w-fit  p-3">
                                 <YouUser/>
                             </div>
 

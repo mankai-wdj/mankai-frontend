@@ -164,10 +164,14 @@
 }
 
 .profile_image1{
-  border-radius: 100px;
-  width:200px;
-  height:200px;
-  object-fit: cover;
+  /* border-radius: 50%;
+  width:50%;
+  height:30%;
+  object-fit: cover; */
+    width: 50%; 
+    border-radius: 50%;
+    display: block;
+    margin: auto;
 }
 
 
@@ -196,6 +200,18 @@
    margin-right: 5px;
 }
 
+.profile_container{
+  overflow: hidden;
+  border-radius: 70%;
+  margin:auto;
+  width:200px;
+  height:200px;
+}
+
+.profile2{
+  min-width: 100%;
+  min-height: 100%;
+}
 
 
 @keyframes App-logo-spin {

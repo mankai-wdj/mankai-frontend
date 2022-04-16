@@ -64,6 +64,7 @@ function UserMenu() {
   return (
     <div className="relative inline-flex">
       {(user) ?
+      (user.profile) ?
       <IconButton
       ref={trigger}
       className="inline-flex justify-center items-center group"
@@ -71,10 +72,17 @@ function UserMenu() {
       onClick={() => setDropdownOpen(!dropdownOpen)}
       aria-expanded={dropdownOpen}
     >
-      <Avatar>
-        <img src={user.profile} alt=""/>
+      <Avatar src={user.profile}>
       </Avatar>
     </IconButton>
+    :
+    <Avatar
+         style={{
+            backgroundColor: indigo[300],
+          }}
+        >
+          {user.name.substring(0, 1)}
+    </Avatar>
       :
       <IconButton
         ref={trigger}

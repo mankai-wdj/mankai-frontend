@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useSelector,useDispatch } from 'react-redux'
 import Typography from '@mui/material/Typography';
+import {Avatar} from '@mui/material'
 import { Link } from 'react-router-dom';
 import avatar from '../../images/sosoeueunOctocat.png'
 import '../../styles/MyPage.css'
@@ -70,14 +71,26 @@ export default function YouUser() {
   },[followerFollower])
 
   return (
-    <div id='user_page' className='bg-white border-solid rounded-lg p-3 drop-shadow-xl '>
-      <img id='cardImg' src={(follow.profile) ? (follow.profile) : "https://www.taggers.io/common/img/default_profile.png"} alt="Avatar"/>
-    
-      <div className="text-2xl mt-3 grid justify-items-center font-black">
+    <div id='user_page' className='bg-white border-solid rounded-lg p-3 drop-shadow-xl'>
+      {
+      (follow)?
+      (follow.profile) ?
+      <Avatar src={follow.profile} sx={{ borderColor:'black', border:2, m:'auto', width:'200px',height:'200px' }} alt="Avatar"/>
+    :
+    <Avatar sx={{ m:'auto', minWidth:'50%',height:'auto', borderRadius:5 }} alt="Avatar">
+      {(follow.name).charAt(0)}
+    </Avatar>
+    : <Avatar src="https://www.taggers.io/common/img/default_profile.png" sx={{ m:'auto', minWidth:'50%',height:'auto' }} alt="Avatar">
+    </Avatar>
+    }
+    {/* 다 줄였을 때 사진이 튀어나옴. MyUser와 다르게 */}
+  
+      
+      <div className="text-2xl mt-5 grid justify-items-center font-black">
         {(follow.name) ? follow.name : <Skeleton variant="rectangular" style={{ borderRadius: 4, }} width={50} height={20} />}
         </div>
         <br/>
-        <Typography variant="body2" color="text.secondary" sx={{ textOverflow: 'ellipsis' }}>
+        <Typography variant="body2" color="text.secondary" sx={{ textOverflow: 'ellipsis',mt:3 }}>
           {follow.description}
         </Typography>
 
