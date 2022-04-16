@@ -23,6 +23,7 @@ import 'react-dropdown/style.css';
 import UseAnimations from 'react-useanimations';
 import heart from 'react-useanimations/lib/heart'
 import MyPostEditModal from './MyPostEditModal';
+import settings2 from 'react-useanimations/lib/settings2'
 
 function BoardCard(props){
     
@@ -302,16 +303,9 @@ function BoardCard(props){
       <MyPostEditModal showBoardByEdit={showBoardByEdit} editModalOpen={editModalOpen} openEditModal={openEditModal} memoContentText={props.board.content_text}
         postId={props.board.id}       
         />
-
-                                <Button
-                                    id="basic-button"
-                                    aria-controls={open ? 'basic-menu' : undefined}
-                                    aria-haspopup="true"
-                                    aria-expanded={open ? 'true' : undefined}
-                                    onClick={handleClick}
-                                >
-                                    설정
-                                </Button>
+    
+                                <UseAnimations onClick={handleClick} size={32} animation={settings2}/>
+                                
                                 <Menu
                                     id="basic-menu"
                                     anchorEl={anchorEl}

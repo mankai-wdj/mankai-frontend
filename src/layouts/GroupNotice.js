@@ -3,7 +3,7 @@ import { Box } from "@mui/system"
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import axios from "axios"
-import { useEffect, useReducer, useState } from "react"
+import { useEffect, useReducer, useRef, useState } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import SunEditor from "suneditor-react"
 import GroupEditor from "../components/GroupEditor"
@@ -12,6 +12,7 @@ import CreateIcon from '@mui/icons-material/Create';
 
 function GroupNotice(props){
     const user = useSelector(state => state.Reducers.user)
+    let seditor = useRef(null)
     const [open,setOpen] = useState(false)
     const [postTitle,setPostTitle] = useState("")
     const [content,setContent] = useState("")
@@ -76,7 +77,8 @@ function GroupNotice(props){
 
     const ClickBoard = (data) =>{
         setSelectedValue(data)
-        setDetailOpen(true)    
+        setDetailOpen(true) 
+        console.log(seditor.current)  
     }
 
     const toServer = () => {
@@ -160,10 +162,12 @@ function GroupNotice(props){
                             <p className="w-full bg-gray-200 rounded-2xl px-4 py-1 mb-2">{selectedValue.title}</p>
                             
                             <SunEditor 
-                                readOnly
+                                readOnly="true"
                                 hideToolbar 
                                 height="500" 
-                                defaultValue={selectedValue.content}/>    
+                                defaultValue={selectedValue.content}
+                                />    
+                                {/* <div className="h-192" dangerouslySetInnerHTML={{__html:selectedValue.content}}></div> */}
                        </div>
                  </Box>
             </Modal>
@@ -185,28 +189,30 @@ function GroupNotice(props){
             </Modal>
 
             <Modal 
+                
                 open={titleOpen}
                 onClose={titleClose}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
                 <Box sx={style}>
-           <TextField 
-          fullWidth 
-          value={memoTitle}
-          onChange={titleChange}
-          multiline 
-          maxRows={5}
-          id="standard-basic" 
-          label="메모 제목을 적어주세요" 
-          variant="standard"
-          />
+                <TextField 
+                fullWidth 
+                value={memoTitle}
+                onChange={titleChange}
+                multiline 
+                maxRows={5}
+                id="standard-basic" 
+                label="메모 제목을 적어주세요" 
+                variant="standard"
+                />
 
-          <Button onClick={toServer} sx={{ ":hover":{
-            backgroundColor:'#6f53f0'
-          }, backgroundColor:'#4D2BF4', }} variant="contained" className="submit_button">메모저장</Button>
-          </Box>
-            </Modal>
+                <Button onClick={toServer} sx={{ ":hover":{
+                    backgroundColor:'#6f53f0'
+                }, backgroundColor:'#4D2BF4', }} variant="contained" className="submit_button">메모저장</Button>
+                </Box>
+
+        </Modal>
         </div>
     )
 }export default GroupNotice

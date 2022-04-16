@@ -6,7 +6,6 @@ import "suneditor/dist/css/suneditor.min.css";
 import axios from "axios";
 import Button from '@mui/material/Button';
 import SendIcon from '@mui/icons-material/Send';
-import { cyan } from "@mui/material/colors";
 
 function GroupEditor ({group_intro,content,getContent}){
 
@@ -27,9 +26,9 @@ function GroupEditor ({group_intro,content,getContent}){
           height: "100%",
           minHeight:"400px",
           maxHeight: "400px",
-        
+          youtubeQuery: "&autoplay=1",
           buttonList: [
-          //   Default
+          // Default
             ["undo", "redo"],
             ["font", "fontSize", "formatBlock"],
             ["paragraphStyle", "blockquote"],
@@ -39,19 +38,12 @@ function GroupEditor ({group_intro,content,getContent}){
             ["outdent", "indent"],
             ["align", "horizontalRule", "list", "lineHeight"],
             ["table", "link", "image", "video", "audio"],
-            ["imageGallery"],
           ],
           historyStackDelayTime: 100,
           attributesWhitelist: {
             all: "style"
           },
-          // imageUploadHeader:{
-          //   "x-csrf-token":csrf_token
-          // }
-          // ,
-          // imageUploadUrl:"http://localhost:8000/api/post/introimage"
         })
-       
       }, [])
 
     return(
