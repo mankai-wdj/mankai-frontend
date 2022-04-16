@@ -63,10 +63,6 @@ function ChatContainer() {
 
   //     return () => {
   //       document.getElementById('scrollableDiv').removeEventListener('scroll', handleScroll);
-<<<<<<< HEAD
-=======
-
->>>>>>> 6434c882b16098dbf424fa1764e1f49353707fb8
   //     }
   //   }
   // });
