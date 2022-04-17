@@ -20,10 +20,10 @@ export default function YouFollow() {
         axios.get('/api/follows/'+follow.id)
         .then((res)=>{
             dispatch({
-              type:"SET_FOLLOWERFOLLOWER",
-              payload:{followerFollower:res.data}
+              type:"SET_FOLLOWERFOLLOWING",
+              payload:{followerFollowing:res.data}
             });
-          })
+        })
         .catch((err)=>{
             console.log(err)
         })

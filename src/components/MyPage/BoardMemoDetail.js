@@ -3,6 +3,8 @@ import Modal from '@mui/material/Modal'
 import Box from '@mui/material/Box'
 import SunEditor from 'suneditor-react'
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone'
+import Typography from '@mui/material/Typography'
+import {IoIosCloseCircle} from 'react-icons/io'
 
 function BoardMemoDetail(props){
    
@@ -35,6 +37,8 @@ function BoardMemoDetail(props){
         props.openBoardMemoEditModal()
     }
 
+    
+
     return(
         <Modal 
                 open={detailOpen}
@@ -42,10 +46,15 @@ function BoardMemoDetail(props){
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
-                <Box className="bg-white w-192 mx-auto mt-10 h-230 rounded-xl p-5 relative">
+                <Box className="bg-white w-192 mx-auto mt-10 h-230 rounded-xl relative">
                         <div className="">
-                            <p className="px-2 text-xl font-bold mb-2">메모제목</p>
-                            <p className="w-full bg-gray-200 rounded-2xl px-4 py-1 mb-2">{memoTitle}</p>
+                        <div className = "grid justify-items-center">
+          <Typography sx={{ mb:1, mt:1 }} id="modal-modal-title" variant="h6" component="h2">
+            {memoTitle}
+          </Typography>
+          </div>
+          <IoIosCloseCircle onClick={detailModalClose} size={37} className='close_memodetail'></IoIosCloseCircle>
+
                             <SunEditor 
                                 readOnly
                                 hideToolbar 

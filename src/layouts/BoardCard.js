@@ -1,6 +1,7 @@
 import React, { Component, useEffect, useState } from 'react';
 import { Avatar, Button, Card, IconButton, Skeleton,TextField } from '@mui/material';
 import BoardSide from './BoardSide';
+import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import Modal from '@mui/material/Modal'
@@ -261,7 +262,13 @@ function BoardCard(props){
                     <div className="w-full h-16 ml-2 flex items-center flex justify-between ">
                         <div className='w-full flex justify-between mt-10 py-1 px-4 mr-4 rounded-lg  border-2 border-gray-300'> 
                             <div className="flex">
-                                <Avatar className='mr-3 mt-1'><img src={(profile) ? profile :"https://www.taggers.io/common/img/default_profile.png"}/></Avatar> 
+                                {
+                                    (profile) ?
+                                    <Avatar src={profile} alt=""/>
+                                    : (props.board.name)? 
+                                    <Avatar>{props.board.name.charAt(0)}</Avatar>
+                                    :<CircularProgress />
+                                }
                                 <div>        
                                     <h3 className="font-bold text-md">{props.board.name}</h3>
                                     <p className='text-sm text-gray-500'><Moment format='YYYY/MM/DD'>{props.board.updated_at}</Moment> </p>
@@ -312,11 +319,6 @@ function BoardCard(props){
                                     'aria-labelledby': 'basic-button',
                                     }}
                                 >
-                                    {option.map((option)=>{
-                                        return(
-                                            <MenuItem onClick={handleClose}>{option}</MenuItem> 
-                                        )
-                                    })}
                                     {user &&
                                         user.id===Number(props.board.user_id) && <MenuItem onClick={handleClose}>{option}</MenuItem> 
                                     }

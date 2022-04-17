@@ -151,11 +151,11 @@ const exitBoardMemoEditModal = () => {
             {
 <div onClick={(memo.type === 'SNS') ? (e) => {memoDetail(e, memo.id, memo.content_text, memo.memo_title,memo.type)}
 : (e) => boardMemoDetail(e,memo.id,memo.content_text, memo.memo_title,memo.type)
-} key={memo.id} className="relative inline-block py-3 ml-10 mt-7 w-1/5">
+} key={memo.id} className="relative inline-block py-3 ml-10 mt-7 w-48">
 <div
-   className="absolute inset-0 bg-gradient-to-r from-blue-300 to-blue-600 shadow-lg transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 sm:rounded-3xl">
+   className="absolute inset-0 bg-gradient-to-r from-blue-300 to-blue-600 shadow-lg transform -skew-y-6 skew-y-0 -rotate-6 rounded-3xl">
 </div>
-<div className="relative px-4 py-10 bg-white shadow-lg sm:rounded-3xl">
+<div className="relative px-4 py-10 bg-white shadow-lg rounded-3xl">
    <div className="max-w-md mx-auto">
       <div>
          <h1 className="text-1xl font-semibold oneline">{memo.memo_title}</h1>

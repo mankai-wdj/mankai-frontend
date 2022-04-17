@@ -18,12 +18,11 @@ export default function YouFollowing() {
 // follow.id를 getFollows라는 메소드에다가 요청하는 파라미터로 쓰고 가져온 데이터를 follows라는 state에 저장한다.
 
     useEffect(()=>{
-        axios.get('/api/followings/'+follow.id)
+        axios.get('/api/followers/'+follow.id)
         .then((res)=>{
-            console.log("follower의 following:",res.data)
             dispatch({
-              type:"SET_FOLLOWERFOLLOWING",
-              payload:{followerFollowing:res.data}
+              type:"SET_FOLLOWERFOLLOWER",
+              payload:{followerFollower:res.data}
             });
           })
         .catch((err)=>{

@@ -2,6 +2,7 @@ import * as React from 'react'
 import {useState, useEffect} from 'react'
 import Box from '@mui/material/Box'
 import Modal from '@mui/material/Modal'
+import Avatar from '@mui/material/Avatar';
 import TextField from '@mui/material/TextField'
 import Icon from '@mui/material/Icon'
 import ImageList from '@mui/material/ImageList'
@@ -17,6 +18,7 @@ import { IoIosCloseCircle } from "react-icons/io";
 import { MdAddPhotoAlternate } from "react-icons/md";
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import { IoMdPhotos } from "react-icons/io";
+import CircularProgress from '@mui/material/CircularProgress';
 import axios from 'axios'
 import { useSelector } from 'react-redux';
 import '../App.css'
@@ -210,9 +212,14 @@ const fileDrop = (e) => {
 
         <Box sx={style}>
         <div className="flex justify-start pb-3">
-            <img src="https://images.pexels.com/photos/3278968/pexels-photo-3278968.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260"
-                className="h-14 w-14 rounded-full object-cover"
-                alt="username"/>
+        { (user) ?
+          (user.profile)?
+            <Avatar><img src={(user.profile)}
+            className="h-14 w-14 object-cover"
+            alt="username"/></Avatar>
+                : <Avatar>{(user.name.charAt(0))}</Avatar>
+                : <CircularProgress />
+          }
             <div className="ml-4 mt-2">
                 <div className="flex items-center">
                     <h2 style={{ fontWeight:'bold' }}>{username}</h2>
@@ -253,7 +260,7 @@ const fileDrop = (e) => {
           multiline 
           maxRows={5}
           id="standard-basic" 
-          label="무슨 생각을 하고 있나요? test" 
+          label="무슨 생각을 하고 있나요?" 
           variant="standard"
           />
       <div>

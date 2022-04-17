@@ -254,10 +254,10 @@ function GroupDetail({match}) {
                                                 <div className={'pt-4 '+(data == postType ? "brightness-75" : " hover:brightness-75")}>
                                                     {data == "SNS"
                                                         ?<div className='px-3'>
-                                                            <img className='w-full border-2 border-black rounded-2xl' src={SNSImage}  alt="이미지없음"></img>
+                                                            <img className='w-full h-96 border-2 border-black rounded-2xl' src={SNSImage}  alt="이미지없음"></img>
                                                         </div>
                                                         :<div className='px-3 mb-3'>
-                                                            <img className='w-full border-2 border-black rounded-2xl' src={BoardImage} alt="이미지없음"></img>
+                                                            <img className='w-full h-96 border-2 border-black rounded-2xl' src={BoardImage} alt="이미지없음"></img>
                                                         </div>
                                                     }
                                                 </div>

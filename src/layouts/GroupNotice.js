@@ -32,11 +32,13 @@ function GroupNotice(props){
         width: 600,
         maxHeight: 630,
         borderRadius:'10px',
-        bgcolor: 'background.paper',
+        bgcolor: 'white',
         border: '2px solid #000',
         boxShadow: 24,
         p: 4,
       };
+
+      
 
     const modalClose = () => {
         setOpen(false)
@@ -189,13 +191,14 @@ function GroupNotice(props){
             </Modal>
 
             <Modal 
-                
                 open={titleOpen}
                 onClose={titleClose}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
-                <Box sx={style}>
+                <Box 
+                sx={style}
+                >
                 <TextField 
                 fullWidth 
                 value={memoTitle}
