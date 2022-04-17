@@ -137,7 +137,7 @@ function ChatDrawer() {
                               className="p-3 w-12 h-12"
                               download
                               href={
-                                'http://localhost:8000/storage/' + file.path
+                                file.path
                               }
                             >
                               <FileIcon
@@ -150,7 +150,7 @@ function ChatDrawer() {
                             <div>
                               <a
                                 href={
-                                  'http://localhost:8000/storage/' + file.path
+                                  file.path
                                 }
                                 download
                                 className="font-bold break-all"
@@ -165,7 +165,7 @@ function ChatDrawer() {
                               className="p-3"
                               download
                               href={
-                                'http://localhost:8000/storage/' + file.path
+                                file.path
                               }
                             >
                               <span className="text-primarytext">
@@ -200,8 +200,8 @@ function ChatDrawer() {
                       JSON.parse(image.message).map((image, file) => (
                         <ImageListItem key={image}>
                           <img
-                            src={`http://localhost:8000/storage/${image}?w=161&fit=crop&auto=format`}
-                            srcSet={`http://localhost:8000/storage/${image}?w=161&fit=crop&auto=format&dpr=2 2x`}
+                            src={`${image}?w=161&fit=crop&auto=format`}
+                            srcSet={`${image}?w=161&fit=crop&auto=format&dpr=2 2x`}
                             loading="lazy"
                           />
                         </ImageListItem>
@@ -209,8 +209,8 @@ function ChatDrawer() {
                     ) : (
                       <ImageListItem key={image.message}>
                         <img
-                          src={`http://localhost:8000/storage/${image.message}?w=161&fit=crop&auto=format`}
-                          srcSet={`http://localhost:8000/storage/${image.message}?w=161&fit=crop&auto=format&dpr=2 2x`}
+                          src={`${image.message}?w=161&fit=crop&auto=format`}
+                          srcSet={`${image.message}?w=161&fit=crop&auto=format&dpr=2 2x`}
                           loading="lazy"
                         />
                       </ImageListItem>
