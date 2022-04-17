@@ -133,10 +133,6 @@ function GroupCreateModal(props) {
                                 multiple
                                 onChange={ImageHandle}
                             />
-
-
-
-
                         </div>
                     </div>
                     {/* <div className="my-4">

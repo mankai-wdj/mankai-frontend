@@ -42,10 +42,7 @@ function BoardCard(props){
     const [sampleComment, setSampleComment] = useState([])
     const [titlefieldvalue,setTitleFieldValue] = useState("");
     const [commentLength, setCommentLength] = useState("")
-    const option = ["번역하기","클립보드로 이동",
-    (user.id===Number(props.board.user_id)) ? "수정하기" : null,
-    (user.id===Number(props.board.user_id)) ? "삭제하기" : null
-    ]
+    const option = ["번역하기","클립보드로 이동"];
     const [translated,setTranslated] = useState("");
     const [profile,setProfile] = useState("");
     const [editModalOpen,setEditModalOpen] = useState(false)
@@ -315,18 +312,12 @@ function BoardCard(props){
                                     'aria-labelledby': 'basic-button',
                                     }}
                                 >
-                                    {
-                                        (user) ?
-                                        (user.id)?
-                                    option.map((option)=>{
-                                        return(
-                                            <MenuItem onClick={handleClose}>{option}</MenuItem>
-                                        )
-                                        
-                                    })
-                                    :null
-                                    :null
-                                }
+                                    {user &&
+                                        user.id===Number(props.board.user_id) && <MenuItem onClick={handleClose}>{option}</MenuItem> 
+                                    }
+                                    {user &&
+                                        user.id===Number(props.board.user_id) && <MenuItem onClick={handleClose}>{option}</MenuItem> 
+                                    }
                                     
                                 </Menu>
                             </div>

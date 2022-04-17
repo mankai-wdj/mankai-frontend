@@ -58,7 +58,7 @@ function RoomInviteUserModal(props) {
           if(currentRoom.id != res.data.id) {
               dispatch({ type: 'ADD_ROOM', payload: { room: res.data } })
               dispatch({type : 'SET_CHAT_LIST_INDEX', payload : {index : 1}})
-
+              dispatch({ type: 'SET_CURRENT_CHATROOM', payload: { room: res.data } })
           }
           // dispatch({ type: 'SET_CURRENT_CHATROOM', payload: { room: res.data } })
           // dispatch({ type: 'CHAT_PAGE_ONE' })
@@ -71,7 +71,8 @@ function RoomInviteUserModal(props) {
   }, [checkedInviteUsers, complete])
 
   React.useEffect(() => {
-    if(toUser && inviteMessage) {
+    if(toUser && inviteMessage && currentRoom.type != 'dm') {
+      console.log(currentRoom);
       let toUsers = []
       for (let i = 0; i < toUser.length; i++) {
         toUsers.push(toUser[i]['user_id'])
