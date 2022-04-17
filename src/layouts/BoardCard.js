@@ -78,6 +78,7 @@ function BoardCard(props){
         let eText = e.target.outerText;
         if(eText === "번역하기")
         {
+            console.log("번역하기클릭")
             axios.post('/api/show/papago',{
                 text:props.board.content_text
             }).then(res=>{
@@ -318,8 +319,8 @@ function BoardCard(props){
                                     'aria-labelledby': 'basic-button',
                                     }}
                                 >
-                                    <MenuItem>번역하기</MenuItem>
-                                    <MenuItem>클립보드로 이동</MenuItem>
+                                    <MenuItem onClick={handleClose}>번역하기</MenuItem>
+                                    <MenuItem onClick={handleClose}>클립보드로 이동</MenuItem>
                                     {user &&
                                         user.id===Number(props.board.user_id) && <MenuItem onClick={handleClose}>수정하기</MenuItem> 
                                     }
