@@ -43,7 +43,6 @@ function BoardCard(props){
     const [sampleComment, setSampleComment] = useState([])
     const [titlefieldvalue,setTitleFieldValue] = useState("");
     const [commentLength, setCommentLength] = useState("")
-    const option = ["번역하기","클립보드로 이동"];
     const [translated,setTranslated] = useState("");
     const [profile,setProfile] = useState("");
     const [editModalOpen,setEditModalOpen] = useState(false)
@@ -77,7 +76,7 @@ function BoardCard(props){
 
     const handleClose = (e) => {
         let eText = e.target.outerText;
-        if(eText === option[0])
+        if(eText === "번역하기")
         {
             axios.post('/api/show/papago',{
                 text:props.board.content_text
@@ -319,11 +318,13 @@ function BoardCard(props){
                                     'aria-labelledby': 'basic-button',
                                     }}
                                 >
+                                    <MenuItem>번역하기</MenuItem>
+                                    <MenuItem>클립보드로 이동</MenuItem>
                                     {user &&
-                                        user.id===Number(props.board.user_id) && <MenuItem onClick={handleClose}>{option}</MenuItem> 
+                                        user.id===Number(props.board.user_id) && <MenuItem onClick={handleClose}>수정하기</MenuItem> 
                                     }
                                     {user &&
-                                        user.id===Number(props.board.user_id) && <MenuItem onClick={handleClose}>{option}</MenuItem> 
+                                        user.id===Number(props.board.user_id) && <MenuItem onClick={handleClose}>삭제하기</MenuItem> 
                                     }
                                     
                                 </Menu>
