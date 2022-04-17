@@ -122,6 +122,17 @@ function GroupDetail({match}) {
             // 그룹 가입여부 체크
             setIsGroup(false)
             console.log("유저체크")
+            groupUserCheck()
+        }
+    },[groupUsers])
+    useEffect(()=>{
+        if(groupUsers){
+            groupUserCheck()
+        }
+    },[user])
+
+    const groupUserCheck = () => {
+        if(user){
             groupUsers.forEach(groupUser=>{
                 if(groupUser.user_id ==  user.id)
                     setIsGroup(true)
@@ -131,8 +142,10 @@ function GroupDetail({match}) {
                         setIsMaster(true)
                 }
             })
-        }
-    },[groupUsers])
+        } 
+    }
+
+   
     const typeHandle = (data) =>{
         console.log(data)
         setPostType(data)
