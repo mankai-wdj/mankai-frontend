@@ -64,25 +64,25 @@ function UserMenu() {
   return (
     <div className="relative inline-flex">
       {user ? (
-        user.profile ? (
-          <IconButton
-            ref={trigger}
-            className="inline-flex justify-center items-center group"
-            aria-haspopup="true"
-            onClick={() => setDropdownOpen(!dropdownOpen)}
-            aria-expanded={dropdownOpen}
-          >
-            <Avatar src={user.profile}></Avatar>
-          </IconButton>
-        ) : (
-          <Avatar
-            style={{
-              backgroundColor: indigo[300],
-            }}
-          >
-            {user.name.substring(0, 1)}
-          </Avatar>
-        )
+        <IconButton
+          ref={trigger}
+          className="inline-flex justify-center items-center group"
+          aria-haspopup="true"
+          onClick={() => setDropdownOpen(!dropdownOpen)}
+          aria-expanded={dropdownOpen}
+        >
+          {user.profile ? (
+            <Avatar>
+              <img src={user.profile} alt="" />
+            </Avatar>
+          ) : (
+            <div className="flex flex-row items-center text-center">
+              <div className="flex items-center justify-center h-10 w-10 text-black rounded-2xl bg-primary300 font-bold uppercase text-xl">
+                <span>{user.name.substring(0, 1)}</span>
+              </div>
+            </div>
+          )}
+        </IconButton>
       ) : (
         <IconButton
           ref={trigger}
@@ -91,13 +91,11 @@ function UserMenu() {
           onClick={() => setDropdownOpen(!dropdownOpen)}
           aria-expanded={dropdownOpen}
         >
-          <Avatar
-            style={{
-              backgroundColor: indigo[300],
-            }}
-          >
-            {user.name.substring(0, 1)}
-          </Avatar>
+          <div className="flex flex-row items-center text-center">
+            <div className="flex items-center justify-center h-10 w-10 text-black rounded-2xl bg-primary300 font-bold uppercase text-xl">
+              <span>{user.name.substring(0, 1)}</span>
+            </div>
+          </div>
         </IconButton>
       )}
       <Transition
