@@ -319,11 +319,6 @@ function BoardCard(props){
                                     'aria-labelledby': 'basic-button',
                                     }}
                                 >
-                                    {option.map((option)=>{
-                                        return(
-                                            <MenuItem onClick={handleClose}>{option}</MenuItem> 
-                                        )
-                                    })}
                                     {user &&
                                         user.id===Number(props.board.user_id) && <MenuItem onClick={handleClose}>{option}</MenuItem> 
                                     }
