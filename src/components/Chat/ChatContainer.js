@@ -314,14 +314,14 @@ function ChatContainer() {
         }
       } else {
         formData.append('file', e.target.files[0])
-        formData.append('type', 'file')
       }
+      formData.append('type', 'file')
       axios
         .post('api/message/send', formData, {
           headers: { 'Content-Type': 'multipart/from-data' },
         })
         .then(res => {
-          console.log('파일 전송됨')
+          console.log(res.data)
           if (document.getElementById('scrollableDiv').scrollTop != 0) {
             //메세지 왔을 때 밑에 띄워주는 newMsg에 메세지 저장
             document.getElementById('scrollableDiv').scrollTop =
