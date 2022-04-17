@@ -62,16 +62,13 @@ function Group(props) {
             <Header/>  
             
             <div className="w-full text-center ">
-                <div className="w-full flex flex-wrap">
-                <p className="text-5xl my-7 ml-192">
-                   그룹 검색하기
-                </p>
-                <div className="flex flex justify-center items-center ml-5 mt-4">
-                <GroupCreateModal></GroupCreateModal>
-                </div>
-                </div>
-
-
+                    <p className="text-5xl my-2">
+                        그룹 검색하기
+                    </p>
+                    <div className="flex justify-center mt-4 mb-4">
+                        <GroupCreateModal></GroupCreateModal>
+                    </div>
+                
                 <div className="mb-10 my-auto">
                     <input type={"text"} onKeyPress={onKeyPress} onChange={searchHandle} placeholder="어떤 그룹을 찾으시나요?" className="bg-gray-100 px-5 border border-gray-300 w-192 h-14 rounded-l-xl"/>
                     <button onClick={searchBtn} className="h-14 px-3  border rounded-r-xl">검색하기<SearchIcon></SearchIcon></button>
@@ -99,7 +96,7 @@ function Group(props) {
                                 {group.onelineintro}
                                 </p>
                             </div>
-                            <div class="flex justify-between items-center p-1 ml-72  h-10">
+                            <div class="flex justify-end mr-4 h-12">
                                 <div class="flexs">
                                 <p className="text-xl text-black-400">
                                     {group.category} / <SvgIcon><GroupIcon></GroupIcon></SvgIcon>{group.length}

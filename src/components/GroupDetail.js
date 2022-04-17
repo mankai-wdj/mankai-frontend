@@ -122,6 +122,17 @@ function GroupDetail({match}) {
             // 그룹 가입여부 체크
             setIsGroup(false)
             console.log("유저체크")
+            groupUserCheck()
+        }
+    },[groupUsers])
+    useEffect(()=>{
+        if(groupUsers){
+            groupUserCheck()
+        }
+    },[user])
+
+    const groupUserCheck = () => {
+        if(user){
             groupUsers.forEach(groupUser=>{
                 if(groupUser.user_id ==  user.id)
                     setIsGroup(true)
@@ -131,8 +142,10 @@ function GroupDetail({match}) {
                         setIsMaster(true)
                 }
             })
-        }
-    },[groupUsers])
+        } 
+    }
+
+   
     const typeHandle = (data) =>{
         console.log(data)
         setPostType(data)
@@ -216,33 +229,35 @@ function GroupDetail({match}) {
             <div className='pt-10 bg-gray-200'/>
 
             {/* 카테고리 추가 레이아웃 */}
+   
             <Modal 
                 open={open}
                 onClose={modalClose}    
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
+                sx={{ overflow:"scroll" }}
             >
-                <Box className="bg-white w-192 mx-auto mt-10 h-240 rounded-xl p-5 relative">
+                <Box className="bg-white w-192 h-80vh mx-auto mt-2 rounded-xl p-3 text-center" >
                     <div>
                             <button onClick={()=>settingClick(2)} className={'w-80 py-2 my-5 border-b-4 border-indigo-300 hover:border-indigo-600' +(settingOption == "2" ? 'border-b-4 border-indigo-600' : "")}>카테고리 관리</button>
                             <button onClick={()=>settingClick(1)} className={'w-80 py-2 my-5 ml-6 border-b-4 border-indigo-300 hover:border-indigo-600' +(settingOption == "1" ? 'border-b-4 border-indigo-600' : "")}>카테고리 생성</button>
                         {settingOption == 1 ?
                             <div>
-                                <div className='text-2xl font-bold text-center mt-5 mb-5'>카테고리 제목</div>
+                                <div className='text-2xl font-bold text-center'>카테고리 제목</div>
                                     <input type={"text"} onChange={titleHandle} className='bg-gray-200 w-full p-2 rounded-2xl'></input>
-                                    <div className='text-center text-xl font-bold mt-10 mb-10'>어떤 타입의 게시판을 만들것인가요?</div>
+                                    <div className='text-center text-xl font-bold mt-5 mb-5'>어떤 타입의 게시판을 만들것인가요?</div>
                                     <div className='flex w-full'>                        
                                     {array.map((data)=>{
                                         return(
-                                            <div className='w-full' onClick={()=>typeHandle(data)}>
+                                            <div className='w-full mb-5 h-2/6' onClick={()=>typeHandle(data)}>
                                                 <div className='text-center text-xl font-bold '>{data} 타입</div>
                                                 <div className={'pt-4 '+(data == postType ? "brightness-75" : " hover:brightness-75")}>
                                                     {data == "SNS"
                                                         ?<div className='px-3'>
-                                                            <img className='w-full h-80 border-2 border-black rounded-2xl' src={SNSImage}  alt="이미지없음"></img>
+                                                            <img className='w-full border-2 border-black rounded-2xl' src={SNSImage}  alt="이미지없음"></img>
                                                         </div>
                                                         :<div className='px-3 mb-3'>
-                                                            <img className='w-full h-80 border-2 border-black rounded-2xl' src={BoardImage} alt="이미지없음"></img>
+                                                            <img className='w-full border-2 border-black rounded-2xl' src={BoardImage} alt="이미지없음"></img>
                                                         </div>
                                                     }
                                                 </div>
@@ -250,7 +265,7 @@ function GroupDetail({match}) {
                                         )
                                     })}
                                 </div>
-                                <button className='absolute bottom-5 left-8 bg-green-300 p-2 rounded-xl text-white font-bold w-180 hover:bg-green-400' onClick={postCategory}>만들기</button>
+                                <button className='bg-green-300 p-2 h-1/6 rounded-xl text-white font-bold w-180 hover:bg-green-400' onClick={postCategory}>만들기</button>
                             </div>
                             :<div className=''>
                                 <div className='flex my-2'>

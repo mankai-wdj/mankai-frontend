@@ -1,91 +1,91 @@
-import * as React from 'react';
-import Typography from '@mui/material/Typography';
-import {Skeleton} from '@mui/material'
-import { Link } from 'react-router-dom';
-import EditIcon from '@mui/icons-material/Edit';
-import { useDispatch, useSelector } from 'react-redux';
-import Modal from '@mui/material/Modal';
-import Box from '@mui/material/Box';
+import * as React from 'react'
+import Typography from '@mui/material/Typography'
+import { Skeleton } from '@mui/material'
+import { Link } from 'react-router-dom'
+import EditIcon from '@mui/icons-material/Edit'
+import { useDispatch, useSelector } from 'react-redux'
+import Modal from '@mui/material/Modal'
+import Box from '@mui/material/Box'
 import '../../styles/MyPage.css'
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Avatar from '@mui/material/Avatar'
 import TextField from '@mui/material/TextField'
-import colors from 'vuetify/lib/util/colors';
 import '../../App.css'
 import axios from 'axios';
 import { convertLength } from '@mui/material/styles/cssUtils';
 
 export default function MyUser() {
-  const user = useSelector(state => state.Reducers.user);
+  const user = useSelector(state => state.Reducers.user)
 
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
 
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false)
   const handleOpen = () => {
     setImageToServer(user.profile)
-    setOpen(true);
+    setOpen(true)
   }
-  const handleClose = () => setOpen(false);
+  const handleClose = () => setOpen(false)
 
-  const [nameFieldValue,setNameFieldValue] = React.useState("");
-  const [countryFieldValue,setCountryFieldValue] = React.useState("");
-  const [descriptionFieldValue,setDescriptionFieldValue] = React.useState("");
-  const [imageToServer,setImageToServer] = React.useState("");
+  const [nameFieldValue, setNameFieldValue] = React.useState('')
+  const [countryFieldValue, setCountryFieldValue] = React.useState('')
+  const [descriptionFieldValue, setDescriptionFieldValue] = React.useState('')
+  const [imageToServer, setImageToServer] = React.useState('')
   // 서버에 보낼 4개
-  
-  const [previewUrl,setPreviewUrl] = React.useState("");
 
-  React.useEffect(()=>{
-    if(user){
-    setNameFieldValue(user.name)
-    setCountryFieldValue(user.country)
-    setDescriptionFieldValue(user.description)
-    setPreviewUrl(user.profile)
-  }
-  },[user])
+  const [previewUrl, setPreviewUrl] = React.useState('')
 
-  const nameTextChange = (e) => {
-    setNameFieldValue(e.target.value);
-  }
+  React.useEffect(() => {
+    if (user) {
+      setNameFieldValue(user.name)
+      setCountryFieldValue(user.country)
+      setDescriptionFieldValue(user.description)
+      setPreviewUrl(user.profile)
+    }
+  }, [user])
 
-  const countryTextChange = (e) => {
-    setCountryFieldValue(e.target.value);
+  const nameTextChange = e => {
+    setNameFieldValue(e.target.value)
   }
 
-  const descriptionTextChange = (e) => {
-    setDescriptionFieldValue(e.target.value);
+  const countryTextChange = e => {
+    setCountryFieldValue(e.target.value)
   }
 
-  const imageHandleChange = (e) => {
+  const descriptionTextChange = e => {
+    setDescriptionFieldValue(e.target.value)
+  }
+
+  const imageHandleChange = e => {
     setImageToServer(e.target.files[0])
     setPreviewUrl(URL.createObjectURL(e.target.files[0]))
   }
 
   const profileToServer = () => {
-    const formData = new FormData();
-    formData.append('user_id', user.id);
-    formData.append('name',nameFieldValue)
-    formData.append('country',countryFieldValue)
-    formData.append('description',descriptionFieldValue)
-    formData.append('image',imageToServer)   
-    
-    axios.post('/api/profile',formData)
-    .then((res)=>{
-      console.log(res);
-      dispatch({
-        type : "UPDATE_USER",
-        payload : {
-          name:nameFieldValue,
-          country:countryFieldValue,
-          description:descriptionFieldValue,
-          image:res.data
-        }
-      });
-      handleClose();
-    })
-    .catch((err)=>{
-      console.log(err)
-    })
+    const formData = new FormData()
+    formData.append('user_id', user.id)
+    formData.append('name', nameFieldValue)
+    formData.append('country', countryFieldValue)
+    formData.append('description', descriptionFieldValue)
+    formData.append('image', imageToServer)
+
+    axios
+      .post('/api/profile', formData)
+      .then(res => {
+        console.log(res)
+        dispatch({
+          type: 'UPDATE_USER',
+          payload: {
+            name: nameFieldValue,
+            country: countryFieldValue,
+            description: descriptionFieldValue,
+            image: res.data,
+          },
+        })
+        handleClose()
+      })
+      .catch(err => {
+        console.log(err)
+      })
   }
 
   const style = {
@@ -99,7 +99,7 @@ export default function MyUser() {
     border: '2px solid #000',
     boxShadow: 24,
     p: 1,
-  };
+  }
 
   return (
     <div id='user_page' className='bg-white border-solid rounded-lg p-3 drop-shadow-xl '>
@@ -150,61 +150,77 @@ export default function MyUser() {
             프로필 편집
           </Typography>
           </div>
-          <hr style={{
-             width:'380px',
-         }}/>
-          <Box sx={{ p:2 }}>
-          <div className = "grid justify-items-center" >
-          <label htmlFor="file">
-          <img  alt="" src={(previewUrl) ? previewUrl : "https://www.taggers.io/common/img/default_profile.png"} className="profile_image" />
-          </label>
-          <input onChange={imageHandleChange} type="file" id="file" style={{ display:"none" }}/>
-          </div>
-         {/* 사진 아무것도 설정 안하기도 있어야 됨 */}
-
-           <TextField 
-          fullWidth 
-          value={nameFieldValue}
-          onChange={nameTextChange}
-          multiline 
-          maxRows={2}
-          id="standard-basic" 
-          label="이름" 
-          variant="standard"
-          style={{ margin:3 }}
+          <hr
+            style={{
+              width: '380px',
+            }}
           />
+          <Box sx={{ p: 2 }}>
+            <div className="grid justify-items-center">
+              <label htmlFor="file">
+                <img
+                  alt=""
+                  src={
+                    previewUrl
+                      ? previewUrl
+                      : 'https://www.taggers.io/common/img/default_profile.png'
+                  }
+                  className="profile_image"
+                />
+              </label>
+              <input
+                onChange={imageHandleChange}
+                type="file"
+                id="file"
+                style={{ display: 'none' }}
+              />
+            </div>
+            {/* 사진 아무것도 설정 안하기도 있어야 됨 */}
 
-<TextField 
-          fullWidth 
-          value={countryFieldValue}
-          onChange={countryTextChange}
-          multiline 
-          maxRows={2}
-          id="standard-basic" 
-          label="국적" 
-          variant="standard"
-          style={{ margin:3 }}
-          />
+            <TextField
+              fullWidth
+              value={nameFieldValue}
+              onChange={nameTextChange}
+              multiline
+              maxRows={2}
+              id="standard-basic"
+              label="이름"
+              variant="standard"
+              style={{ margin: 3 }}
+            />
 
-<TextField 
-          fullWidth 
-          value={descriptionFieldValue}
-          onChange={descriptionTextChange}
-          multiline 
-          maxRows={2}
-          id="standard-basic" 
-          label="상태메시지" 
-          variant="standard"
-          style={{ margin:3 }}
-          />
-          <button onClick={profileToServer} className='flex items-center bg-purple-600 w-full hover:bg-purple-800 text-white py-2 px-4 mt-4 rounded grid justify-items-center'>
+            <TextField
+              fullWidth
+              value={countryFieldValue}
+              onChange={countryTextChange}
+              multiline
+              maxRows={2}
+              id="standard-basic"
+              label="국적"
+              variant="standard"
+              style={{ margin: 3 }}
+            />
+
+            <TextField
+              fullWidth
+              value={descriptionFieldValue}
+              onChange={descriptionTextChange}
+              multiline
+              maxRows={2}
+              id="standard-basic"
+              label="상태메시지"
+              variant="standard"
+              style={{ margin: 3 }}
+            />
+            <button
+              onClick={profileToServer}
+              className="flex items-center bg-purple-600 w-full hover:bg-purple-800 text-white py-2 px-4 mt-4 rounded grid justify-items-center"
+            >
               프로필 수정
-          </button>
-          </Box> 
+            </button>
+          </Box>
         </Box>
       </Modal>
-
-      
     </div>
-  );
+  )
 }

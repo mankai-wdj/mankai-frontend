@@ -24,6 +24,7 @@ import 'react-dropdown/style.css';
 import UseAnimations from 'react-useanimations';
 import heart from 'react-useanimations/lib/heart'
 import MyPostEditModal from './MyPostEditModal';
+import settings2 from 'react-useanimations/lib/settings2'
 
 function BoardCard(props){
     
@@ -42,10 +43,7 @@ function BoardCard(props){
     const [sampleComment, setSampleComment] = useState([])
     const [titlefieldvalue,setTitleFieldValue] = useState("");
     const [commentLength, setCommentLength] = useState("")
-    const option = ["번역하기","클립보드로 이동",
-    (user.id===Number(props.board.user_id)) ? "수정하기" : null,
-    (user.id===Number(props.board.user_id)) ? "삭제하기" : null
-    ]
+    const option = ["번역하기","클립보드로 이동"];
     const [translated,setTranslated] = useState("");
     const [profile,setProfile] = useState("");
     const [editModalOpen,setEditModalOpen] = useState(false)
@@ -309,16 +307,9 @@ function BoardCard(props){
       <MyPostEditModal showBoardByEdit={showBoardByEdit} editModalOpen={editModalOpen} openEditModal={openEditModal} memoContentText={props.board.content_text}
         postId={props.board.id}       
         />
-
-                                <Button
-                                    id="basic-button"
-                                    aria-controls={open ? 'basic-menu' : undefined}
-                                    aria-haspopup="true"
-                                    aria-expanded={open ? 'true' : undefined}
-                                    onClick={handleClick}
-                                >
-                                    설정
-                                </Button>
+    
+                                <UseAnimations onClick={handleClick} size={32} animation={settings2}/>
+                                
                                 <Menu
                                     id="basic-menu"
                                     anchorEl={anchorEl}
@@ -330,9 +321,15 @@ function BoardCard(props){
                                 >
                                     {option.map((option)=>{
                                         return(
-                                            <MenuItem onClick={handleClose}>{option}</MenuItem>
+                                            <MenuItem onClick={handleClose}>{option}</MenuItem> 
                                         )
                                     })}
+                                    {user &&
+                                        user.id===Number(props.board.user_id) && <MenuItem onClick={handleClose}>{option}</MenuItem> 
+                                    }
+                                    {user &&
+                                        user.id===Number(props.board.user_id) && <MenuItem onClick={handleClose}>{option}</MenuItem> 
+                                    }
                                     
                                 </Menu>
                             </div>

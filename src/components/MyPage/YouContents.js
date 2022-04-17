@@ -8,7 +8,7 @@ import Box from '@mui/material/Box';
 import YouFollow from './YouFollow';
 import YouPost from './YouPost';
 import YouGroup from './YouGroup';
-import YouFollowing from './YouFollowing'
+import YouFollower from './YouFollower'
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -70,7 +70,7 @@ export default function YouContents() {
           <YouFollow />
         </TabPanel>
         <TabPanel value={value} index={1}>
-          <YouFollowing />
+          <YouFollower />
         </TabPanel>
         <TabPanel value={value} index={2}>
           <YouPost />

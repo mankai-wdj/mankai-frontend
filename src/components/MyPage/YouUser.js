@@ -77,7 +77,7 @@ export default function YouUser() {
       (follow.profile) ?
       <Avatar src={follow.profile} sx={{ borderColor:'black', border:2, m:'auto', width:'200px',height:'200px' }} alt="Avatar"/>
     :
-    <Avatar sx={{ m:'auto', minWidth:'50%',height:'auto', borderRadius:5 }} alt="Avatar">
+    <Avatar sx={{ borderColor:'black', border:2, m:'auto', width:'200px',height:'200px',fontSize:'90px' }} alt="Avatar">
       {(follow.name).charAt(0)}
     </Avatar>
     : <Avatar src="https://www.taggers.io/common/img/default_profile.png" sx={{ m:'auto', minWidth:'50%',height:'auto' }} alt="Avatar">

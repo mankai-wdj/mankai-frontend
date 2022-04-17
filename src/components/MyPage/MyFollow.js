@@ -8,7 +8,7 @@ import { Skeleton,Avatar,Typography,Box } from '@mui/material';
 
 export default function MyFollow() {
 
-  const follows = useSelector(state=> state.Reducers.follows);
+  const followers = useSelector(state=> state.Reducers.followers);
 
   const dispatch = useDispatch();
 
@@ -17,14 +17,14 @@ export default function MyFollow() {
     
         
      <div>
-        { (follows) ?
-           follows.map((follow)=>(
-          <div key={follow.id} className='border border-gray-300 rounded py-2 px-4 my-3'>
+        { (followers) ?
+           followers.map((follower)=>(
+          <div key={follower.id} className='border border-gray-300 rounded py-2 px-4 my-3'>
             <img  alt="" className="rounded-full border border-gray-100 w-12 h-12 inline-block" src={ 
-              (follow.profile) ? (follow.profile)
+              (follower.profile) ? (follower.profile)
               :"https://www.taggers.io/common/img/default_profile.png"} />
             
-            <Button href={"/youpage/"+follow.id}>{follow.name}
+            <Button href={"/youpage/"+follower.id}>{follower.name}
             </Button>
             <BsThreeDots className='float-right my-4 mx-4'/>
             <BiPaperPlane className='float-right my-4'/>

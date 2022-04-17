@@ -12,7 +12,9 @@ import SvgIcon from '@mui/material/SvgIcon';
 import CreateIcon from '@mui/icons-material/Create';
 import TranslateIcon from '@mui/icons-material/Translate';
 import CloseIcon from '@mui/icons-material/Close';
-
+import UseAnimations from 'react-useanimations';
+import loading from 'react-useanimations/lib/loading'
+import settings2 from 'react-useanimations/lib/settings2'
 
 const drawerWidth = 700;
 
@@ -296,7 +298,7 @@ function BoardSide(props){
                                         aria-haspopup="true"
                                         onClick={handleToggle}
                                     >
-                                    설정
+                                    <UseAnimations animation={settings2}/>
                                     </Button>
                                     <Popper
                                         open={isMenuOpen}
@@ -322,8 +324,8 @@ function BoardSide(props){
                                                     aria-labelledby="composition-button"
                                                 >
                                                     <MenuItem onClick={()=>callPapago(sideData.content_text)}>번역하기</MenuItem>
-                                                    <MenuItem onClick={() => handleToggle("memo")}>메모 보내기</MenuItem>
-                                                    <MenuItem onClick={() => handleToggle("")}>신고하기</MenuItem>
+                                                    <MenuItem onClick={() =>handleToggle("memo")}>메모 보내기</MenuItem>
+                                                    <MenuItem onClick={() =>handleToggle("")}>신고하기</MenuItem>
                                                 </MenuList>
                                                 </ClickAwayListener>
                                             </Paper>
@@ -347,28 +349,11 @@ function BoardSide(props){
                        
                         {/* 댓글 데이터 로딩중 */}
                         {comments.length === 0 &&
-                            <div>
-                                <div className='w-full p-3'>
-                                     <div className='flex mb-2'>
-                                         <Skeleton variant="circular" width={48} height={48} />
-                                         <Skeleton className='w-24 ml-2' variant="text"/>
-                                     </div>
-                                     <Skeleton variant="rectangular" width={270} height={58} />
-                                </div>
-                                <div className='w-full p-3'>
-                                     <div className='flex mb-2'>
-                                         <Skeleton variant="circular" width={48} height={48} />
-                                         <Skeleton className='w-24 ml-2' variant="text"/>
-                                     </div>
-                                     <Skeleton variant="rectangular" width={270} height={58} />
-                                </div>
-                                <div className='w-full p-3'>
-                                     <div className='flex mb-2'>
-                                         <Skeleton variant="circular" width={48} height={48} />
-                                         <Skeleton className='w-24 ml-2' variant="text"/>
-                                     </div>
-                                     <Skeleton variant="rectangular" width={270} height={58} />
-                                </div>
+                            <div className='w-full flex justify-center'>
+                                <UseAnimations 
+                                    size={48}
+                                    animation={loading} 
+                                />
                             </div>
                         }
                         {/* axios 값없으면 보여줌 */}

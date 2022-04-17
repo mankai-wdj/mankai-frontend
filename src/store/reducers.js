@@ -46,64 +46,87 @@ const CHAT_PAGE_NOT = 'CHAT_PAGE_NOT'
 const GET_FOLLOWS_PENDING = 'GET_FOLLOWS_PENDING'
 const GET_FOLLOWS_SUCCESS = 'GET_FOLLOWS_SUCCESS'
 const GET_FOLLOWS_FAILURE = 'GET_FOLLOWS_FAILURE'
-const SET_FOLLOWERFOLLOWER = 'SET_FOLLOWERFOLLOWER'
-const TOGGLE_FOLLOWERFOLLOWER = 'TOGGLE_FOLLOWERFOLLOWER'
-const GET_FOLLOWINGS_PENDING = 'GET_FOLLOWINGS_PENDING'
-const GET_FOLLOWINGS_SUCCESS = 'GET_FOLLOWINGS_SUCCESS'
-const GET_FOLLOWINGS_FAILURE = 'GET_FOLLOWINGS_FAILURE'
-const SET_FOLLOWERFOLLOWING = 'SET_FOLLOWERFOLLOWING'
-const DELETE_FOLLOWINGS = 'DELETE_FOLLOWINGS'
 const GET_MEMO_PENDING = 'GET_MEMO_PENDING'
 const GET_MEMO_SUCCESS = 'GET_MEMO_SUCCESS'
 const GET_MEMO_FAILURE = 'GET_MEMO_FAILURE'
+const CHAT_SIDE_OPEN = 'CHAT_SIDE_OPEN'
+const CHAT_SIDE_CLOSE = 'CHAT_SIDE_CLOSE'
+const SET_CHAT_SIDE_DATAS = 'SET_CHAT_SIDE_DATAS'
+const ADD_CHAT_SIDE_FILES = 'ADD_CHAT_SIDE_FILES'
+const ADD_CHAT_SIDE_IMAGES = 'ADD_CHAT_SIDE_IMAGES'
+const ADD_CHAT_SIDE_MEMOS = 'ADD_CHAT_SIDE_MEMOS'
+const CHAT_INVITE_MODAL_OPEN = 'CHAT_INVITE_MODAL_OPEN'
+const CHAT_INVITE_MODAL_CLOSE = 'CHAT_INVITE_MODAL_CLOSE'
+const GET_CURRENT_ROOM_PENDING = 'GET_CURRENT_ROOM_PENDING'
+const GET_CURRENT_ROOM_SUCCESS = 'GET_CURRENT_ROOM_SUCCESS'
+const GET_CURRENT_ROOM_FAILURE = 'GET_CURRENT_ROOM_FAILURE'
+const SET_ROOM_USERS = 'SET_ROOM_USERS'
+const SET_FOLLOWERFOLLOWER = 'SET_FOLLOWERFOLLOWER'
+const TOGGLE_FOLLOWERFOLLOWER = 'TOGGLE_FOLLOWERFOLLOWER'
+const SET_FOLLOWERFOLLOWING = 'SET_FOLLOWERFOLLOWING'
+const DELETE_FOLLOWS = 'DELETE_FOLLOWS'
+const GET_FOLLOWERS_PENDING = 'GET_FOLLOWERS_PENDING'
+const GET_FOLLOWERS_SUCCESS = 'GET_FOLLOWERS_SUCCESS'
+const GET_FOLLOWERS_FAILURE = 'GET_FOLLOWERS_FAILURE'
 const DELETE_MEMO = 'DELETE_MEMO'
 const UPDATE_MEMO = 'UPDATE_MEMO'
 const BOARD_REALUPDATE = 'BOARD_REALUPDATE'
-const BOARD_UPDATE = "BOARD_UPDATE"
-const BOARD_CLICK ="BOARD_CLICK"
-const BOARD_CLEAR ="BOARD_CLEAR"
-const BOARD_DELETE = "BOARD_DELETE"
-const LIKE_UPDATE ="LIKE_UPDATE"
-const SIDE_OPEN = "SIDE_OPEN"
-const SIDE_CLOSE ="SIDE_CLOSE"
-const MEMO_UPDATE = "MEMO_UPDATE"
-const GROUP_LIST = "GROUP_LIST"
-const ADD_MEMO = "ADD_MEMO"
-const MODAL_OPEN = "MODAL_OPEN"
-const MODAL_CLOSE = "MODAL_CLOSE"
-const GROUP_IN = "GROUP_IN"
-const GROUP_OUT = "GROUP_OUT"
-const SET_FOLLOWID = "SET_FOLLOWID"
+const BOARD_UPDATE = 'BOARD_UPDATE'
+const BOARD_CLICK = 'BOARD_CLICK'
+const BOARD_CLEAR = 'BOARD_CLEAR'
+const BOARD_DELETE = 'BOARD_DELETE'
+const LIKE_UPDATE = 'LIKE_UPDATE'
+const SIDE_OPEN = 'SIDE_OPEN'
+const SIDE_CLOSE = 'SIDE_CLOSE'
+const MEMO_UPDATE = 'MEMO_UPDATE'
+const GROUP_LIST = 'GROUP_LIST'
+const ADD_MEMO = 'ADD_MEMO'
+const MODAL_OPEN = 'MODAL_OPEN'
+const MODAL_CLOSE = 'MODAL_CLOSE'
+const GROUP_IN = 'GROUP_IN'
+const GROUP_OUT = 'GROUP_OUT'
+const SET_FOLLOWID = 'SET_FOLLOWID'
+const SET_TO_USERS = 'SET_TO_USERS'
+const SET_CHAT_LIST_INDEX = 'SET_CHAT_LIST_INDEX'
+const SET_CHAT_ROOMS = 'SET_CHAT_ROOMS'
+const SET_NOTI_TOKEN = 'SET_NOTI_TOKEN'
 
 const initialState = {
   user: null,
   pending: false,
   error: false,
   noti: null,
-  boardData:[],
-  sideData:"",
-  sideLikeData:[],
-  sideImageList:[],
-  isOpen:false,
-
-  likeData:[],
-  memoUpdate:[],
-  likeUpdate:0,
-  likeId:0,
-  groupChange:0,
   rooms: null,
   message: [],
-  memo : null,
-  follows : null,
   currentRoom: null,
   chat_current_page: 1,
   chat_inf_handle: true,
-  isModalOpen : false,
-  isGroupChange:0,
-  followId:0,
+  chat_side: false,
+  chat_invite_modal: false,
+  current_room_users: null,
+  boardData: [],
+  sideData: '',
+  sideLikeData: [],
+  sideImageList: [],
+  isOpen: false,
+  to_users : null,
+  chat_list_index : 0,
+  users_country : [],
+  noti_token : null,
+
+  likeData: [],
+  memoUpdate: [],
+  likeUpdate: 0,
+  likeId: 0,
+  groupChange: 0,
+  memo: null,
+  follows: null,
+  followers: null,
+  isModalOpen: false,
+  isGroupChange: 0,
+  followId: 0,
   followerFollower: null,
-  followings: null,
-  followerFollowing : null,
+  followerFollowing: null,
 }
 
 export default handleActions(
@@ -161,18 +184,17 @@ export default handleActions(
         error: false,
       }
     },
-    [UPDATE_USER] : (state,action) => {
-      const copieduser = {...state.user};
+    [UPDATE_USER]: (state, action) => {
+      const copieduser = { ...state.user }
 
-
-      copieduser.name = action.payload.name;
-      copieduser.country = action.payload.country;
-      copieduser.description = action.payload.description;
-      copieduser.profile = action.payload.image;
+      copieduser.name = action.payload.name
+      copieduser.country = action.payload.country
+      copieduser.description = action.payload.description
+      copieduser.profile = action.payload.image
 
       return {
         ...state,
-        user: copieduser
+        user: copieduser,
       }
     },
     [GET_USER_FAILURE]: (state, action) => {
@@ -250,76 +272,74 @@ export default handleActions(
         error: false,
       }
     },
-    [BOARD_REALUPDATE] : (state,action)=>{
-
-    },
-    [BOARD_UPDATE]:(state,action)=>{
-      return{
-          ...state,
-          boardData:[...state.boardData,action.payload.boardData]
-      }
-    },
-    [BOARD_DELETE]:(state,action)=>{
-      return{
+    [BOARD_REALUPDATE]: (state, action) => {},
+    [BOARD_UPDATE]: (state, action) => {
+      return {
         ...state,
-        boardData : state.boardData.filter((boardDataone)=>{
-          return boardDataone.id !== action.payload.boardId
-        })
+        boardData: [...state.boardData, action.payload.boardData],
       }
     },
-  [BOARD_CLICK]:(state,action)=>{
-    return {
-      ...state,
-      sideData:action.payload.sideData,
-      sideLikeData:action.payload.sideLikeData,
-      sideImageList:action.payload.sideImageList   
-    }
-  },
-  [BOARD_CLEAR]:(state,action)=>{
-    return {
-      ...state,
-      boardData:[]
-    }
-  },
-  [SIDE_OPEN]:(state,action)=>{
-    return {
-      ...state,
-      isOpen:true
-    }
-  },
-  [SIDE_CLOSE]:(state,action)=>{
-    return {
-      ...state,
-      isOpen:false
-    }
-  },
+    [BOARD_DELETE]: (state, action) => {
+      return {
+        ...state,
+        boardData: state.boardData.filter(boardDataone => {
+          return boardDataone.id !== action.payload.boardId
+        }),
+      }
+    },
+    [BOARD_CLICK]: (state, action) => {
+      return {
+        ...state,
+        sideData: action.payload.sideData,
+        sideLikeData: action.payload.sideLikeData,
+        sideImageList: action.payload.sideImageList,
+      }
+    },
+    [BOARD_CLEAR]: (state, action) => {
+      return {
+        ...state,
+        boardData: [],
+      }
+    },
+    [SIDE_OPEN]: (state, action) => {
+      return {
+        ...state,
+        isOpen: true,
+      }
+    },
+    [SIDE_CLOSE]: (state, action) => {
+      return {
+        ...state,
+        isOpen: false,
+      }
+    },
 
-  [MODAL_OPEN]:(state,action)=>{
-    return {
-      ...state,
-      isModalOpen:true
-    }
-  },
-  [MODAL_CLOSE]:(state,action)=>{
-    return {
-      ...state,
-      isModalOpen:false
-    }
-  },
+    [MODAL_OPEN]: (state, action) => {
+      return {
+        ...state,
+        isModalOpen: true,
+      }
+    },
+    [MODAL_CLOSE]: (state, action) => {
+      return {
+        ...state,
+        isModalOpen: false,
+      }
+    },
 
-  [LIKE_UPDATE]:(state,action)=>{
-    return{
-      ...state,
-      likeUpdate:state.likeUpdate+1,
-      likeId:action.payload.board_id
-    }
-  },
-  [GROUP_LIST]:(state,action)=>{
-    return{
-      ...state,
-      groupChange:state.groupChange+1
-    }
-  },
+    [LIKE_UPDATE]: (state, action) => {
+      return {
+        ...state,
+        likeUpdate: state.likeUpdate + 1,
+        likeId: action.payload.board_id,
+      }
+    },
+    [GROUP_LIST]: (state, action) => {
+      return {
+        ...state,
+        groupChange: state.groupChange + 1,
+      }
+    },
 
     [POST_USEREDIT_PENDING]: (state, action) => {
       return {
@@ -333,9 +353,9 @@ export default handleActions(
         ...state,
         useredit_register_pending: false,
         useredit: action.payload,
-        sideData:action.payload.sideData,
-        sideLikeData:action.payload.sideLikeData,
-        sideImageList:action.payload.sideImageList   
+        sideData: action.payload.sideData,
+        sideLikeData: action.payload.sideLikeData,
+        sideImageList: action.payload.sideImageList,
       }
     },
     [POST_USEREDIT_FAILURE]: (state, action) => {
@@ -410,157 +430,6 @@ export default handleActions(
         get_room_error: true,
       }
     },
-    [GET_FOLLOWS_PENDING]: (state, action) => {
-      return {
-        ...state,
-        follows_pending: true,
-        get_follows_error: true,
-      }
-    },
-    [GET_FOLLOWS_SUCCESS]: (state, action) => {
-      return {
-        ...state,
-        follows_pending: false,
-        follows: action.payload,
-        get_follows_error: false,
-      }
-    },
-    [GET_FOLLOWS_FAILURE]: (state, action) => {
-      return {
-        ...state,
-        follows_pending: false,
-        get_follows_error: true,
-      }
-    },
-    [SET_FOLLOWERFOLLOWING] : (state, action) => {
-      return {
-        ...state,
-        followerFollowing :action.payload.followerFollowing
-      }
-    },
-
-    [GET_FOLLOWINGS_PENDING]: (state, action) => {
-      return {
-        ...state,
-        followings_pending: true,
-        get_followings_error: true,
-      }
-    },
-    [GET_FOLLOWINGS_SUCCESS]: (state, action) => {
-      return {
-        ...state,
-        followings_pending: false,
-        followings: action.payload,
-        get_followings_error: false,
-      }
-    },
-    [GET_FOLLOWINGS_FAILURE]: (state, action) => {
-      return {
-        ...state,
-        followings_pending: false,
-        get_followings_error: true,
-      }
-    },
-
-    [SET_FOLLOWID]: (state, action) => {
-      return {
-        ...state,
-        followId : action.payload.followId, 
-      }
-    },
-    [SET_FOLLOWERFOLLOWER] : (state, action) => {
-      return {
-        ...state,
-      followerFollower: action.payload.followerFollower,
-      }
-    },
-    [TOGGLE_FOLLOWERFOLLOWER] : (state, action) => {
-      var plus = true;
-      var i = 0 ;
-
-      var copiedfollowerFollower = [...state.followerFollower];
-      copiedfollowerFollower.forEach(follower => {
-        if(follower.id === action.payload.followerFollower.id){
-          copiedfollowerFollower.splice(i,1)
-          plus = false;
-        }
-        i++;
-      })
-      if(plus === true){
-        copiedfollowerFollower.push(action.payload.followerFollower);
-      }
-
-      return{
-      ...state,
-      followerFollower : copiedfollowerFollower
-    }
-    },
-
-    [DELETE_FOLLOWINGS] : (state,action) => {
-        return {
-          ...state,
-          followings : state.followings.filter((following)=>{
-            return following.id !== action.payload
-          })
-        }
-    },
-    [GET_MEMO_PENDING]: (state, action) => {
-      return {
-        ...state,
-        memo_pending: true,
-        get_memo_error: true,
-      }
-    },
-    [GET_MEMO_SUCCESS]: (state, action) => {
-      return {
-        ...state,
-        memo_pending: false,
-        memo: action.payload,
-        get_memo_error: false,
-      }
-    },
-    [GET_MEMO_FAILURE]: (state, action) => {
-      return {
-        ...state,
-        memo_pending: false,
-        get_memo_error: true,
-      }
-    },
-    [ADD_MEMO]: (state, action) => {
-      return {
-        ...state,
-        memo: [...state.memo, action.payload.memo],
-      }
-    },
-    [DELETE_MEMO]: (state, action) => {
-      return {
-        ...state,
-        memo: state.memo.filter((onememo, index) => {
-                    return onememo.id !== action.payload.memo_id
-        }),
-      }
-    },
-
-    [UPDATE_MEMO]:(state, action) => {
-      return { 
-        ...state,
-          memo: [
-            ...state.memo.filter(onememo => {
-              if(onememo.id === action.payload.memo_id){
-                onememo.memo_title = action.payload.memo_title  
-                onememo.content_text = action.payload.content_text
-              }
-              return onememo.id === action.payload.memo_id
-            }
-
-            ),
-            ...state.memo.filter(onememo => {
-              return onememo.id !== action.payload.memo_id
-            })
-          ]
-      }
-    },
-
     [ADD_MESSAGE]: (state, action) => {
       return {
         ...state,
@@ -593,6 +462,7 @@ export default handleActions(
         ...state,
         // rooms:[...state.rooms,action.payload.room]
         currentRoom: action.payload.room,
+        current_room_users: action.payload.room.users,
         chat_inf_handle: true,
       }
     },
@@ -603,7 +473,18 @@ export default handleActions(
           ...state.rooms.filter(room => {
             if (room.id == action.payload.room_id) {
               room.updated_at = action.payload.updated_at
-              room.last_message = action.payload.last_message
+              if(action.payload.type == 'memo') {
+                room.last_message = 'MEMO가 도착했습니다'
+              }else if(action.payload.type == 'file'){
+                if(action.payload.last_message.startsWith('[{')) {
+                  room.last_message = '파일이 도착했습니다'
+                }else {
+                  room.last_message = "사진이 도착했습니다"
+                }
+              }else {
+                room.last_message = action.payload.last_message
+              }
+
             }
             return room.id == action.payload.room_id
           }),
@@ -633,34 +514,287 @@ export default handleActions(
         chat_current_page: 1,
       }
     },
+
     [CHAT_PAGE_NOT]: (state, action) => {
       return {
         ...state,
         chat_inf_handle: false,
       }
     },
-    [GROUP_LIST]:(state,action)=>{
-      return{
+    [GET_FOLLOWS_PENDING]: (state, action) => {
+      return {
         ...state,
-        groupChange:state.groupChange+1
+        follows_pending: true,
+        get_follows_error: true,
       }
     },
-    [GROUP_IN]:(state,action)=>{
-      return{
+    [GET_FOLLOWS_SUCCESS]: (state, action) => {
+      return {
         ...state,
-        isGroupChange:state.isGroupChange+1
+        follows_pending: false,
+        follows: action.payload,
+        get_follows_error: false,
       }
     },
-    [GROUP_OUT]:(state,action)=>{
-      return{
+    [GET_FOLLOWS_FAILURE]: (state, action) => {
+      return {
         ...state,
-        isGroupChange:state.isGroupChange+1
+        follows_pending: false,
+        get_follows_error: true,
       }
     },
-    [MEMO_UPDATE]:(state,action)=>{
-      return{
+
+    [GET_FOLLOWERS_PENDING]: (state, action) => {
+      return {
         ...state,
-        memoUpdate:[...state.memoUpdate,1]
+        followers_pending: true,
+        get_followers_error: true,
+      }
+    },
+    [GET_FOLLOWERS_SUCCESS]: (state, action) => {
+      return {
+        ...state,
+        followers_pending: false,
+        followers: action.payload,
+        get_followers_error: false,
+      }
+    },
+    [GET_FOLLOWERS_FAILURE]: (state, action) => {
+      return {
+        ...state,
+        followers_pending: false,
+        get_followers_error: true,
+      }
+    },
+
+    [SET_FOLLOWERFOLLOWING]: (state, action) => {
+      return {
+        ...state,
+        followerFollowing: action.payload.followerFollowing,
+      }
+    },
+
+
+    [SET_FOLLOWID]: (state, action) => {
+      return {
+        ...state,
+        followId: action.payload.followId,
+      }
+    },
+    [SET_FOLLOWERFOLLOWER]: (state, action) => {
+      return {
+        ...state,
+        followerFollower: action.payload.followerFollower,
+      }
+    },
+    [TOGGLE_FOLLOWERFOLLOWER]: (state, action) => {
+      var plus = true
+      var i = 0
+
+      
+      if(state.followerFollower){
+      var copiedfollowerFollower = [...state.followerFollower]
+      copiedfollowerFollower.forEach(follower => {
+        if (follower.id === action.payload.followerFollower.id) {
+          copiedfollowerFollower.splice(i, 1)
+          plus = false
+        }
+        i++
+      })
+      if(plus === true){
+        return{
+          ...state,
+          followerFollower: [...state.followerFollower, action.payload.followerFollower],
+        }
+      }
+    }
+      if (plus === true) {
+        var copiedfollowerFollower = [...state.followerFollower]
+        copiedfollowerFollower.push(action.payload.followerFollower);
+        return{
+          ...state,
+        followerFollower: copiedfollowerFollower,
+      }
+      }
+      return {
+        ...state,
+        followerFollower: copiedfollowerFollower,
+      }
+    },
+
+
+
+    [DELETE_FOLLOWS]: (state, action) => {
+      return {
+        ...state,
+        follows: state.follows.filter(following => {
+          return following.id !== action.payload
+        }),
+      }
+    },
+
+    [GET_MEMO_PENDING]: (state, action) => {
+      return {
+        ...state,
+        memo_pending: true,
+        get_memo_error: true,
+      }
+    },
+    [GET_MEMO_SUCCESS]: (state, action) => {
+      return {
+        ...state,
+        memo_pending: false,
+        memo: action.payload,
+        get_memo_error: false,
+      }
+    },
+    [GET_MEMO_FAILURE]: (state, action) => {
+      return {
+        ...state,
+        memo_pending: false,
+        get_memo_error: true,
+      }
+    },
+    [ADD_MEMO]: (state, action) => {
+      return {
+        ...state,
+        memo: [...state.memo, action.payload.memo],
+      }
+    },
+    [CHAT_SIDE_OPEN]: (state, action) => {
+      return {
+        ...state,
+        chat_side: true,
+      }
+    },
+    [CHAT_SIDE_CLOSE]: (state, action) => {
+      return {
+        ...state,
+        chat_side: false,
+      }
+    },
+    [CHAT_INVITE_MODAL_OPEN]: (state, action) => {
+      return {
+        ...state,
+        chat_invite_modal: true,
+      }
+    },
+    [CHAT_INVITE_MODAL_CLOSE]: (state, action) => {
+      return {
+        ...state,
+        chat_invite_modal: false,
+      }
+    },
+    [SET_CHAT_SIDE_DATAS]: (state, action) => {
+      return {
+        ...state,
+        room_files: action.payload.files,
+        room_images: action.payload.images,
+        room_memos: action.payload.memos,
+      }
+    },
+    [ADD_CHAT_SIDE_FILES]: (state, action) => {
+      return {
+        ...state,
+        room_files: [action.payload.files, ...state.room_files],
+      }
+    },
+    [ADD_CHAT_SIDE_IMAGES]: (state, action) => {
+      return {
+        ...state,
+        room_images: [action.payload.images, ...state.room_images],
+      }
+    },
+    [ADD_CHAT_SIDE_MEMOS]: (state, action) => {
+      return {
+        ...state,
+        room_memos: [action.payload.memos, ...state.room_memos],
+      }
+    },
+    [GET_CURRENT_ROOM_SUCCESS]: (state, action) => {
+      return {
+        ...state,
+        current_room_users: action.payload,
+        rooms: [
+          ...state.rooms.filter(room => {
+            if (room.id == state.currentRoom.id) {
+              room.users = action.payload
+            }
+            return room.id == state.currentRoom.id
+          }),
+          ...state.rooms.filter(room => {
+            return room.id != state.currentRoom.id
+          }),
+        ],
+      }
+    },
+
+    [DELETE_MEMO]: (state, action) => {
+      return {
+        ...state,
+        memo: state.memo.filter((onememo, index) => {
+          return onememo.id !== action.payload.memo_id
+        }),
+      }
+    },
+
+    [UPDATE_MEMO]: (state, action) => {
+      return {
+        ...state,
+        memo: [
+          ...state.memo.filter(onememo => {
+            if (onememo.id === action.payload.memo_id) {
+              onememo.memo_title = action.payload.memo_title
+              onememo.content_text = action.payload.content_text
+            }
+            return onememo.id === action.payload.memo_id
+          }),
+          ...state.memo.filter(onememo => {
+            return onememo.id !== action.payload.memo_id
+          }),
+        ],
+      }
+    },
+    [GROUP_IN]: (state, action) => {
+      return {
+        ...state,
+        isGroupChange: state.isGroupChange + 1,
+      }
+    },
+    [GROUP_OUT]: (state, action) => {
+      return {
+        ...state,
+        isGroupChange: state.isGroupChange + 1,
+      }
+    },
+    [MEMO_UPDATE]: (state, action) => {
+      return {
+        ...state,
+        memoUpdate: [...state.memoUpdate, 1],
+      }
+    },
+    [SET_TO_USERS]: (state, action) => {
+      return {
+        ...state,
+        to_users : action.payload.toUsers,
+      }
+    },
+    [SET_CHAT_LIST_INDEX]: (state, action) => {
+      return {
+        ...state,
+        chat_list_index : action.payload.index,
+      }
+    },
+    [SET_CHAT_ROOMS]: (state, action) => {
+      return {
+        ...state,
+        rooms : action.payload.rooms,
+      }
+    },
+    [SET_NOTI_TOKEN] : (state, action) => {
+      return {
+        ...state,
+        noti_token : action.payload.noti_token,
       }
     }
   },

@@ -48,7 +48,7 @@ export default function GroupWriteModal({group_id,category_id,GetUpdate}) {
   const user = useSelector(state=> state.Reducers.user);
   const [username, setUsername] = useState('');
   const imageHandleChange = (e) => {
-    // console.log(e.target.files)
+  // console.log(e.target.files)
   if(e.target.files){
     const targetImages = Array.from(e.target.files).map((file) => file);
     setImageToServer([...imageToServer, ...targetImages]);
@@ -225,29 +225,7 @@ const fileDrop = (e) => {
                 <br/>
             </div>
             <FormControl sx={{ ml:2, mt:0.7 }}>
-      <InputLabel
-      size="small"
-      id="demo-simple-select-label">category</InputLabel>
-      <Select 
-        labelId="demo-simple-select-label"
-        id="demo-simple-select"
-        sx={{ minWidth: 110, maxHeight:35 }}
-        label="Age"
-        value={muiSelectValue}
-        onChange={SelectChange}
-      >
-    
-    <MenuItem value={"전체"}>전체</MenuItem>
-    <MenuItem value={"영화"}>영화</MenuItem>
-    <MenuItem value={"음식"}>음식</MenuItem>
-    <MenuItem value={"여행"}>여행</MenuItem>
-    <MenuItem value={"자동차"}>자동차</MenuItem>
-    <MenuItem value={"IT"}>IT</MenuItem>
-    <MenuItem value={"패션"}>패션</MenuItem>
-    <MenuItem value={"취업"}>취업</MenuItem>
-    <MenuItem value={"가상화폐"}>가상화폐</MenuItem>
-    <MenuItem value={"홍보"}>홍보</MenuItem>
-  </Select>
+      
 </FormControl>
          </div>
 

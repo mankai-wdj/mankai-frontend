@@ -79,15 +79,16 @@ function GroupUpdateModal(props) {
                 onClose={ModalClose}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
+                sx={{ overflow:"scroll" }}
             >
-                <Box className="bg-white w-192 mx-auto mt-10 h-4/5 rounded-xl p-5 relative">
+                <Box className="bg-white w-192 mx-auto mt-5 h-min rounded-xl p-3 relative" >
                     <p className="text-2xl mb-5 font-bold text-center">
                         그룹 수정하기
                     </p>
                     <div className="relative mt-5">
                         {preview
                             ?    <img className="w-full h-72 rounded-xl" src={preview} alt="이미지 에러"/>
-                            :    <img className="w-full h-72 " src="https://mankai-bucket.s3-ap-northeast-2.amazonaws.com/images/EjqTKgV5GU3U5cTOuUEGIg6303oAiz2Kfl5vS871.jpg" alt="이미지없음"/>
+                            :    <img className="w-full h-72"src="https://mankai-bucket.s3-ap-northeast-2.amazonaws.com/images/EjqTKgV5GU3U5cTOuUEGIg6303oAiz2Kfl5vS871.jpg" alt="이미지없음"/>
                         }
                         <div className="absolute w-full top-0 left-0">
 
@@ -158,12 +159,9 @@ function GroupUpdateModal(props) {
                             )
                         })}
                     </div>
-                    <div className="absolute flex bottom-5 right-10">
-                        <div className="mr-2">
-                            <Button variant="outlined"  color="success" onClick={save}>수정하기</Button>
-                        </div>
+                    <div className="flex justify-end mt-10">
+                        <Button variant="outlined"  color="success" onClick={save}>수정하기</Button>
                         <Button variant="outlined"  color="error" onClick={ModalClose}>취소하기</Button>
-                
                     </div>
                 </Box>
             </Modal>
