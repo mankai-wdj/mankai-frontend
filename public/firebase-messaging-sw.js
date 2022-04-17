@@ -3,13 +3,13 @@
 importScripts('https://www.gstatic.com/firebasejs/8.2.3/firebase-app.js');
 importScripts('https://www.gstatic.com/firebasejs/8.2.3/firebase-messaging.js');
 const config =  { 
-    apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+    apiKey: "AIzaSyBecxWiGZMPCfagqeh1CJO41uHIomGbM5g",
     authDomain: "mankai-project.firebaseapp.com",
     projectId: "mankai-project",
     storageBucket: "mankai-project.appspot.com",
-    messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
-    appId: process.env.REACT_APP_FIREBASE_APP_ID,
-    measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID
+    messagingSenderId: 860929381621,
+    appId: "1:860929381621:web:9f918af7be472bf022a1bc",
+    measurementId: "G-3C4RS2WTH6"
 }; 
 firebase.initializeApp(config);
 

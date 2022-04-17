@@ -315,11 +315,18 @@ function BoardCard(props){
                                     'aria-labelledby': 'basic-button',
                                     }}
                                 >
-                                    {option.map((option)=>{
+                                    {
+                                        (user) ?
+                                        (user.id)?
+                                    option.map((option)=>{
                                         return(
                                             <MenuItem onClick={handleClose}>{option}</MenuItem>
                                         )
-                                    })}
+                                        
+                                    })
+                                    :null
+                                    :null
+                                }
                                     
                                 </Menu>
                             </div>
