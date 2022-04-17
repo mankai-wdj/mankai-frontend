@@ -94,7 +94,7 @@ function Message({ message: msg }) {
                           <a
                             className="p-3 w-12 h-12"
                             download
-                            href={'http://localhost:8000/storage/' + file.path}
+                            href={file.path}
                           >
                             <FileIcon
                               extension={file.type}
@@ -106,7 +106,7 @@ function Message({ message: msg }) {
                           <div>
                             <a
                               href={
-                                'http://localhost:8000/storage/' + file.path
+                                file.path
                               }
                               download
                               className="font-bold break-all"
@@ -120,7 +120,7 @@ function Message({ message: msg }) {
                           <a
                             className="p-3"
                             download
-                            href={'http://localhost:8000/storage/' + file.path}
+                            href={file.path}
                           >
                             <span className="text-primarytext">
                               <DownloadIcon />
@@ -135,7 +135,7 @@ function Message({ message: msg }) {
                         <img
                           key={index}
                           className="w-1/2"
-                          src={'http://localhost:8000/storage/' + image}
+                          src={image}
                           onClick={() => setOpen(true)}
                         ></img>
                       ))}
@@ -143,11 +143,11 @@ function Message({ message: msg }) {
                   ) : (
                     <div className="flex text-left mr-2 py-3 px-4   rounded-xl border-2">
                       <img
-                        src={'http://localhost:8000/storage/' + message.message}
+                        src={message.message}
                         onClick={() => setOpen(true)}
                       ></img>
                       <ReactImageViewer
-                        imgs={'http://localhost:8000/storage/' + message.message}
+                        imgs={message.message}
                         isOpen={isOpen}
                         onClose={() => setOpen(false)}
                       />
@@ -256,7 +256,7 @@ function Message({ message: msg }) {
                       <a
                         className="p-3 w-12 h-12"
                         download
-                        href={'http://localhost:8000/storage/' + file.path}
+                        href={file.path}
                       >
                         <FileIcon
                           extension={file.type}
@@ -267,7 +267,7 @@ function Message({ message: msg }) {
                     <div className="flex flex-col">
                       <div>
                         <a
-                          href={'http://localhost:8000/storage/' + file.path}
+                          href={file.path}
                           download
                           className="font-bold break-all"
                         >
@@ -280,7 +280,7 @@ function Message({ message: msg }) {
                       <a
                         className="p-3"
                         download
-                        href={'http://localhost:8000/storage/' + file.path}
+                        href={file.path}
                       >
                         <span className="text-primarytext">
                           <DownloadIcon />
@@ -295,7 +295,7 @@ function Message({ message: msg }) {
                     <img
                       key={index}
                       className="w-1/2"
-                      src={'http://localhost:8000/storage/' + image}
+                      src={image}
                       onClick={() => setOpen(true)}
                     ></img>
                   ))}
@@ -303,11 +303,11 @@ function Message({ message: msg }) {
               ) : (
                 <div className="flex text-left mr-2 py-3 px-4 rounded-xl border-2  max-w-[50%]">
                   <img
-                    src={'http://localhost:8000/storage/' + message.message}
+                    src={message.message}
                     onClick={() => setOpen(true)}
                   ></img>
                   <ReactImageViewer
-                    imgs={'http://localhost:8000/storage/' + message.message}
+                    imgs={message.message}
                     isOpen={isOpen}
                     onClose={() => setOpen(false)}
                   />
