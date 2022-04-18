@@ -63,11 +63,11 @@ const GET_CURRENT_ROOM_FAILURE = 'GET_CURRENT_ROOM_FAILURE'
 const SET_ROOM_USERS = 'SET_ROOM_USERS'
 const SET_FOLLOWERFOLLOWER = 'SET_FOLLOWERFOLLOWER'
 const TOGGLE_FOLLOWERFOLLOWER = 'TOGGLE_FOLLOWERFOLLOWER'
-const GET_FOLLOWINGS_PENDING = 'GET_FOLLOWINGS_PENDING'
-const GET_FOLLOWINGS_SUCCESS = 'GET_FOLLOWINGS_SUCCESS'
-const GET_FOLLOWINGS_FAILURE = 'GET_FOLLOWINGS_FAILURE'
 const SET_FOLLOWERFOLLOWING = 'SET_FOLLOWERFOLLOWING'
-const DELETE_FOLLOWINGS = 'DELETE_FOLLOWINGS'
+const DELETE_FOLLOWS = 'DELETE_FOLLOWS'
+const GET_FOLLOWERS_PENDING = 'GET_FOLLOWERS_PENDING'
+const GET_FOLLOWERS_SUCCESS = 'GET_FOLLOWERS_SUCCESS'
+const GET_FOLLOWERS_FAILURE = 'GET_FOLLOWERS_FAILURE'
 const DELETE_MEMO = 'DELETE_MEMO'
 const UPDATE_MEMO = 'UPDATE_MEMO'
 const BOARD_REALUPDATE = 'BOARD_REALUPDATE'
@@ -121,11 +121,11 @@ const initialState = {
   groupChange: 0,
   memo: null,
   follows: null,
+  followers: null,
   isModalOpen: false,
   isGroupChange: 0,
   followId: 0,
   followerFollower: null,
-  followings: null,
   followerFollowing: null,
   room_files : [],
   room_images : [],
@@ -547,6 +547,29 @@ export default handleActions(
       }
     },
 
+    [GET_FOLLOWERS_PENDING]: (state, action) => {
+      return {
+        ...state,
+        followers_pending: true,
+        get_followers_error: true,
+      }
+    },
+    [GET_FOLLOWERS_SUCCESS]: (state, action) => {
+      return {
+        ...state,
+        followers_pending: false,
+        followers: action.payload,
+        get_followers_error: false,
+      }
+    },
+    [GET_FOLLOWERS_FAILURE]: (state, action) => {
+      return {
+        ...state,
+        followers_pending: false,
+        get_followers_error: true,
+      }
+    },
+
     [SET_FOLLOWERFOLLOWING]: (state, action) => {
       return {
         ...state,
@@ -554,28 +577,6 @@ export default handleActions(
       }
     },
 
-    [GET_FOLLOWINGS_PENDING]: (state, action) => {
-      return {
-        ...state,
-        followings_pending: true,
-        get_followings_error: true,
-      }
-    },
-    [GET_FOLLOWINGS_SUCCESS]: (state, action) => {
-      return {
-        ...state,
-        followings_pending: false,
-        followings: action.payload,
-        get_followings_error: false,
-      }
-    },
-    [GET_FOLLOWINGS_FAILURE]: (state, action) => {
-      return {
-        ...state,
-        followings_pending: false,
-        get_followings_error: true,
-      }
-    },
 
     [SET_FOLLOWID]: (state, action) => {
       return {
@@ -593,6 +594,8 @@ export default handleActions(
       var plus = true
       var i = 0
 
+      
+      if(state.followerFollower){
       var copiedfollowerFollower = [...state.followerFollower]
       copiedfollowerFollower.forEach(follower => {
         if (follower.id === action.payload.followerFollower.id) {
@@ -601,24 +604,36 @@ export default handleActions(
         }
         i++
       })
-      if (plus === true) {
-        copiedfollowerFollower.push(action.payload.followerFollower)
+      if(plus === true){
+        return{
+          ...state,
+          followerFollower: [...state.followerFollower, action.payload.followerFollower],
+        }
       }
-
+    }
+      if (plus === true) {
+        return{
+          ...state,
+        followerFollower: [...state.followerFollower, action.payload.followerFollower],
+      }
+      }
       return {
         ...state,
         followerFollower: copiedfollowerFollower,
       }
     },
 
-    [DELETE_FOLLOWINGS]: (state, action) => {
+
+
+    [DELETE_FOLLOWS]: (state, action) => {
       return {
         ...state,
-        followings: state.followings.filter(following => {
+        follows: state.follows.filter(following => {
           return following.id !== action.payload
         }),
       }
     },
+
     [GET_MEMO_PENDING]: (state, action) => {
       return {
         ...state,

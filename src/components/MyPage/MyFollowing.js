@@ -12,7 +12,7 @@ import axios from 'axios';
 
 export default function MyFollowing() {
 
-  const followings = useSelector(state=> state.Reducers.followings);
+  const follows = useSelector(state=> state.Reducers.follows);
 
   const user = useSelector(state=> state.Reducers.user);
 
@@ -35,13 +35,13 @@ export default function MyFollowing() {
 
   const noFollow = () => {
     axios.post('/api/user/follow',{
-      user_id : followId,
-      to_user_id : user.id,
+      user_id : user.id,
+      to_user_id : followId
     })
     .then((res)=>{
       console.log(res)
       dispatch({
-        type:"DELETE_FOLLOWINGS",
+        type:"DELETE_FOLLOWS",
         payload: followId
       })
     })
@@ -55,8 +55,8 @@ export default function MyFollowing() {
     
         
      <div>
-        { (followings) ?
-           followings.map((follow)=>(
+        { (follows) ?
+           follows.map((follow)=>(
           <div key={follow.id} className='border border-gray-300 rounded py-2 px-4 my-3'>
             <img  alt="" className="rounded-full border border-gray-100 w-12 h-12 inline-block" src={ 
               (follow.profile) ? (follow.profile)

@@ -30,7 +30,6 @@ function Group() {
         <div>
           
 
-            <GroupCreateModal></GroupCreateModal>
 
                   
             

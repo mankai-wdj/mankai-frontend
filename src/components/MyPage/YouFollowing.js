@@ -12,24 +12,24 @@ export default function YouFollowing() {
   const dispatch = useDispatch()
 
   const follow = useSelector(state=> state.Reducers.followId);
-
-  const followerFollowing = useSelector(state=>state.Reducers.followerFollowing);
   
+  const followerFollowing = useSelector(state=> state.Reducers.followerFollowing);
 // follow.id를 getFollows라는 메소드에다가 요청하는 파라미터로 쓰고 가져온 데이터를 follows라는 state에 저장한다.
 
     useEffect(()=>{
-        axios.get('/api/followings/'+follow.id)
+        axios.get('/api/follows/'+follow.id)
         .then((res)=>{
-            console.log("follower의 following:",res.data)
             dispatch({
               type:"SET_FOLLOWERFOLLOWING",
               payload:{followerFollowing:res.data}
             });
-          })
+        })
         .catch((err)=>{
             console.log(err)
         })
     },[follow])
+
+    
 
   return (
     
@@ -98,7 +98,6 @@ export default function YouFollowing() {
           <div style={{ paddingTop: '5.5%'}} />
         </Skeleton>
 </Box>
-
 
             </>
             </div>

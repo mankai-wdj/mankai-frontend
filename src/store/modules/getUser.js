@@ -1,8 +1,8 @@
 import axios from 'axios'
 import { getFollows } from './getFollows'
+import { getFollowers } from './getFollowers'
 import { getMemo } from './getMemo'
 import { Users } from './getUsers'
-import { getFollowings } from './getFollowings'
 import firebase from 'firebase/app';
 import "firebase/messaging"
 const firebaseConfig = {
@@ -39,8 +39,9 @@ export const User = () => async dispatch => {
         payload: res.data,
       })
       dispatch(getFollows(res.data.id))
+      dispatch(getFollowers(res.data.id))
       dispatch(getMemo(res.data.id))
-      dispatch(getFollowings(res.data.id))
+
       firebaseMessaging
       .requestPermission()
       .then(() => {

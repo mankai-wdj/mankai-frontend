@@ -7,18 +7,20 @@ import { useSelector,useDispatch } from 'react-redux';
 import { Skeleton,Avatar,Typography,Box } from '@mui/material';
 
 
-export default function YouFollow() {
+export default function YouFollowing() {
 
   const dispatch = useDispatch()
 
   const follow = useSelector(state=> state.Reducers.followId);
+
+  const followerFollower = useSelector(state=>state.Reducers.followerFollower);
   
-  const followerFollower = useSelector(state=> state.Reducers.followerFollower);
 // follow.id를 getFollows라는 메소드에다가 요청하는 파라미터로 쓰고 가져온 데이터를 follows라는 state에 저장한다.
 
     useEffect(()=>{
-        axios.get('/api/follows/'+follow.id)
+        axios.get('/api/followers/'+follow.id)
         .then((res)=>{
+          console.log("followerfollower를 가져왔을 때")
             dispatch({
               type:"SET_FOLLOWERFOLLOWER",
               payload:{followerFollower:res.data}
@@ -106,5 +108,4 @@ export default function YouFollow() {
         
   )
         };
-        // 추가로 myFollow는 삭제버튼 만들어야 된다.
 
