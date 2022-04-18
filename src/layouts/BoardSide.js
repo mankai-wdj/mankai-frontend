@@ -226,32 +226,6 @@ function BoardSide(props){
         }
     }
     return (
-       <>
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-          <Box sx={style}>
-           <TextField 
-          fullWidth 
-          value={titlefieldvalue}
-          onChange={textChange}
-          multiline 
-          maxRows={5}
-          id="standard-basic" 
-          label="메모 제목을 적어주세요" 
-          variant="standard"
-          />
-
-          <Button onClick={() => {submitMemo(titlefieldvalue)}} sx={{ ":hover":{
-            backgroundColor:'#6f53f0'
-          }, backgroundColor:'#4D2BF4', }} variant="contained" className="submit_button">메모저장</Button>
-          </Box>
-      </Modal>
-
-
         <Box className="justify-between flex">
             <Drawer
                 sx={{
@@ -278,63 +252,6 @@ function BoardSide(props){
                     </Button>
                     <div className='w-full p-5'>
                     {/* 프사 & 이름 */}
-                    <div className='flex justify-between'>
-                        <div className="flex">
-                          
-                            <Avatar className='mr-3'>d</Avatar> 
-                            <div>
-                                <h3 className="text-md font-semibold">{sideData.name}</h3>
-                                <p className="text-xs text-gray-500">시간표시할것</p>
-                            </div>
-                        </div>
-                            {/* 메뉴바 */}
-                            <Stack direction="row" className='z-10' spacing={2}>
-                                <div>
-                                    <Button className=''
-                                        ref={anchorRef}
-                                        id="composition-button"
-                                        aria-controls={isMenuOpen ? 'composition-menu' : undefined}
-                                        aria-expanded={isMenuOpen ? 'true' : undefined}
-                                        aria-haspopup="true"
-                                        onClick={handleToggle}
-                                    >
-                                    <UseAnimations animation={settings2}/>
-                                    </Button>
-                                    <Popper
-                                        open={isMenuOpen}
-                                        anchorEl={anchorRef.current}
-                                        role={undefined}
-                                        placement="bottom"
-                                        transition
-                                        disablePortal
-                                    >
-                                    {({ TransitionProps, placement }) => (
-                                        <Grow
-                                            {...TransitionProps}
-                                            style={{
-                                                transformOrigin:
-                                                placement === 'bottom-start' ? 'left top' : 'left bottom',
-                                            }}
-                                            >
-                                            <Paper>
-                                                <ClickAwayListener onClickAway={() => handleToggle("")}>
-                                                <MenuList
-                                                    autoFocusItem={isMenuOpen}
-                                                    id="composition-menu"
-                                                    aria-labelledby="composition-button"
-                                                >
-                                                    <MenuItem onClick={()=>callPapago(sideData.content_text)}>번역하기</MenuItem>
-                                                    <MenuItem onClick={() =>handleToggle("memo")}>메모 보내기</MenuItem>
-                                                    <MenuItem onClick={() =>handleToggle("")}>신고하기</MenuItem>
-                                                </MenuList>
-                                                </ClickAwayListener>
-                                            </Paper>
-                                        </Grow>
-                                    )}
-                                    </Popper>
-                                </div>
-                            </Stack>  
-                    </div>
                         
                         {/* 게시글 구간 */}
                         <BoardSideCard board={sideData}></BoardSideCard>
@@ -453,7 +370,6 @@ function BoardSide(props){
             }
             </Drawer>
         </Box>
-        </>
         ); 
 }
 export default BoardSide;
