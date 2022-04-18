@@ -37,7 +37,7 @@ import YouPage from './components/MyPage/YouPage'
 import GroupDetail from './components/GroupDetail'
 import firebase from 'firebase/app';
 import "firebase/messaging"
-axios.defaults.baseURL = 'http://mankai.shop/'
+axios.defaults.baseURL = 'http://api.mankai.shop/'
 axios.defaults.headers.post['Content-Type'] = 'application/json'
 axios.defaults.headers.post['Accept'] = 'application/json'
 axios.defaults.withCredentials = true
@@ -55,8 +55,8 @@ window.Echo = new Echo({
   cluster: 'ap3',
   forceTLS: true,
   wsHost: "api.mankai.shop",
-  wsPort: 6001,
-  wssPort: 6001,
+  wsPort: 6001, 
+  wssPort: 6001, 
   authEndpoint: '/broadcasting/auth',
   disableStats: true,
   enabledTransports: ['ws', 'wss'],
