@@ -5,7 +5,7 @@ import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 
-import YouFollow from './YouFollow';
+import YouFollowing from './YouFollowing';
 import YouPost from './YouPost';
 import YouGroup from './YouGroup';
 import YouFollower from './YouFollower'
@@ -67,10 +67,10 @@ export default function YouContents() {
 
       <div className=' bg-white border-solid rounded-md ' id='scroll'>
         <TabPanel value={value} index={0}>
-          <YouFollow />
+        <YouFollower />
         </TabPanel>
         <TabPanel value={value} index={1}>
-          <YouFollower />
+        <YouFollowing/>
         </TabPanel>
         <TabPanel value={value} index={2}>
           <YouPost />

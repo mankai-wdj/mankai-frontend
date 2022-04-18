@@ -609,11 +609,9 @@ export default handleActions(
       }
     }
       if (plus === true) {
-        var copiedfollowerFollower = [...state.followerFollower]
-        copiedfollowerFollower.push(action.payload.followerFollower);
         return{
           ...state,
-        followerFollower: copiedfollowerFollower,
+        followerFollower: [...state.followerFollower, action.payload.followerFollower],
       }
       }
       return {

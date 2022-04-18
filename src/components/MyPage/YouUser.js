@@ -110,7 +110,6 @@ export default function YouUser() {
           alt="Avatar"
         ></Avatar>
       )}
-      {/* 다 줄였을 때 사진이 튀어나옴. MyUser와 다르게 */}
 
       <div className="text-2xl mt-5 grid justify-items-center font-black">
         {follow.name ? (

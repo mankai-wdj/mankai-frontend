@@ -7,13 +7,13 @@ import { useSelector,useDispatch } from 'react-redux';
 import { Skeleton,Avatar,Typography,Box } from '@mui/material';
 
 
-export default function YouFollow() {
+export default function YouFollowing() {
 
   const dispatch = useDispatch()
 
   const follow = useSelector(state=> state.Reducers.followId);
   
-  const followerFollower = useSelector(state=> state.Reducers.followerFollower);
+  const followerFollowing = useSelector(state=> state.Reducers.followerFollowing);
 // follow.id를 getFollows라는 메소드에다가 요청하는 파라미터로 쓰고 가져온 데이터를 follows라는 state에 저장한다.
 
     useEffect(()=>{
@@ -29,12 +29,14 @@ export default function YouFollow() {
         })
     },[follow])
 
+    
+
   return (
     
         
      <div>
-        { (followerFollower) ?
-           followerFollower.map((follow)=>(
+        { (followerFollowing) ?
+           followerFollowing.map((follow)=>(
           <div key={follow.id} className='border border-gray-300 rounded py-2 px-4 my-3'>
             <img  alt="" className="rounded-full border border-gray-100 w-12 h-12 inline-block" src={ 
               (follow.profile) ? (follow.profile)
@@ -96,7 +98,6 @@ export default function YouFollow() {
           <div style={{ paddingTop: '5.5%'}} />
         </Skeleton>
 </Box>
-
 
             </>
             </div>

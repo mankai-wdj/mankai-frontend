@@ -13,13 +13,14 @@ export default function YouFollowing() {
 
   const follow = useSelector(state=> state.Reducers.followId);
 
-  const followerFollowing = useSelector(state=>state.Reducers.followerFollowing);
+  const followerFollower = useSelector(state=>state.Reducers.followerFollower);
   
 // follow.id를 getFollows라는 메소드에다가 요청하는 파라미터로 쓰고 가져온 데이터를 follows라는 state에 저장한다.
 
     useEffect(()=>{
         axios.get('/api/followers/'+follow.id)
         .then((res)=>{
+          console.log("followerfollower를 가져왔을 때")
             dispatch({
               type:"SET_FOLLOWERFOLLOWER",
               payload:{followerFollower:res.data}
@@ -29,13 +30,14 @@ export default function YouFollowing() {
             console.log(err)
         })
     },[follow])
+    // 얘만 실행되면 된다.
 
   return (
     
         
      <div>
-        { (followerFollowing) ?
-           followerFollowing.map((follow)=>(
+        { (followerFollower) ?
+           followerFollower.map((follow)=>(
           <div key={follow.id} className='border border-gray-300 rounded py-2 px-4 my-3'>
             <img  alt="" className="rounded-full border border-gray-100 w-12 h-12 inline-block" src={ 
               (follow.profile) ? (follow.profile)
