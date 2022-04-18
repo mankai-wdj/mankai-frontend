@@ -9,6 +9,8 @@ import Echo from 'laravel-echo'
 import Pusher from 'pusher-js'
 import * as React from 'react'
 import { useTranslation } from 'react-i18next'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import RoomInviteUserModal from './RoomInviteUserModal'
 import { useDispatch, useSelector } from 'react-redux'
 import { getMessage } from '../../store/modules/getMessage'
@@ -105,32 +107,38 @@ function ChatContainer() {
       })
   }
 
+const speechModal = () => {
+  toast(<div>
+    <div>메세지를 보낼까요?</div>
+
+    </div>);
+}
+
   useEffect(() => {
     if (sendSpeech) {
       console.log('보내기')
-      if (window.confirm(`녹음을 보낼까요? ${tempSpeech} => ${speech}`)) {
-        let toUsers = []
-        for (let i = 0; i < toUser.length; i++) {
-          toUsers.push(toUser[i]['user_id'])
-        }
-        axios
-          .post('/api/message/send', {
-            message: speech,
-            room_id: currentChatRoom.id,
-            to_users: toUsers,
-            user_id: currentUser.id,
-            type: 'message',
-          })
-          .then(res => {
-            transBotChat()
-          })
+
+      let toUsers = []
+      for (let i = 0; i < toUser.length; i++) {
+        toUsers.push(toUser[i]['user_id'])
       }
+      axios
+        .post('/api/message/send', {
+          message: speech,
+          room_id: currentChatRoom.id,
+          to_users: toUsers,
+          user_id: currentUser.id,
+          type: 'message',
+        })
+        .then(res => {
+          transBotChat()
+        })
       setCheckLag(null)
       setSendSpeech(false)
     }
 
     setSpeech(null)
-  }, [sendSpeech, tempSpeech])
+  }, [sendSpeech])
   const speechToText = () => {
     setSpeechList(!speechList)
     // console.log(speechBoolean);
@@ -164,7 +172,9 @@ function ChatContainer() {
           .post('api/translate/text', { country: checkLag, text: speech })
           .then(res => {
             setSpeech(res.data)
-            setSendSpeech(true)
+            // speechModal();
+            setSendSpeech(true);
+
           })
           .catch(err => {
             console.log(err)
@@ -465,6 +475,7 @@ function ChatContainer() {
     }
   }, [currentChatRoom, currentUser])
   return (
+    
     <div className="w-full overflow-hidden">
       {currentChatRoom ? (
         <div className=" w-full ">
