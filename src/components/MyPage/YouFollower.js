@@ -30,7 +30,6 @@ export default function YouFollowing() {
             console.log(err)
         })
     },[follow])
-    // 얘만 실행되면 된다.
 
   return (
     
@@ -109,5 +108,4 @@ export default function YouFollowing() {
         
   )
         };
-        // 추가로 myFollow는 삭제버튼 만들어야 된다.
 

@@ -8,8 +8,9 @@ import '../../styles/MyPage.css'
 import axios from 'axios'
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
 import { Skeleton } from '@mui/material'
-import CheckIcon from '@mui/icons-material/Check'
+
 import { BiPaperPlane } from 'react-icons/bi'
+import { AiOutlineCheck } from 'react-icons/ai'
 
 import Button from '@mui/material/Button'
 import Menu from '@mui/material/Menu'
@@ -147,7 +148,7 @@ export default function YouUser() {
         </div>
       ) : (
         <div>
-          <div class="space-x-4">
+          <div class="space-x-4 text-right">
             <div class="inline-block">
               <button
                 id="demo-positioned-button"
@@ -157,7 +158,7 @@ export default function YouUser() {
                 onClick={handleClick}
                 className="flex items-center bg-gray-300  hover:bg-gray-400 text-white py-2 px-4 rounded "
               >
-                <CheckIcon sx={{ mr: 1 }} />
+                <AiOutlineCheck sx={{ mr: 1 }} />
                 팔로잉
               </button>
             </div>
@@ -167,13 +168,14 @@ export default function YouUser() {
                 aria-controls={open ? 'demo-positioned-menu' : undefined}
                 aria-haspopup="true"
                 aria-expanded={open ? 'true' : undefined}
-                className="flex items-center bg-purple-600  hover:bg-purple-400 text-white py-2 px-4 mb-3 rounded"
+                className="flex items-center bg-purple-600  hover:bg-purple-400 text-white py-2 px-4 rounded"
               >
-                <BiPaperPlane sx={{ mr: 1 }} /> 메시지
+                {/* <BiPaperPlane sx={{ mr: 1 }} /> */}
+                <BiPaperPlane/>
+                메시지
               </button>
             </div>
           </div>
-          {/* 두개를 나란히 오른쪽으로 놔야됨 */}
           <Menu
             id="demo-positioned-menu"
             aria-labelledby="demo-positioned-button"
