@@ -266,7 +266,7 @@ const fileDrop = (e) => {
       memo_title : postTitle,
       user_id : user.id,
       content_text : data,
-      type : "BOARD"
+      memo_type : "BOARD"
     })
     .then((res)=>{
       editorMemoClose();

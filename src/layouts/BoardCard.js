@@ -80,7 +80,8 @@ function BoardCard(props){
         {
             console.log("번역하기클릭")
             axios.post('/api/show/papago',{
-                text:props.board.content_text
+                text:props.board.content_text,
+                mycountry : user.country
             }).then(res=>{
                setTranslated(res.data.message.result.translatedText); 
             })

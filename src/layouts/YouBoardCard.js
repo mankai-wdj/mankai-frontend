@@ -77,7 +77,8 @@ function BoardCard(props){
         if(eText === option[0])
         {
             axios.post('/api/show/papago',{
-                text:props.board.content_text
+                text:props.board.content_text,
+                mycountry : user.country
             }).then(res=>{
                setTranslated(res.data.message.result.translatedText); 
             })
