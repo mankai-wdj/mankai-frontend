@@ -1,5 +1,5 @@
 import React, { Component, useEffect, useRef, useState } from 'react';
-import { Avatar, Button, Card, IconButton } from '@mui/material';
+import { Avatar, Button, Card, IconButton, Modal, TextField } from '@mui/material';
 import BoardSide from './BoardSide';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -17,8 +17,10 @@ import Moment from 'react-moment';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 
+import settings2 from 'react-useanimations/lib/settings2'
 import UseAnimations from 'react-useanimations';
 import heart from 'react-useanimations/lib/heart'
+import { Box } from '@mui/system';
 
 function GroupBoardSideCard(props){
     
@@ -31,10 +33,25 @@ function GroupBoardSideCard(props){
     const sideData = useSelector(state=>state.Reducers.sideData)
     const [isLike,setIsLike] = useState(false)
     const [likes,setLikes] = useState([])
-    const option = ["번역하기","클립보드로 이동","신고하기"]
+    const option = ["번역하기","클립보드로 이동"]
     const [translated,setTranslated] = useState("");
     const animationHandle = useRef(null)
+    const [titleFieldValue,setTitleFieldValue] = useState("")
+    const [modalOpen,setModalOpen]=useState(false)
 
+    const style = {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: 600,
+        maxHeight: 630,
+        borderRadius:'10px',
+        bgcolor: 'white',
+        border: '2px solid #000',
+        boxShadow: 24,
+        p: 4,
+      };
     const ClickLike = () => {
         dispatch({
             type:"LIKE_UPDATE",
@@ -50,6 +67,37 @@ function GroupBoardSideCard(props){
             console.log(res.data)
             setLikes(res.data)
         })
+    }
+    const ModalOpen = () =>{
+        setModalOpen(true)
+    }
+    const ModalClose = () =>{
+        setModalOpen(false)
+    }
+    const submitMemo = (titlefieldvalue) => {
+        axios.post("/api/storememo",{
+            content_text:{sideData}.sideData.content_text,
+            memo_title : titlefieldvalue,
+            user_id : user.id,
+            post_memo_id : {sideData}.sideData.id
+        })
+        // post_memo_id를 보낸게 MemoController에서 게시글에 딸린 이미지를 저장할 수 있게 해준다. 
+        .then((res)=>{
+            console.log(res);
+            ModalClose();
+            dispatch({
+                type: 'ADD_MEMO',
+                payload: { memo: res.data },
+              })
+        })
+        .catch((err)=>{
+            console.log(err);
+        })
+        setTitleFieldValue("")
+    }
+    
+    const textChange = (e) =>{
+        setTitleFieldValue(e.target.value)
     }
     const ClickDisLike =() => {
         dispatch({
@@ -70,8 +118,10 @@ function GroupBoardSideCard(props){
     // 메뉴바 
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
+
     const handleClick = (event) => {
-      setAnchorEl(event.currentTarget);
+        console.log("클릭")
+        setAnchorEl(event.currentTarget);
     };
     const handleClose = (e) => {
         let eText = e.target.outerText;
@@ -79,11 +129,16 @@ function GroupBoardSideCard(props){
         {
             // console.log(props.board.content_text)
             axios.post('/api/show/papago',{
-                text:props.board.content_text
+                text:props.board.content_text,
+                mycountry : user.country
             }).then(res=>{
                 // console.log(res.data)
                setTranslated(res.data.message.result.translatedText); 
             })
+        }
+        else if (eText == option[1])
+        {
+            ModalOpen()
         }
         setAnchorEl(null);
     };
@@ -124,23 +179,20 @@ function GroupBoardSideCard(props){
                 <div className="bg-white w-full rounded-md shadow-md mt-2">
                     <div className="w-full h-16 ml-2 flex items-center flex justify-between ">
                         <div className='w-full flex justify-between mt-10 py-1 px-4 mr-4 rounded-lg  border-2 border-gray-300'> 
-                            <div className="flex">
-                                <Avatar className='mr-3 mt-1'>d</Avatar> 
-                                <div>
+                            <div className="flex mt-1">
+                                {
+                                     (props.board.profile) 
+                                     ?<Avatar src={props.board.profile} alt=""/>
+                                     : (props.board.name) && 
+                                     <Avatar>{props.board.name.charAt(0)}</Avatar>    
+                                }
+                                <div className='ml-3'>
                                     <h3 className="font-bold text-md">{props.board.name}</h3>
                                     <p className='text-sm text-gray-500'><Moment format='YYYY/MM/DD'>{props.board.created_at}</Moment></p>
                                 </div>
                             </div>
-                            <div>
-                                <Button
-                                    id="basic-button"
-                                    aria-controls={open ? 'basic-menu' : undefined}
-                                    aria-haspopup="true"
-                                    aria-expanded={open ? 'true' : undefined}
-                                    onClick={handleClick}
-                                >
-                                    설정
-                                </Button>
+                            <div className='z-10'>
+                            <UseAnimations  onClick={handleClick} size={36} animation={settings2}/>
                                 <Menu
                                     id="basic-menu"
                                     anchorEl={anchorEl}
@@ -201,6 +253,29 @@ function GroupBoardSideCard(props){
                     </div>
                 </div>
             </div>
+            <Modal
+                open={modalOpen}
+                onClose={ModalClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+                <Box sx={style}>
+                <TextField 
+                fullWidth 
+                value={titleFieldValue}
+                onChange={textChange}
+                multiline 
+                maxRows={5}
+                id="standard-basic" 
+                label="메모 제목을 적어주세요" 
+                variant="standard"
+                />
+
+                <Button onClick={() => {submitMemo(titleFieldValue)}} sx={{ ":hover":{
+                    backgroundColor:'#6f53f0'
+                }, backgroundColor:'#4D2BF4', }} variant="contained" className="submit_button">메모저장</Button>
+                </Box>
+            </Modal>
         </div>
     );   
 }

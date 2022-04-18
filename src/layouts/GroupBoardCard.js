@@ -77,9 +77,10 @@ function GroupBoardCard(props){
         {
             // console.log(props.board.content_text)
             axios.post('/api/show/papago',{
-                text:props.board.content_text
+                text:props.board.content_text,
+                mycountry : user.country
             }).then(res=>{
-                // console.log(res.data)
+                console.log(res.data)
                setTranslated(res.data.message.result.translatedText); 
             })
         }
@@ -257,9 +258,13 @@ function GroupBoardCard(props){
                 <div className="bg-white w-full rounded-2xl shadow-md mt-2">
                     <div className="w-full h-16 ml-2 flex items-center flex justify-between ">
                         <div className='w-full flex justify-between mt-10 py-1 px-4 mr-4 rounded-lg  border-2 border-gray-300'> 
-                            <div className="flex">
-                                <Avatar className='mr-3 mt-1'>d</Avatar> 
-                                <div>        
+                            <div className="flex mt-1">
+                                {props.board.profile
+                                       ?<Avatar src={props.board.profile} alt=""/> 
+                                       :<Avatar>{props.board.name.charAt(0)}</Avatar>
+                                       
+                                }
+                                <div className='ml-3'>        
                                     <h3 className="font-bold text-md">{props.board.name}</h3>
                                     <p className='text-sm text-gray-500'><Moment format='YYYY/MM/DD'>{props.board.updated_at}</Moment> </p>
                                 </div>
@@ -267,7 +272,7 @@ function GroupBoardCard(props){
                             {/* 메뉴바 */}
                             <div>
                                 
-                                <UseAnimations onClick={handleClick} size={32} animation={settings2}/>
+                                <UseAnimations onClick={handleClick} size={36} animation={settings2}/>
                                 <Menu
                                     id="basic-menu"
                                     anchorEl={anchorEl}

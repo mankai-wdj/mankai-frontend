@@ -10,9 +10,11 @@ import FormControl from '@mui/material/FormControl'
 import InputLabel from '@mui/material/InputLabel'
 import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
+import {Avatar} from '@mui/material'
 import { Fab } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import Button from '@mui/material/Button'
+import {CircularProgress} from '@mui/material'
 import { IoIosCloseCircle } from "react-icons/io";
 import { MdAddPhotoAlternate } from "react-icons/md";
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
@@ -175,7 +177,9 @@ const fileDrop = (e) => {
       .then(function(response) {
         console.log(response.data)
          handleClose();
-        GetUpdate();
+         setTextFieldValue("")
+         dontImageContainer();
+          GetUpdate();
       }).catch(function(error){
         console.log(error);
       })
@@ -212,9 +216,14 @@ const fileDrop = (e) => {
 
         <Box sx={style}>
         <div className="flex justify-start pb-3">
-            <img src="https://images.pexels.com/photos/3278968/pexels-photo-3278968.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260"
-                className="h-14 w-14 rounded-full object-cover"
-                alt="username"/>
+        { (user) ?
+          (user.profile)?
+            <Avatar><img src={(user.profile)}
+            className="h-14 w-14 object-cover"
+            alt="username"/></Avatar>
+                : <Avatar>{(user.name.charAt(0))}</Avatar>
+                : <CircularProgress />
+          }
             <div className="ml-4 mt-2">
                 <div className="flex items-center">
                     <h2 style={{ fontWeight:'bold' }}>{username}</h2>
