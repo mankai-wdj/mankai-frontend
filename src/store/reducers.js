@@ -127,6 +127,9 @@ const initialState = {
   followerFollower: null,
   followings: null,
   followerFollowing: null,
+  room_files : [],
+  room_images : [],
+  room_memos : [],
 }
 
 export default handleActions(
