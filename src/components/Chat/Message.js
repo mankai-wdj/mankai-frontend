@@ -73,7 +73,7 @@ function Message({ message: msg }) {
             <div className="">
               {message.user.profile ? (
                 <img
-                  src={message.user.profile_photo_url}
+                  src={message.user.profile}
                   alt="Avatar"
                   className="w-10 h-10 rounded-full"
                 />
@@ -196,13 +196,13 @@ function Message({ message: msg }) {
                     </div>
                     :
                     (message.type == 'group' ? 
-                      <a href={'http://localhost:3000/group/'+JSON.parse(message.message).id} className="transform transition duration-500 hover:scale-105 text-left mr-2 py-3 px-4 bg-primary hover:bg-blue-700 text-white rounded-xl border">
+                      <a href={'https://mankai.shop/group/'+JSON.parse(message.message).id} className="transform transition duration-500 hover:scale-105 text-left mr-2 py-3 px-4 bg-primary hover:bg-blue-700 text-white rounded-xl border">
                         {JSON.parse(message.message).name} group에서 초대메세지가 왔습니다.
                       </a> : message.type == 'video' ?
-                      <a href={'http://localhost:3000/video/'+currentRoom.id} className="flex transform border-indigo-500/100 transition duration-500 hover:scale-105 text-left mr-2 py-3 px-4 hover:bg-blue-700 hover:text-white text-primary rounded-xl border">
+                      <a href={'https://mankai.shop/group/'+currentRoom.id} className="flex transform border-indigo-500/100 transition duration-500 hover:scale-105 text-left mr-2 py-3 px-4 hover:bg-blue-700 hover:text-white text-primary rounded-xl border">
                          <div className='flex flex-col'>
                             <span className=''>{message.message}</span>
-                            <span>{'http://localhost:3000/video/'+currentRoom.id}</span>
+                            <span>{'https://mankai.shop/group/'+currentRoom.id}</span>
                           </div>
                       </a> :
                   <div
@@ -351,13 +351,13 @@ function Message({ message: msg }) {
               </div>
                  :
                  (message.type == 'group' ? 
-                  <a href={'http://localhost:3000/group/'+JSON.parse(message.message).id} className="transform transition duration-500 hover:scale-105 text-left mr-2 py-3 px-4 bg-primary hover:bg-blue-700 text-white rounded-xl border max-w-[50%]">
+                  <a href={'https://mankai.shop/video/'+JSON.parse(message.message).id} className="transform transition duration-500 hover:scale-105 text-left mr-2 py-3 px-4 bg-primary hover:bg-blue-700 text-white rounded-xl border max-w-[50%]">
                     {JSON.parse(message.message).name} group에서 초대메세지가 왔습니다.
                   </a> : message.type == 'video' ? 
-                        <a href={'http://localhost:3000/video/'+currentRoom.id} className="transform border-indigo-500/100 border- transition duration-500 hover:scale-105 text-left mr-2 py-3 px-4 hover:bg-blue-700 hover:text-white text-primary rounded-xl border max-w-[50%]">
+                        <a href={'https://mankai.shop/video/'+currentRoom.id} className="transform border-indigo-500/100 border- transition duration-500 hover:scale-105 text-left mr-2 py-3 px-4 hover:bg-blue-700 hover:text-white text-primary rounded-xl border max-w-[50%]">
                           <div className='flex flex-col'>
                             <span className='w-full'>{message.message}</span>
-                            <span>{'http://localhost:3000/video/'+currentRoom.id}</span>
+                            <span>{'https://mankai.shop/video/'+currentRoom.id}</span>
                           </div>
                         </a> :
               <div

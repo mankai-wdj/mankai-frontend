@@ -37,7 +37,7 @@ import YouPage from './components/MyPage/YouPage'
 import GroupDetail from './components/GroupDetail'
 import firebase from 'firebase/app';
 import "firebase/messaging"
-axios.defaults.baseURL = 'http://api.mankai.shop'
+axios.defaults.baseURL = 'http://mankai.shop/'
 axios.defaults.headers.post['Content-Type'] = 'application/json'
 axios.defaults.headers.post['Accept'] = 'application/json'
 axios.defaults.withCredentials = true
@@ -123,7 +123,7 @@ function App() {
       const room = JSON.parse(payload.data.room)
       const sendUser = JSON.parse(payload.data.user)
       toast(
-        <a href='http://localhost:3000/chat'>
+        <a href='https://mankai.shop/chat/'>
           <div className='w-full mb-1 font-bold'>{userName(room.type, room.users)}</div>
           <hr />
           <div className='flex my-2'>
