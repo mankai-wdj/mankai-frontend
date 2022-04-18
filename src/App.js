@@ -56,6 +56,7 @@ window.Echo = new Echo({
   forceTLS: true,
   wsHost: "api.mankai.shop",
   wsPort: 6001,
+  wssPort: 6001,
   authEndpoint: '/broadcasting/auth',
   disableStats: true,
   enabledTransports: ['ws', 'wss'],
