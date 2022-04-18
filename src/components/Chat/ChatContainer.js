@@ -197,7 +197,7 @@ function ChatContainer() {
       const channel = window.Echo.channel('room.' + currentChatRoom.id) // 채팅방 참여
         .listen('.send-message', e => {
           // e.message.read_users = "[]";
-
+          console.log(e.message);
           dispatch({
             type: 'ADD_MESSAGE_REVERSE',
             payload: {

@@ -177,7 +177,9 @@ const fileDrop = (e) => {
       .then(function(response) {
         console.log(response.data)
          handleClose();
-        GetUpdate();
+         setTextFieldValue("")
+         dontImageContainer();
+          GetUpdate();
       }).catch(function(error){
         console.log(error);
       })

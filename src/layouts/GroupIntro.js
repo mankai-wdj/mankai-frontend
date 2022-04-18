@@ -10,6 +10,7 @@ import 'suneditor/dist/css/suneditor.min.css'; // Import Sun Editor's CSS File
 import GroupEditor from "../components/GroupEditor";
 import UseAnimations from "react-useanimations";
 import loading from 'react-useanimations/lib/loading'
+import GroupIntroCard from "../components/GroupIntroCard";
 
 
 
@@ -154,26 +155,10 @@ function GroupIntro(props)
                     :<div></div>
                 }
             </div>
-            <div className="w-fit mx-auto text-gray-600 mt-2 bg-gray-200 border rounded-xl px-10">
-                {props.group.password
-                        ?<div>비공개 그룹</div>
-                        :<div>공개 그룹</div>
-                }
-            </div>
-            <div className="mx-4 my-2 border py-2 px-4 rounded-xl">
-                <div className="text-3xl font-bold">그룹 정보</div>
-                <div className="text-xl">{props.group.name}</div>
-                <div className="text-md">
-                    <SvgIcon><GroupIcon></GroupIcon></SvgIcon>{props.group_user.length} 
-                     
-                     - 관심사 : {props.group.category}
-                </div>
-                나중에 레이아웃 바꿀것
+                <GroupIntroCard group_user={props.group_user} group={props.group}/>                
 
-            </div>
-            <div className="m-4 border py-2 px-4 rounded-xl">
-                <div className="flex justify-between mb-5">
-                    <p className="text-3xl font-bold">소개글</p>
+            <div className="m-4 border shadow-md py-4 px-6 rounded-xl">
+                <div className="flex justify-center mb-5">
                     {isMaster 
                         ?<Button onClick={modalOpen} className="text-blue-500 hover:text-blue-700">수정하기</Button>
                         :<div></div>
