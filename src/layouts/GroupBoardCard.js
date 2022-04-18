@@ -77,9 +77,10 @@ function GroupBoardCard(props){
         {
             // console.log(props.board.content_text)
             axios.post('/api/show/papago',{
-                text:props.board.content_text
+                text:props.board.content_text,
+                mycountry : user.country
             }).then(res=>{
-                // console.log(res.data)
+                console.log(res.data)
                setTranslated(res.data.message.result.translatedText); 
             })
         }

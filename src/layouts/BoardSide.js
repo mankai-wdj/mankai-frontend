@@ -155,7 +155,8 @@ function BoardSide(props){
     const callPapago = (data) =>{
         handleToggle()
         axios.post("/api/show/papago",{
-            text:data
+            text:data,
+            mycountry:user.country
         }).then(res=>{
             if(res == "Error!!"){
                 setTranslatedText(translatedText=>"언어를 찾을 수 없습니다");
@@ -168,7 +169,8 @@ function BoardSide(props){
     // 댓글 번역 api 
     const callCommentPapago =(comment)=>{
         axios.post("/api/show/papago",{
-            text:comment.comment
+            text:comment.comment,
+            mycountry:user.country
         }).then(res=>{
             setTransComment(transComment =>
                 [{

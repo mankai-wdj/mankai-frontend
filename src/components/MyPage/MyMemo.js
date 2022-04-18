@@ -30,10 +30,6 @@ export default function MyMemo(props){
 
     // 일단은 새로운 메모 저장으로 저장하고서 DB에 저장하고 dispatch에도 저장해야 한다. 
 
-
-
-
-
 function editPage(memo){
     window.open("/my_memo_edit/"+memo.id, "bnhgn", "width=500,height=600")
 }
@@ -99,7 +95,6 @@ useEffect(()=>{
     console.log(memos)
     if(memos){
         console.log(memos === null)
-        console.log("sort를 마주하려면 무조건 지나는 console.log")
     var copiedSortedMemos = memos.sort(function(a,b){
         return b.id - a.id 
     });
