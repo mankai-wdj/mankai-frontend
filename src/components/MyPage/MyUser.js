@@ -104,161 +104,161 @@ export default function MyUser() {
   return (
     <div
       id="user_page"
-      className="bg-white border-solid rounded-lg p-3 drop-shadow-xl "
+      className="flex flex-col  items-center  bg-white border-solid rounded-lg p-3 "
     >
-      {user ? (
-        user.profile ? (
-          <Avatar
-            src={user.profile}
-            sx={{
-              borderColor: 'black',
-              border: 2,
-              m: 'auto',
-              width: '200px',
-              height: '200px',
-            }}
-            alt="Avatar"
-          />
-        ) : (
-          <Avatar
-            sx={{
-              borderColor: 'black',
-              border: 2,
-              m: 'auto',
-              width: '200px',
-              height: '200px',
-              fontSize: '90px',
-            }}
-            alt="Avatar"
-          >
-            {user.name.charAt(0)}
-          </Avatar>
-        )
-      ) : (
-        <Avatar
-          src="https://www.taggers.io/common/img/default_profile.png"
-          sx={{ m: 'auto', minWidth: '50%', height: 'auto' }}
-          alt="Avatar"
-        ></Avatar>
-      )}
-
-      <div className="text-2xl mt-5 grid justify-items-center font-black">
+      <div className="m-auto">
         {user ? (
-          user.name
+          user.profile ? (
+            <Avatar
+              src={user.profile}
+              sx={{
+                borderColor: 'black',
+                border: 2,
+                width: '200px',
+                height: '200px',
+              }}
+              alt="Avatar"
+            />
+          ) : (
+            <Avatar
+              sx={{
+                borderColor: 'black',
+                border: 2,
+                width: '200px',
+                height: '200px',
+                fontSize: '90px',
+              }}
+              alt="Avatar"
+            >
+              {user.name.charAt(0)}
+            </Avatar>
+          )
         ) : (
-          <Skeleton
-            variant="rectangular"
-            style={{ borderRadius: 4 }}
-            width={150}
-            height={50}
-          />
+          <Avatar
+            src="https://www.taggers.io/common/img/default_profile.png"
+            sx={{ m: 'auto', minWidth: '50%', height: 'auto' }}
+            alt="Avatar"
+          ></Avatar>
         )}
 
+        <div className="text-2xl grid justify-items-center font-black mt-3">
+          {user ? (
+            user.name
+          ) : (
+            <Skeleton
+              variant="rectangular"
+              style={{ borderRadius: 4 }}
+              width={150}
+              height={50}
+            />
+          )}
+
+          <br />
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{ textOverflow: 'ellipsis', mt: 3 }}
+          >
+            {user ? user.description : null}
+          </Typography>
+        </div>
+
         <br />
-        <Typography
-          variant="body2"
-          color="text.secondary"
-          sx={{ textOverflow: 'ellipsis', mt: 3 }}
+
+        <div className="grid justify-items-center">
+          <button
+            onClick={handleOpen}
+            className="flex items-center bg-purple-600  hover:bg-purple-800 text-white py-2 px-4 rounded "
+          >
+            <EditIcon sx={{ mr: 1 }} />
+            프로필 편집
+          </button>
+        </div>
+
+        <Modal
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
         >
-          {user ? user.description : null}
-        </Typography>
-      </div>
-
-      <br />
-
-      <div className="grid justify-items-end">
-        <button
-          onClick={handleOpen}
-          className="flex items-center bg-purple-600  hover:bg-purple-800 text-white py-2 px-4 rounded "
-        >
-          <EditIcon sx={{ mr: 1 }} />
-          프로필 편집
-        </button>
-      </div>
-
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          <div className="grid justify-items-center">
-            <Typography id="modal-modal-title" variant="h6" component="h2">
-              프로필 편집
-            </Typography>
-          </div>
-          <hr
-            style={{
-              width: '380px',
-            }}
-          />
-          <Box sx={{ p: 2 }}>
+          <Box sx={style}>
             <div className="grid justify-items-center">
-              <label htmlFor="file">
-                <img
-                  alt=""
-                  src={
-                    previewUrl
-                      ? previewUrl
-                      : 'https://www.taggers.io/common/img/default_profile.png'
-                  }
-                  className="profile_image"
-                />
-              </label>
-              <input
-                onChange={imageHandleChange}
-                type="file"
-                id="file"
-                style={{ display: 'none' }}
-              />
+              <Typography id="modal-modal-title" variant="h6" component="h2">
+                프로필 편집
+              </Typography>
             </div>
-            {/* 사진 아무것도 설정 안하기도 있어야 됨 */}
-
-            <TextField
-              fullWidth
-              value={nameFieldValue}
-              onChange={nameTextChange}
-              multiline
-              maxRows={2}
-              id="standard-basic"
-              label="이름"
-              variant="standard"
-              style={{ margin: 3 }}
+            <hr
+              style={{
+                width: '380px',
+              }}
             />
+            <Box sx={{ p: 2 }}>
+              <div className="grid justify-items-center">
+                <label htmlFor="file">
+                  <img
+                    alt=""
+                    src={
+                      previewUrl
+                        ? previewUrl
+                        : 'https://www.taggers.io/common/img/default_profile.png'
+                    }
+                    className="profile_image"
+                  />
+                </label>
+                <input
+                  onChange={imageHandleChange}
+                  type="file"
+                  id="file"
+                  style={{ display: 'none' }}
+                />
+              </div>
+              {/* 사진 아무것도 설정 안하기도 있어야 됨 */}
 
-            <TextField
-              fullWidth
-              value={countryFieldValue}
-              onChange={countryTextChange}
-              multiline
-              maxRows={2}
-              id="standard-basic"
-              label="국적"
-              variant="standard"
-              style={{ margin: 3 }}
-            />
+              <TextField
+                fullWidth
+                value={nameFieldValue}
+                onChange={nameTextChange}
+                multiline
+                maxRows={2}
+                id="standard-basic"
+                label="이름"
+                variant="standard"
+                style={{ margin: 3 }}
+              />
 
-            <TextField
-              fullWidth
-              value={descriptionFieldValue}
-              onChange={descriptionTextChange}
-              multiline
-              maxRows={2}
-              id="standard-basic"
-              label="상태메시지"
-              variant="standard"
-              style={{ margin: 3 }}
-            />
-            <button
-              onClick={profileToServer}
-              className="flex items-center bg-purple-600 w-full hover:bg-purple-800 text-white py-2 px-4 mt-4 rounded grid justify-items-center"
-            >
-              프로필 수정
-            </button>
+              <TextField
+                fullWidth
+                value={countryFieldValue}
+                onChange={countryTextChange}
+                multiline
+                maxRows={2}
+                id="standard-basic"
+                label="국적"
+                variant="standard"
+                style={{ margin: 3 }}
+              />
+
+              <TextField
+                fullWidth
+                value={descriptionFieldValue}
+                onChange={descriptionTextChange}
+                multiline
+                maxRows={2}
+                id="standard-basic"
+                label="상태메시지"
+                variant="standard"
+                style={{ margin: 3 }}
+              />
+              <button
+                onClick={profileToServer}
+                className="flex items-center bg-purple-600 w-full hover:bg-purple-800 text-white py-2 px-4 mt-4 rounded grid justify-items-center"
+              >
+                프로필 수정
+              </button>
+            </Box>
           </Box>
-        </Box>
-      </Modal>
+        </Modal>
+      </div>
     </div>
   )
 }
