@@ -35,8 +35,8 @@ import './css/style.scss'
 import Profile from './components/MyPage/Profile'
 import YouPage from './components/MyPage/YouPage'
 import GroupDetail from './components/GroupDetail'
-import firebase from 'firebase/app';
-import "firebase/messaging"
+import firebase from 'firebase/app'
+import 'firebase/messaging'
 axios.defaults.baseURL = 'http://api.mankai.shop/'
 axios.defaults.headers.post['Content-Type'] = 'application/json'
 axios.defaults.headers.post['Accept'] = 'application/json'
@@ -54,9 +54,9 @@ window.Echo = new Echo({
   key: 'anykey',
   cluster: 'ap3',
   forceTLS: true,
-  wsHost: "api.mankai.shop",
-  wsPort: 6001, 
-  wssPort: 6001, 
+  wsHost: 'api.mankai.shop',
+  wsPort: 6001,
+  wssPort: 6001,
   authEndpoint: '/broadcasting/auth',
   disableStats: true,
   enabledTransports: ['ws', 'wss'],
@@ -70,38 +70,38 @@ window.Echo = new Echo({
 function App() {
   const token = localStorage.getItem('auth_token')
   const dispatch = useDispatch()
-  const currentUser = useSelector(state => state.Reducers.user);
-  const firebaseMessaging = firebase.messaging();
+  const currentUser = useSelector(state => state.Reducers.user)
+  const firebaseMessaging = firebase.messaging()
   const currentRoom = useSelector(state => state.Reducers.currentRoom)
   const notiToken = useSelector(state => state.Reducers.noti_token)
   useEffect(() => {
-    if(currentUser && notiToken) {
+    if (currentUser && notiToken) {
       const channel = window.Echo.channel('user.' + currentUser.id) // 채팅방 참여
-      .listen('.user-connect', e => {
-        // 여기서 fcm으로 보내주기 방번호 꼭 보내주기
-        if(currentUser.id != e.message.user_id) {
-          axios.post('api/fcm/message', {
-            token : notiToken,
-            body : e.message.message,
-            user_id : e.message.user_id,
-            room_id : e.message.room_id,
-            type : e.message.type,
-            serverKey : process.env.REACT_APP_FIREBASE_SERVER_KEY
-          }).then(res => {
-          })
-        }
-      })
+        .listen('.user-connect', e => {
+          // 여기서 fcm으로 보내주기 방번호 꼭 보내주기
+          if (currentUser.id != e.message.user_id) {
+            axios
+              .post('api/fcm/message', {
+                token: notiToken,
+                body: e.message.message,
+                user_id: e.message.user_id,
+                room_id: e.message.room_id,
+                type: e.message.type,
+                serverKey: process.env.REACT_APP_FIREBASE_SERVER_KEY,
+              })
+              .then(res => {})
+          }
+        })
       return () => {
         channel.subscription.unbind(
           channel.eventFormatter.format('.user-connect')
         )
       }
     }
-    
-  }, [currentUser, notiToken]);
+  }, [currentUser, notiToken])
 
   const getCurrentRoom = () => {
-    return currentRoom;
+    return currentRoom
   }
   const userName = (types, users) => {
     users = JSON.parse(users)
@@ -119,20 +119,25 @@ function App() {
       return userNames
     }
   }
-  firebaseMessaging.onMessage(function(payload){
-    if(getCurrentRoom() == null || getCurrentRoom().id != JSON.parse(payload.data.room).id) {
+  firebaseMessaging.onMessage(function (payload) {
+    if (
+      getCurrentRoom() == null ||
+      getCurrentRoom().id != JSON.parse(payload.data.room).id
+    ) {
       // console.log(getCurrentRoom().id);
       const room = JSON.parse(payload.data.room)
       const sendUser = JSON.parse(payload.data.user)
       toast(
-        <a href='https://mankai.shop/chat/'>
-          <div className='w-full mb-1 font-bold'>{userName(room.type, room.users)}</div>
+        <a href="https://mankai.shop/chat/">
+          <div className="w-full mb-1 font-bold">
+            {userName(room.type, room.users)}
+          </div>
           <hr />
-          <div className='flex my-2'>
+          <div className="flex my-2">
             <div className="">
               {sendUser.profile ? (
                 <img
-                  src={sendUser.profile_photo_url}
+                  src={sendUser.profile}
                   alt="Avatar"
                   className="w-10 h-10 rounded-full"
                 />
@@ -142,35 +147,38 @@ function App() {
                 </div>
               )}
             </div>
-            <div className='flex-col'>
+            <div className="flex-col">
               <div className="text-left ml-2 my-auto">
-                <span className='font-bold'>{sendUser.name}</span>
+                <span className="font-bold">{sendUser.name}</span>
               </div>
-              <div className='text-left ml-2 '>
-                {payload.data.type == 'memo' ? 
-                  JSON.parse(payload.notification.body).memo_title + ' 메모가 도착했습니다'
-                  : payload.data.type == 'file' ?
-                    (payload.notification.body.startsWith('[{') ? '파일이 도착했습니다' : "사진이 도착했습니다")
-                    : payload.notification.body}
-                
+              <div className="text-left ml-2 ">
+                {payload.data.type == 'memo'
+                  ? JSON.parse(payload.notification.body).memo_title +
+                    ' 메모가 도착했습니다'
+                  : payload.data.type == 'file'
+                  ? payload.notification.body.startsWith('[{')
+                    ? '파일이 도착했습니다'
+                    : '사진이 도착했습니다'
+                  : payload.notification.body}
               </div>
             </div>
           </div>
-        </a> , 
+        </a>,
         {
-          position: "bottom-right",
+          position: 'bottom-right',
           autoClose: 2000,
           hideProgressBar: true,
           closeOnClick: true,
           pauseOnHover: true,
           draggable: true,
           progress: undefined,
-          });
+        }
+      )
       //확인 후 toast 띄워주기
     }
   })
   // useEffect(() => {
-    
+
   //   console.log(notiToken);
   // }, [notiToken]);
 
@@ -180,7 +188,7 @@ function App() {
       dispatch(User())
       dispatch(Noti())
     }
-  }, [token]);
+  }, [token])
   return (
     <Router>
       <ToastContainer />
