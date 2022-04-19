@@ -69,10 +69,10 @@ function ChatContainer() {
   //   }
   // });
 
-  const handleScroll = () => {
-    if (document.getElementById('scrollableDiv').scrollTop == 0) {
-      setSendNewMessage(null)
-    }
+  // const handleScroll = () => {
+  //   if (document.getElementById('scrollableDiv').scrollTop == 0) {
+  //     setSendNewMessage(null)
+  //   }
   }
 
   // 라라벨 에서 데이터 받아 state 저장
@@ -214,23 +214,23 @@ const speechModal = () => {
               message: e.message,
             },
           })
-          if (
-            document.getElementById('scrollableDiv').scrollTop != 0 &&
-            e.message.user_id != currentUser.id
-          ) {
-            //메세지 왔을 때 밑에 띄워주는 newMsg에 메세지 저장
-            if (
-              e.message.type == 'message' ||
-              e.message.type == 'group' ||
-              e.message.type == 'video'
-            ) {
-              setSendNewMessage(e.message.message)
-            } else if (e.message.type == 'file') {
-              setSendNewMessage('파일이 도착했습니다')
-            } else {
-              setSendNewMessage('메모가 도착했습니다')
-            }
-          }
+          // if (
+          //   document.getElementById('scrollableDiv').scrollTop != 0 &&
+          //   e.message.user_id != currentUser.id
+          // ) {
+          //   //메세지 왔을 때 밑에 띄워주는 newMsg에 메세지 저장
+          //   if (
+          //     e.message.type == 'message' ||
+          //     e.message.type == 'group' ||
+          //     e.message.type == 'video'
+          //   ) {
+          //     setSendNewMessage(e.message.message)
+          //   } else if (e.message.type == 'file') {
+          //     setSendNewMessage('파일이 도착했습니다')
+          //   } else {
+          //     setSendNewMessage('메모가 도착했습니다')
+          //   }
+          // }
           dispatch({
             type: 'SET_ROOM_UPDATED_AT',
             payload: {
@@ -332,11 +332,11 @@ const speechModal = () => {
         })
         .then(res => {
           console.log(res.data)
-          if (document.getElementById('scrollableDiv').scrollTop != 0) {
-            //메세지 왔을 때 밑에 띄워주는 newMsg에 메세지 저장
-            document.getElementById('scrollableDiv').scrollTop =
-              document.getElementById('scrollableDiv').scrollHeight
-          }
+          // if (document.getElementById('scrollableDiv').scrollTop != 0) {
+          //   //메세지 왔을 때 밑에 띄워주는 newMsg에 메세지 저장
+          //   document.getElementById('scrollableDiv').scrollTop =
+          //     document.getElementById('scrollableDiv').scrollHeight
+          // }
           e.target.value = ''
         })
     }
@@ -348,7 +348,7 @@ const speechModal = () => {
   }
 
   const changeVideo = () => {
-    window.location.href = 'http://localhost:3000/video/' + currentChatRoom.id
+    window.location.href = 'http://mankai.shop/video/' + currentChatRoom.id
   }
 
   // useEffect(() => {
@@ -425,11 +425,11 @@ const speechModal = () => {
         .then(res => {
           console.log(res.data)
           transBotChat()
-          if (document.getElementById('scrollableDiv').scrollTop != 0) {
-            //메세지 왔을 때 밑에 띄워주는 newMsg에 메세지 저장
-            document.getElementById('scrollableDiv').scrollTop =
-              document.getElementById('scrollableDiv').scrollHeight
-          }
+          // if (document.getElementById('scrollableDiv').scrollTop != 0) {
+          //   //메세지 왔을 때 밑에 띄워주는 newMsg에 메세지 저장
+          //   document.getElementById('scrollableDiv').scrollTop =
+          //     document.getElementById('scrollableDiv').scrollHeight
+          // }
         })
       setNewMessage('')
     }
