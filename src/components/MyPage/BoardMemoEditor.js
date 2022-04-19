@@ -41,7 +41,8 @@ function BoardMemoEditor ({content,memoId,memoTitle,modalClose}){
           plugins: plugins, 
           width: "100%",
           height: "100%",
-          minHeight: "550px",
+          minHeight:"400px",
+          maxHeight: "550px",
           buttonList: [
           //   Default
             ["undo", "redo"],
@@ -73,7 +74,7 @@ function BoardMemoEditor ({content,memoId,memoTitle,modalClose}){
             
             <textarea ref={txtArea} defaultValue={content}/>
             <div className="flex justify-center">
-            <button className="mt-3" onClick={PostUpload}><EditTwoToneIcon sx={{ mb:0.8, width:50  }}/>수정하기</button>
+            <button className="mt-3 p-2 rounded-xl bg-blue-200" onClick={PostUpload}><EditTwoToneIcon sx={{ mb:0.8, width:50  }}/>수정하기</button>
             </div>
         </div>
     )

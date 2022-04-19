@@ -108,6 +108,8 @@ const [memoType,setMemoType] = React.useState("")
         onClose={handleClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
+        sx={{ overflow:"scroll" }}
+            
       >
         <Box sx={style}>
         <div className = "grid justify-items-center">
