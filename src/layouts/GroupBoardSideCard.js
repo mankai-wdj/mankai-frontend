@@ -159,6 +159,7 @@ function GroupBoardSideCard(props){
                 console.log("showLike",res.data)
                 setLikes(res.data)
             })
+            setTranslated("")
     },[sideData])
 
     // 좋아요 업데이트되면 유저 있는지 체크
