@@ -50,9 +50,7 @@ function ChatMessage({ message: msg, user: user, date: date }) {
                   <a
                     className="p-3 w-12 h-12"
                     download
-                    href={
-                      'http://localhost:8000/storage/' + message.file[0].path
-                    }
+                    href={message.file[0].path}
                     target="_blank"
                   >
                     <FileIcon
@@ -64,9 +62,7 @@ function ChatMessage({ message: msg, user: user, date: date }) {
                 <div className="flex flex-col p-2">
                   <div>
                     <a
-                      href={
-                        'http://localhost:8000/storage/' + message.file[0].path
-                      }
+                      href={message.file[0].path}
                       download
                       className="font-bold break-all"
                       target="_blank"
@@ -83,18 +79,12 @@ function ChatMessage({ message: msg, user: user, date: date }) {
                   message.file[0].type == 'bmp' ? (
                     <div>
                       <img
-                        src={
-                          'http://localhost:8000/storage/' +
-                          message.file[0].path
-                        }
+                        src={message.file[0].path}
                         onClick={() => setOpen(true)}
                       />
                       {message && (
                         <ReactImageViewer
-                          imgs={
-                            'http://localhost:8000/storage/' +
-                            message.file[0].path
-                          }
+                          imgs={message.file[0].path}
                           isOpen={isOpen}
                           onClose={() => setOpen(false)}
                         />
@@ -107,9 +97,7 @@ function ChatMessage({ message: msg, user: user, date: date }) {
                     className="p-3"
                     download
                     target="_blank"
-                    href={
-                      'http://localhost:8000/storage/' + message.file[0].path
-                    }
+                    href={message.file[0].path}
                   >
                     <span className="text-primarytext">
                       <DownloadIcon />
@@ -146,9 +134,7 @@ function ChatMessage({ message: msg, user: user, date: date }) {
                     <a
                       className="p-3 w-12 h-12"
                       download
-                      href={
-                        'http://localhost:8000/storage/' + message.file[0].path
-                      }
+                      href={message.file[0].path}
                       target="_blank"
                     >
                       <FileIcon
@@ -160,10 +146,7 @@ function ChatMessage({ message: msg, user: user, date: date }) {
                   <div className="flex flex-col p-2">
                     <div>
                       <a
-                        href={
-                          'http://localhost:8000/storage/' +
-                          message.file[0].path
-                        }
+                        href={message.file[0].path}
                         download
                         className="font-bold break-all"
                         target="_blank"
@@ -180,18 +163,12 @@ function ChatMessage({ message: msg, user: user, date: date }) {
                     message.file[0].type == 'bmp' ? (
                       <div>
                         <img
-                          src={
-                            'http://localhost:8000/storage/' +
-                            message.file[0].path
-                          }
+                          src={message.file[0].path}
                           onClick={() => setOpen(true)}
                         />
                         {message && (
                           <ReactImageViewer
-                            imgs={
-                              'http://localhost:8000/storage/' +
-                              message.file[0].path
-                            }
+                            imgs={message.file[0].path}
                             isOpen={isOpen}
                             onClose={() => setOpen(false)}
                           />
@@ -204,9 +181,7 @@ function ChatMessage({ message: msg, user: user, date: date }) {
                       className="p-3"
                       download
                       target="_blank"
-                      href={
-                        'http://localhost:8000/storage/' + message.file[0].path
-                      }
+                      href={message.file[0].path}
                     >
                       <span className="text-primarytext">
                         <DownloadIcon />
