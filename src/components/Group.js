@@ -82,11 +82,11 @@ function Group(props) {
             검색결과가 없습니다
           </div>
         ) : (
-          <div className="w-full flex flex-wrap">
+          <div className="w-11/12 justify-center mx-auto gap-8 flex flex-wrap">
             {groups.map(group => {
               return (
                 <div
-                  className="bg-gray-100 h-90 w-96 mx-5 mt-5 mb-8 rounded-md"
+                  className="bg-gray-100 h-90 w-96 rounded-md"
                   onClick={() => listClick(group.id)}
                   key={group.id}
                 >
