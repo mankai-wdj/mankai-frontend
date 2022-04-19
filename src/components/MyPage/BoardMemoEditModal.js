@@ -45,6 +45,8 @@ function BoardMemoEditModal(props){
                 onClose={modalClose}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
+                sx={{ overflow:"scroll" }}
+            
             >
                 <Box className="bg-white w-192 mx-auto mt-10 h-230 rounded-xl p-5 relative">
                 <TextField 

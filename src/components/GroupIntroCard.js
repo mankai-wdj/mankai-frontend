@@ -8,10 +8,11 @@ function GroupIntroCard(props){
                     <div className="px-6 mt-8 mb-4">
                         <h1 className="font-bold text-4xl text-center mb-1">{props.group.name}</h1>      
                         <p className="text-center text-gray-600 text-base mb-4 font-normal">{props.group.onelineintro}</p>
-                        <div className="text-ls text-center mb-4">
+                        <div className="flex text-lg justify-center mb-4">
                             <SvgIcon>
-                                <GroupIcon></GroupIcon>
-                            </SvgIcon>{props.group_user.length}
+                                <GroupIcon ></GroupIcon>
+                            </SvgIcon>
+                            <p>{props.group_user.length}</p>
                         </div>
                         <div className="flex justify-center">
                             <div
