@@ -7,12 +7,12 @@ import { useDispatch, useSelector } from 'react-redux'
 import Modal from '@mui/material/Modal'
 import Box from '@mui/material/Box'
 import '../../styles/MyPage.css'
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle'
 import Avatar from '@mui/material/Avatar'
 import TextField from '@mui/material/TextField'
 import '../../App.css'
-import axios from 'axios';
-import { convertLength } from '@mui/material/styles/cssUtils';
+import axios from 'axios'
+import { convertLength } from '@mui/material/styles/cssUtils'
 
 export default function MyUser() {
   const user = useSelector(state => state.Reducers.user)
@@ -102,53 +102,91 @@ export default function MyUser() {
   }
 
   return (
-    <div id='user_page' className='bg-white border-solid rounded-lg p-3 drop-shadow-xl '>
-    {
-      (user)?
-      (user.profile) ?
-      <Avatar src={user.profile} sx={{ borderColor:'black', border:2, m:'auto', width:'200px',height:'200px' }} alt="Avatar"/>
-    :
-    <Avatar sx={{ borderColor:'black', border:2, m:'auto', width:'200px',height:'200px',fontSize:'90px' }} alt="Avatar">
-      {(user.name).charAt(0)}
-    </Avatar>
-    : <Avatar src="https://www.taggers.io/common/img/default_profile.png" sx={{ m:'auto', minWidth:'50%',height:'auto' }} alt="Avatar">
-    </Avatar>
-    }
-    
+    <div
+      id="user_page"
+      className="bg-white border-solid rounded-lg p-3 drop-shadow-xl "
+    >
+      {user ? (
+        user.profile ? (
+          <Avatar
+            src={user.profile}
+            sx={{
+              borderColor: 'black',
+              border: 2,
+              m: 'auto',
+              width: '200px',
+              height: '200px',
+            }}
+            alt="Avatar"
+          />
+        ) : (
+          <Avatar
+            sx={{
+              borderColor: 'black',
+              border: 2,
+              m: 'auto',
+              width: '200px',
+              height: '200px',
+              fontSize: '90px',
+            }}
+            alt="Avatar"
+          >
+            {user.name.charAt(0)}
+          </Avatar>
+        )
+      ) : (
+        <Avatar
+          src="https://www.taggers.io/common/img/default_profile.png"
+          sx={{ m: 'auto', minWidth: '50%', height: 'auto' }}
+          alt="Avatar"
+        ></Avatar>
+      )}
 
-        <div className="text-2xl mt-5 grid justify-items-center font-black">
-          {(user) ? user.name : <Skeleton variant="rectangular" style={{ borderRadius: 4, }} width={150} height={50} />}
-          
-        <br/>
-        <Typography variant="body2" color="text.secondary" sx={{ textOverflow: 'ellipsis', mt:3 }}>
-          {(user) ?
-          user.description
-          :
-          null
-          }
+      <div className="text-2xl mt-5 grid justify-items-center font-black">
+        {user ? (
+          user.name
+        ) : (
+          <Skeleton
+            variant="rectangular"
+            style={{ borderRadius: 4 }}
+            width={150}
+            height={50}
+          />
+        )}
+
+        <br />
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          sx={{ textOverflow: 'ellipsis', mt: 3 }}
+        >
+          {user ? user.description : null}
         </Typography>
-        </div>
+      </div>
 
-        <br/>
+      <br />
 
-          <div className = "grid justify-items-end">
-          <button onClick={handleOpen} className='flex items-center bg-purple-600  hover:bg-purple-800 text-white py-2 px-4 rounded '>
-              <EditIcon sx={{ mr:1 }}/>프로필 편집
-          </button>
-          </div>
+      <div className="grid justify-items-end">
+        <button
+          onClick={handleOpen}
+          className="flex items-center bg-purple-600  hover:bg-purple-800 text-white py-2 px-4 rounded "
+        >
+          <EditIcon sx={{ mr: 1 }} />
+          프로필 편집
+        </button>
+      </div>
 
-
-        <Modal
+      <Modal
         open={open}
         onClose={handleClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
-          <div className = "grid justify-items-center">
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            프로필 편집
-          </Typography>
+          <div className="grid justify-items-center">
+            <Typography id="modal-modal-title" variant="h6" component="h2">
+              프로필 편집
+            </Typography>
           </div>
           <hr
             style={{
