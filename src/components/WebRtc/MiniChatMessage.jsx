@@ -73,7 +73,7 @@ function ChatMessage({ message: msg, user: user, date: date }) {
           <div className="">
             {message.user.profile ? (
               <img
-                src={message.user.profile_photo_url}
+                src={message.user.profile}
                 alt="Avatar"
                 className="w-10 h-10 rounded-full"
               />
