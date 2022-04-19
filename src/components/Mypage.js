@@ -16,12 +16,12 @@ function Mypage() {
           <div className="w-full">
             <div className="bg-gray-200 flex relative ">
               {/* 화면에서 왼쪽 : 내 정보 간략히 보여주는 컴포넌트 */}
-              <div className="w-1/3 p-3">
+              <div className="w-1/3 p-10">
                 <MyUser />
               </div>
 
               {/* 화면에서 오른쪽 : 즐겨찾기, 게시물, 그룹, 메모장 */}
-              <div className="w-2/3">
+              <div className="w-2/3 mr-8">
                 <MyContents />
               </div>
             </div>
