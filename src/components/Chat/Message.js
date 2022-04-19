@@ -73,7 +73,7 @@ function Message({ message: msg }) {
             <div className="">
               {message.user.profile ? (
                 <img
-                  src={message.user.profile_photo_url}
+                  src={message.user.profile}
                   alt="Avatar"
                   className="w-10 h-10 rounded-full"
                 />
@@ -160,49 +160,44 @@ function Message({ message: msg }) {
                     //     {JSON.parse(message.memos).memo_title}
                     //   </span>
                     // </div>
-                    <div className="flex text-left mr-2 py-3 px-4   rounded-xl border-2  ">
-                      <div className="w-12 h-12 bg-primary300 flex rounded-2xl items-center ml-1 ">
-                        <a
-                          className="p-3 w-12 h-12"
-                          download
-                          href='#'
-                        >
-                          <FileIcon
-                          ></FileIcon>
-                        </a>
-                      </div>
-                      <div className="flex flex-col">
-                        <div>
-                          <a
-                            href='#'
-                            download
-                            className="font-bold break-all"
-                          >
-                            {JSON.parse(message.message).memo_title}
-                          </a>
-                        </div>
-                      </div>
-                      <div className="w-12 h-12 bg-primary300  flex rounded-2xl items-center ml-2">
-                        <a
-                          className="p-3"
-                          download
-                          href='#'
-                        >
-                          <span className="text-primarytext">
-                            <DownloadIcon />
-                          </span>
-                        </a>
-                      </div>
-                    </div>
+                    <div className="flex text-left mr-2 py-3 px-4 rounded-xl border-2  ">
+                <div className="w-12 h-12 bg-primary300 flex rounded-2xl items-center ml-1 ">
+                  <button
+                    className="p-3 w-12 h-12"
+                    onClick={memoModal}
+                  >
+                    <FileIcon
+                    ></FileIcon>
+                  </button>
+                </div>
+                <div className="flex flex-col">
+                  <div>
+                    <button
+                      onClick={memoModal}
+                      className="font-bold break-all m-2"
+                    >
+                      {JSON.parse(message.message).memo_title}
+                    </button>
+                  </div>
+                </div>
+                <div className="w-12 h-12 bg-primary300 hover:bg-blue-200 flex rounded-2xl items-center ml-2">
+                  <button
+                    className="ml-auto px-2 py-1 text-sm font-bold text-blue-900 border border-transparent rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
+                    onClick={memoModal}
+                  >
+                    보기
+                  </button>
+                </div>
+              </div>
                     :
                     (message.type == 'group' ? 
-                      <a href={'http://localhost:3000/group/'+JSON.parse(message.message).id} className="transform transition duration-500 hover:scale-105 text-left mr-2 py-3 px-4 bg-primary hover:bg-blue-700 text-white rounded-xl border">
+                      <a href={'https://mankai.shop/group/'+JSON.parse(message.message).id} className="transform transition duration-500 hover:scale-105 text-left mr-2 py-3 px-4 bg-primary hover:bg-blue-700 text-white rounded-xl border">
                         {JSON.parse(message.message).name} group에서 초대메세지가 왔습니다.
                       </a> : message.type == 'video' ?
-                      <a href={'http://localhost:3000/video/'+currentRoom.id} className="flex transform border-indigo-500/100 transition duration-500 hover:scale-105 text-left mr-2 py-3 px-4 hover:bg-blue-700 hover:text-white text-primary rounded-xl border">
+                      <a href={'https://mankai.shop/video/'+currentRoom.id} className="flex transform border-indigo-500/100 transition duration-500 hover:scale-105 text-left mr-2 py-3 px-4 hover:bg-blue-700 hover:text-white text-primary rounded-xl border">
                          <div className='flex flex-col'>
                             <span className=''>{message.message}</span>
-                            <span>{'http://localhost:3000/video/'+currentRoom.id}</span>
+                            <span>{'https://mankai.shop/video/'+currentRoom.id}</span>
                           </div>
                       </a> :
                   <div
@@ -351,13 +346,13 @@ function Message({ message: msg }) {
               </div>
                  :
                  (message.type == 'group' ? 
-                  <a href={'http://localhost:3000/group/'+JSON.parse(message.message).id} className="transform transition duration-500 hover:scale-105 text-left mr-2 py-3 px-4 bg-primary hover:bg-blue-700 text-white rounded-xl border max-w-[50%]">
+                  <a href={'https://mankai.shop/group/'+JSON.parse(message.message).id} className="transform transition duration-500 hover:scale-105 text-left mr-2 py-3 px-4 bg-primary hover:bg-blue-700 text-white rounded-xl border max-w-[50%]">
                     {JSON.parse(message.message).name} group에서 초대메세지가 왔습니다.
                   </a> : message.type == 'video' ? 
-                        <a href={'http://localhost:3000/video/'+currentRoom.id} className="transform border-indigo-500/100 border- transition duration-500 hover:scale-105 text-left mr-2 py-3 px-4 hover:bg-blue-700 hover:text-white text-primary rounded-xl border max-w-[50%]">
+                        <a href={'https://mankai.shop/video/'+currentRoom.id} className="transform border-indigo-500/100 border- transition duration-500 hover:scale-105 text-left mr-2 py-3 px-4 hover:bg-blue-700 hover:text-white text-primary rounded-xl border max-w-[50%]">
                           <div className='flex flex-col'>
                             <span className='w-full'>{message.message}</span>
-                            <span>{'http://localhost:3000/video/'+currentRoom.id}</span>
+                            <span>{'https://mankai.shop/video/'+currentRoom.id}</span>
                           </div>
                         </a> :
               <div
