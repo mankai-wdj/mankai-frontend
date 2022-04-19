@@ -3,7 +3,7 @@ import SearchModal from '../header/SearchModal'
 import Notifications from '../header/Notifications'
 import UserMenu from '../header/UserMenu'
 import { useSelector } from 'react-redux'
-import { Link } from 'react-router-dom'
+import { NavLink, Link, useLocation } from 'react-router-dom'
 import { IconButton, Skeleton } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search'
 import { indigo } from '@mui/material/colors'
@@ -15,6 +15,8 @@ function Header({ sidebarOpen, setSidebarOpen }) {
   const noti = useSelector(state => state.Reducers.noti)
   const noti_loading = useSelector(state => state.Reducers.noti_pending)
   const isOpen = useSelector(state => state.Reducers.isOpen)
+  const location = useLocation()
+  const { pathname } = location
 
   return (
     <header
@@ -27,23 +29,54 @@ function Header({ sidebarOpen, setSidebarOpen }) {
           {/* Header: Left side */}
           <div className="flex">
             {/* Hamburger button */}
-            <button
-              className="text-slate-500 hover:text-slate-600 lg:hidden"
-              aria-controls="sidebar"
-              aria-expanded={sidebarOpen}
-              onClick={() => setSidebarOpen(!sidebarOpen)}
+            <div class="flex items-center flex-no-shrink text-white mr-6">
+              <Link to="/">
+                <img src="/img/logo.png"></img>
+              </Link>
+            </div>
+
+            <div
+              class="hidden md:flex flex-col md:flex-row md:ml-auto mt-3 md:mt-0"
+              id="navbar-collapse"
             >
-              <span className="sr-only">Open sidebar</span>
-              <svg
-                className="w-6 h-6 fill-current"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
+              <NavLink
+                to="/board"
+                className={
+                  pathname.includes('/board') || pathname == '/'
+                    ? 'p-2 lg:px-4 md:mx-2 text-white rounded bg-indigo-600 font-bold'
+                    : 'p-2 lg:px-4 md:mx-2 text-gray-600 rounded hover:bg-gray-200 hover:text-gray-700 transition-colors duration-300'
+                }
               >
-                <rect x="4" y="5" width="16" height="2" />
-                <rect x="4" y="11" width="16" height="2" />
-                <rect x="4" y="17" width="16" height="2" />
-              </svg>
-            </button>
+                <div className="flex items-center">
+                  <span>홈</span>
+                </div>
+              </NavLink>
+              <NavLink
+                to="/chat"
+                className={
+                  pathname.includes('chat')
+                    ? 'p-2 lg:px-4 md:mx-2 text-white rounded bg-indigo-600 font-bold'
+                    : 'p-2 lg:px-4 md:mx-2 text-gray-600 rounded hover:bg-gray-200 hover:text-gray-700 transition-colors duration-300 '
+                }
+              >
+                <div className="flex items-center">
+                  <span>채팅</span>
+                </div>
+              </NavLink>
+
+              <NavLink
+                to="/group"
+                className={
+                  pathname.includes('group')
+                    ? 'p-2 lg:px-4 md:mx-2 text-white rounded bg-indigo-600 font-bold'
+                    : 'p-2 lg:px-4 md:mx-2 text-gray-600 rounded hover:bg-gray-200 hover:text-gray-700 transition-colors duration-300 '
+                }
+              >
+                <div className="flex items-center">
+                  <span>그룹</span>
+                </div>
+              </NavLink>
+            </div>
           </div>
 
           <div className="flex items-center">

@@ -115,7 +115,6 @@ function UserMenu() {
         >
           <div className="pt-0.5 pb-2 px-3 mb-1 border-b border-slate-200">
             <div className="font-medium text-slate-800">{user.name}</div>
-            <div className="text-xs text-slate-500 italic">Administrator</div>
           </div>
           <ul>
             <li>
@@ -124,7 +123,7 @@ function UserMenu() {
                 to="/mypage"
                 onClick={() => setDropdownOpen(!dropdownOpen)}
               >
-                Settings
+                마이페이지
               </Link>
             </li>
             <li>
@@ -134,7 +133,7 @@ function UserMenu() {
                 onClick={() => setDropdownOpen(!dropdownOpen)}
                 onClick={() => LogOutClicked()}
               >
-                Sign Out
+                로그아웃
               </Link>
             </li>
           </ul>
