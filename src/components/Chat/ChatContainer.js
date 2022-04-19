@@ -73,7 +73,7 @@ function ChatContainer() {
   //   if (document.getElementById('scrollableDiv').scrollTop == 0) {
   //     setSendNewMessage(null)
   //   }
-  }
+  // }
 
   // 라라벨 에서 데이터 받아 state 저장
   const loadMessage = () => {
