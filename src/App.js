@@ -71,7 +71,9 @@ function App() {
   const token = localStorage.getItem('auth_token')
   const dispatch = useDispatch()
   const currentUser = useSelector(state => state.Reducers.user)
-  const firebaseMessaging = firebase.messaging()
+  if (firebase.messaging.isSupported) {
+    const firebaseMessaging = firebase.messaging()
+  }
   const currentRoom = useSelector(state => state.Reducers.currentRoom)
   const notiToken = useSelector(state => state.Reducers.noti_token)
   useEffect(() => {

@@ -116,6 +116,7 @@ export default function MyUser() {
                 border: 2,
                 width: '200px',
                 height: '200px',
+                margin: 'auto',
               }}
               alt="Avatar"
             />
