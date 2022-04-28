@@ -6,7 +6,6 @@ import { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import UserModel from '../../models/user-model'
 import MiniChatMessage from './MiniChatMessage'
-import './MiniChat.css'
 function Chat(props) {
   const dispatch = useDispatch()
   const chatBody = useRef()
@@ -110,38 +109,27 @@ function Chat(props) {
   }, [props.user])
 
   return (
-    <div id="chatContainer">
-      <div id="chatComponent">
-        <div id="chatToolbar">
-          <span>
-            {/* {this.props.user.getStreamManager().stream.session.sessionId} - */}
-            CHAT
-          </span>
-          <IconButton id="closeButton" onClick={() => props.close()}>
-            <HighlightOff color="secondary" />
-          </IconButton>
-        </div>
-        <div className="message-wrap" ref={chatBody}>
-          {messageList &&
-            messageList.map((message, index) => (
-              <MiniChatMessage
-                message={message}
-                user={user}
-                key={message + index}
-              />
-            ))}
-        </div>
+    <div className="bg-[#b2c7d9] bg-opacity-90 h-[27vh]">
+      <div className="message-wrap h-[20vh]" ref={chatBody}>
+        {messageList &&
+          messageList.map((message, index) => (
+            <MiniChatMessage
+              message={message}
+              user={user}
+              key={message + index}
+            />
+          ))}
+      </div>
 
-        <div>
-          <input
-            type="text"
-            value={message}
-            className="w-full h-10 rounded-xl"
-            placeholder="메세지를 입력해주세요"
-            onKeyPress={onKeyPress}
-            onChange={e => setMessage(e.target.value)}
-          />
-        </div>
+      <div>
+        <input
+          type="text"
+          value={message}
+          className="w-full h-10 rounded-xl"
+          placeholder="메세지를 입력해주세요"
+          onKeyPress={onKeyPress}
+          onChange={e => setMessage(e.target.value)}
+        />
       </div>
     </div>
   )
