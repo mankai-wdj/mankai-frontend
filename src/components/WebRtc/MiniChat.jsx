@@ -6,12 +6,14 @@ import { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import UserModel from '../../models/user-model'
 import MiniChatMessage from './MiniChatMessage'
-function Chat(props) {
+function MiniChat(props) {
   const dispatch = useDispatch()
   const chatBody = useRef()
   const [message, setMessage] = useState(null)
   const user = useSelector(state => state.Reducers.user)
   const [messageList, setMessageList] = useState([])
+  const [chatOpen, setChatOpen] = useState('none')
+  let chatBodyValue = null
   const sendMessage = () => {
     if (props.user && message && user) {
       let messageValue = message.replace(/ +(?= )/g, '')
@@ -73,6 +75,11 @@ function Chat(props) {
       } catch (err) {}
     }, 20)
   }
+
+  useEffect(() => {
+    chatBodyValue = props.chatDisplay
+    setChatOpen(chatBodyValue)
+  }, [props.chatDisplay])
   useEffect(() => {
     if (props.user) {
       props.user.getStreamManager().stream.session.on('signal:chat', event => {
@@ -86,7 +93,9 @@ function Chat(props) {
           date: data.date,
         })
         setMessageList([...message])
+        props.messageReceived()
         scrollToBottom()
+        console.log(props.chatDisplay)
       })
 
       props.user
@@ -103,9 +112,13 @@ function Chat(props) {
             date: data.date,
           })
           setMessageList([...message])
+          props.messageReceived()
           scrollToBottom()
+          console.log(props.chatDisplay)
         })
     }
+
+    return () => {}
   }, [props.user])
 
   return (
@@ -134,4 +147,4 @@ function Chat(props) {
     </div>
   )
 }
-export default Chat
+export default MiniChat

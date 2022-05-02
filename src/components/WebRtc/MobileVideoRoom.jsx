@@ -19,6 +19,7 @@ import Videocam from '@mui/icons-material/Videocam'
 import VideocamOff from '@mui/icons-material/VideocamOff'
 
 import Ratio from 'react-ratio/lib/Ratio'
+import MiniPeople from './MiniPeople'
 var localUser = new UserModel()
 const RoomAxios = axios.create()
 const SpeechRecognition =
@@ -52,9 +53,11 @@ class MobileVideoRoom extends Component {
       openModal: false,
       subscribers: [],
       chatDisplay: 'none',
+      userDisplay: 'none',
       userInfo: userInfo,
       currentVideoDevice: undefined,
       sst: undefined,
+      chatCount: 0,
     }
 
     this.joinSession = this.joinSession.bind(this)
@@ -72,6 +75,7 @@ class MobileVideoRoom extends Component {
     this.stopScreenShare = this.stopScreenShare.bind(this)
     this.closeDialogExtension = this.closeDialogExtension.bind(this)
     this.toggleChat = this.toggleChat.bind(this)
+    this.toggleUser = this.toggleUser.bind(this)
     this.checkNotification = this.checkNotification.bind(this)
     this.checkSize = this.checkSize.bind(this)
     this.setOpenModal = this.setOpenModal.bind(this)
@@ -610,6 +614,7 @@ class MobileVideoRoom extends Component {
           // You can send a signal with Session.signal method to warn other participants
         })
     })
+
     publisher.on('streamPlaying', () => {
       this.updateLayout()
       publisher.videos[0].video.parentElement.classList.remove('custom-class')
@@ -654,25 +659,43 @@ class MobileVideoRoom extends Component {
       display = this.state.chatDisplay === 'none' ? 'block' : 'none'
     }
     if (display === 'block') {
-      this.setState({ chatDisplay: display, messageReceived: false })
+      this.setState({
+        chatDisplay: display,
+        messageReceived: false,
+        chatCount: 0,
+      })
     } else {
-      console.log('chat', display)
       this.setState({ chatDisplay: display })
     }
     this.updateLayout()
   }
 
+  toggleUser(property) {
+    let display = property
+
+    if (display === undefined) {
+      display = this.state.userDisplay === 'none' ? 'block' : 'none'
+    }
+    if (display === 'block') {
+      this.setState({ userDisplay: display })
+    } else {
+      this.setState({ userDisplay: display })
+    }
+    this.updateLayout()
+  }
   checkNotification(event) {
-    this.setState({
-      messageReceived: this.state.chatDisplay === 'none',
-    })
+    if (this.state.chatDisplay == 'none') {
+      this.setState({
+        chatCount: (this.state.chatCount += 1),
+        messageReceived: this.state.chatDisplay === 'none',
+      })
+    }
   }
   checkSize() {
     if (
       document.getElementById('layout').offsetWidth <= 700 &&
       !this.hasBeenUpdated
     ) {
-      this.toggleChat('display')
       this.hasBeenUpdated = true
     }
     if (
@@ -687,13 +710,33 @@ class MobileVideoRoom extends Component {
     const mySessionId = this.state.mySessionId
     const localUser = this.state.localUser
     var chatDisplay = { display: this.state.chatDisplay }
-
+    var userDisplay = { display: this.state.userDisplay }
     return (
       <>
         <div class="h-[calc(100vh-calc(100vh-100%))] w-full">
           <div class="bg-gray-800 h-screen mx-auto max-w-full">
             <div className="flex w-full h-full">
               <div className="flex flex-col w-full h-full">
+                <div>
+                  <ChangeNameModal
+                    open={this.state.openModal}
+                    user={localUser}
+                    handleNickname={this.nicknameChanged}
+                    handleClose={this.closeOpenModal}
+                  />
+                  {localUser !== undefined &&
+                    localUser.getStreamManager() !== undefined && (
+                      <div style={userDisplay}>
+                        <MiniPeople
+                          Display={this.state.userDisplay}
+                          localUser={this.state.localUser}
+                          subscribers={this.state.subscribers}
+                          handleOpen={this.setOpenModal}
+                          close={this.closeOpenModal}
+                        />
+                      </div>
+                    )}
+                </div>
                 <div id="container" className="flex flex-col h-full w-full">
                   <div
                     id="layout"
@@ -725,7 +768,6 @@ class MobileVideoRoom extends Component {
                           <MiniChat
                             user={localUser}
                             chatDisplay={this.state.chatDisplay}
-                            close={this.toggleChat}
                             messageReceived={this.checkNotification}
                             roomID={this.props.roomName}
                           />
@@ -736,11 +778,13 @@ class MobileVideoRoom extends Component {
                     sessionId={mySessionId}
                     user={localUser}
                     showNotification={this.state.messageReceived}
+                    chatCount={this.state.chatCount}
                     camStatusChanged={this.camStatusChanged}
                     micStatusChanged={this.micStatusChanged}
                     screenShare={this.screenShare}
                     stopScreenShare={this.stopScreenShare}
                     toggleFullscreen={this.toggleFullscreen}
+                    toggleUser={this.toggleUser}
                     switchCamera={this.switchCamera}
                     leaveSession={this.leaveSession}
                     toggleChat={this.toggleChat}

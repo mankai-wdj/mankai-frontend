@@ -1,12 +1,13 @@
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import DownloadIcon from '@mui/icons-material/Download'
-import './MiniChat.css'
+import './MiniChat3.css'
 import Moment from 'react-moment'
 import 'moment-timezone'
 import { FileIcon, defaultStyles } from 'react-file-icon'
 import prettyBytes from 'pretty-bytes'
 import { useDispatch, useSelector } from 'react-redux'
+import { Avatar } from '@mui/material'
 function ChatMessage({ message: msg, user: user, date: date }) {
   const [message, setMessage] = useState(msg)
   const [isOpen, setOpen] = useState(false)
@@ -41,7 +42,7 @@ function ChatMessage({ message: msg, user: user, date: date }) {
 
           <div
             onDoubleClick={e => translation(message.message)}
-            className="  bg-primary opacity-75  rounded-xl  msg-info "
+            className="max-w-[70%]  bg-primary opacity-75  rounded-xl  msg-info "
           >
             {message.message == undefined ? (
               <div className="flex  msg-content" key={message.file}>
@@ -70,11 +71,9 @@ function ChatMessage({ message: msg, user: user, date: date }) {
         <div className="flex p-1 mr-2 justify-start relative ">
           <div className="">
             {message.user.profile ? (
-              <img
-                src={message.user.profile}
-                alt="Avatar"
-                className="w-10 h-10 rounded-full"
-              />
+              <Avatar>
+                <img src={message.user.profile} alt="" />
+              </Avatar>
             ) : (
               <div className="flex items-center justify-center h-10 w-10 rounded-2xl bg-primary300 font-bold uppercase text-xl">
                 {message.nickname.substring(0, 1)}
