@@ -1,5 +1,3 @@
-import { t } from 'i18next'
-
 class UserModel {
   connectionId
   audioActive
@@ -12,6 +10,8 @@ class UserModel {
   speaking
   caption
   captionOn
+  captionTranslate
+  screenStreamManager
   type // 'remote' | 'local'
 
   constructor() {
@@ -21,11 +21,13 @@ class UserModel {
     this.screenShareActive = false
     this.nickname = ''
     this.streamManager = null
+    this.screenStreamManager = null
     this.type = 'local'
     this.user = 'null'
     this.userOBJ = null
     this.speaking = false
     this.caption = undefined
+    this.captionTranslate = undefined
     this.captionOn = false
   }
 
@@ -52,7 +54,9 @@ class UserModel {
   getStreamManager() {
     return this.streamManager
   }
-
+  getScreenStreamManager() {
+    return this.screenStreamManager
+  }
   getUserOBJ() {
     return this.userOBJ
   }
@@ -61,6 +65,9 @@ class UserModel {
   }
   getCaption() {
     return this.caption
+  }
+  getCaptionTranslate() {
+    return this.captionTranslate
   }
   isSpeaking() {
     return this.speaking
@@ -83,7 +90,9 @@ class UserModel {
   setStreamManager(streamManager) {
     this.streamManager = streamManager
   }
-
+  setScreenStreamManager(streamManager) {
+    this.screenStreamManager = streamManager
+  }
   setConnectionId(conecctionId) {
     this.connectionId = conecctionId
   }
@@ -108,6 +117,10 @@ class UserModel {
 
   captionOnOff(value) {
     this.captionOn = value
+  }
+
+  setCaptionTranslate(value) {
+    this.captionTranslate = value
   }
 }
 

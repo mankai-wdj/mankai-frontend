@@ -18,7 +18,7 @@ export default class StreamComponent extends Component {
     this.state = {
       nickname: this.props.user.getNickname(),
       showForm: false,
-      mutedSound: false,
+      mutedSound: this.props.isMute ? this.props.isMute : false,
       isFormValid: true,
     }
     this.toggleNicknameForm = this.toggleNicknameForm.bind(this)
@@ -52,25 +52,40 @@ export default class StreamComponent extends Component {
 
             <div className="bottom-0  relative bg-red text-white flex ">
               {this.props.user.type == 'local' ? (
-                <div className="left-3  flex font-bold bottom-[10px] absolute">
-                  <div className="bg-white text-2xl font-extrabold">
+                <>
+                  <div className="bottom-[30px] absolute text-center bg-black bg-opacity-50 w-full px-4">
+                    {this.props.user.getCaption() &&
+                    this.props.user.isAudioActive() ? (
+                      <>
+                        <div className="font-semibold text-xl">
+                          {this.props.user.getCaption()} (자동자막)
+                        </div>
+                      </>
+                    ) : null}
+                  </div>
+                  <div className="left-3 bg-white flex font-bold bottom-[10px] absolute">
                     <span className=" bg-clip-text text-transparent bg-gradient-to-r from-cyan-500 to-blue-500">
                       {this.props.user.getNickname()}
                     </span>
+                    {this.props.user.isSpeaking() == true &&
+                    this.props.user.isAudioActive() ? (
+                      <div>말하는중</div>
+                    ) : null}
                   </div>
-                  {this.props.user.getCaption()
-                    ? this.props.user.getCaption()
-                    : null}
-                  {this.props.user.isSpeaking() ? <div>말하는중</div> : null}
-                </div>
+                </>
               ) : (
                 <>
-                  <div className="bottom-[30px] absolute text-center bg-black bg-opacity-50 w-full">
+                  <div className="bottom-[30px] absolute text-center bg-black bg-opacity-50 w-full px-4">
                     {this.props.user.getCaption() &&
                     this.props.user.isAudioActive() ? (
-                      <div className="font-semibold">
-                        {this.props.user.getCaption()} (자동자막)
-                      </div>
+                      <>
+                        <div className="font-semibold text-xl">
+                          {this.props.user.getCaption()} (자동자막)
+                        </div>
+                        <div className="font-semibold text-2xl">
+                          {this.props.user.getCaptionTranslate()} (자동자막)
+                        </div>
+                      </>
                     ) : null}
                   </div>
                   <div className="left-3 bg-gray-500 flex font-bold bottom-[10px] absolute">
