@@ -21,6 +21,12 @@ import VideocamOff from '@mui/icons-material/VideocamOff'
 import Ratio from 'react-ratio/lib/Ratio'
 var localUser = new UserModel()
 const RoomAxios = axios.create()
+const SpeechRecognition =
+  window.SpeechRecognition || window.webkitSpeechRecognition
+const mic = new SpeechRecognition()
+mic.continuous = true
+mic.interimResults = false
+
 class VideoRoom extends Component {
   constructor(props) {
     super(props)
@@ -39,6 +45,7 @@ class VideoRoom extends Component {
       mySessionId: sessionName,
       myUserName: userName,
       session: undefined,
+      screenSession: undefined,
       localUser: undefined,
       openModal: false,
       subscribers: [],
@@ -46,15 +53,18 @@ class VideoRoom extends Component {
       userInfo: userInfo,
       currentVideoDevice: undefined,
       sst: undefined,
+      langCode: userInfo.country,
+      speaking: false,
+      tokenValue: undefined,
     }
-
     this.joinSession = this.joinSession.bind(this)
     this.leaveSession = this.leaveSession.bind(this)
     this.onbeforeunload = this.onbeforeunload.bind(this)
     this.updateLayout = this.updateLayout.bind(this)
     this.camStatusChanged = this.camStatusChanged.bind(this)
-    this.captionChanged = this.captionChanged.bind(this)
+
     this.micStatusChanged = this.micStatusChanged.bind(this)
+    this.captionTranslate = this.captionTranslate.bind(this)
     this.nicknameChanged = this.nicknameChanged.bind(this)
     this.toggleFullscreen = this.toggleFullscreen.bind(this)
     this.switchCamera = this.switchCamera.bind(this)
@@ -90,6 +100,7 @@ class VideoRoom extends Component {
     window.addEventListener('resize', this.updateLayout)
     window.addEventListener('resize', this.checkSize)
     this.getPermissions()
+    mic.lang = this.state.langCode
   }
 
   componentWillUnmount() {
@@ -106,6 +117,7 @@ class VideoRoom extends Component {
 
   joinSession() {
     this.OV = new OpenVidu()
+    this.OVScreen = new OpenVidu()
     this.OV.setAdvancedConfiguration({
       interval: 20, // Frequency of the polling of audio streams in ms (default 100)
       threshold: 50, // Threshold volume in dB (default -50)
@@ -113,10 +125,12 @@ class VideoRoom extends Component {
     this.setState(
       {
         session: this.OV.initSession(),
+        screenSession: this.OVScreen.initSession(),
       },
       () => {
         this.subscribeToStreamCreated()
         this.connectToSession()
+        this.screenConnectToSession()
       }
     )
   }
@@ -130,6 +144,7 @@ class VideoRoom extends Component {
         .then(token => {
           console.log(token)
           this.connect(token)
+          this.setState({ tokenValue: token })
         })
         .catch(error => {
           if (this.props.error) {
@@ -150,6 +165,34 @@ class VideoRoom extends Component {
     }
   }
 
+  screenConnectToSession() {
+    if (this.props.token !== undefined) {
+      console.log('token received: ', this.props.token)
+      this.connect(this.props.token)
+    } else {
+      this.getToken()
+        .then(token => {
+          console.log(token)
+          this.ScreenConnect(token)
+        })
+        .catch(error => {
+          if (this.props.error) {
+            this.props.error({
+              error: error.error,
+              messgae: error.message,
+              code: error.code,
+              status: error.status,
+            })
+          }
+          console.log(
+            'There was an error getting the token:',
+            error.code,
+            error.message
+          )
+          alert('There was an error getting the token:', error.message)
+        })
+    }
+  }
   connect(token) {
     this.state.session
       .connect(token, {
@@ -158,6 +201,33 @@ class VideoRoom extends Component {
       })
       .then(() => {
         this.connectWebCam()
+      })
+      .catch(error => {
+        if (this.props.error) {
+          this.props.error({
+            error: error.error,
+            messgae: error.message,
+            code: error.code,
+            status: error.status,
+          })
+        }
+        alert('There was an error connecting to the session:', error.message)
+        console.log(
+          'There was an error connecting to the session:',
+          error.code,
+          error.message
+        )
+      })
+  }
+
+  ScreenConnect(token) {
+    this.state.screenSession
+      .connect(token, {
+        clientData: this.props.user.name,
+        userOBJ: this.props.user,
+      })
+      .then(() => {
+        console.log('스크린 연결')
       })
       .catch(error => {
         if (this.props.error) {
@@ -200,15 +270,27 @@ class VideoRoom extends Component {
       resolution: '1920x1080',
       frameRate: 30,
       insertMode: 'APPEND',
-      mirror: false,
+      mirror: true,
     })
     publisher.on('publisherStartSpeaking', event => {
+      if (this.state.speaking == false) {
+        try {
+          mic.start()
+          this.setState({ speaking: true })
+        } catch {}
+      }
       console.log('로컬 유저')
       localUser.setSpeaking(true)
       this.sendSignalUserChanged({ speaking: true })
     })
 
     publisher.on('publisherStopSpeaking', event => {
+      if (this.state.speaking == true) {
+        try {
+          mic.stop()
+          this.setState({ speaking: false })
+        } catch {}
+      }
       console.log('로컬 유저 말안함 ㅎ')
       localUser.setSpeaking(false)
       this.sendSignalUserChanged({ speaking: false })
@@ -226,6 +308,25 @@ class VideoRoom extends Component {
           }
         })
       })
+    }
+
+    mic.onstart = () => {
+      console.log('mics on')
+      this.setState({ speaking: true })
+    }
+    mic.onend = () => {
+      this.setState({ speaking: false })
+    }
+    mic.onresult = event => {
+      const transcript = Array.from(event.results)
+        .map(result => result[0])
+        .map(result => result.transcript)
+        .join('')
+      this.sendSignalUserChanged({ caption: transcript })
+      localUser.setCaption(transcript)
+      mic.onerror = event => {
+        console.log(event.error)
+      }
     }
     localUser.setNickname(this.state.myUserName)
     localUser.setUserOBJ(this.props.user)
@@ -251,6 +352,19 @@ class VideoRoom extends Component {
     )
   }
 
+  captionTranslate(text, user) {
+    console.log('번역실행' + text)
+    axios
+      .post('/api/translate/text', {
+        country: this.props.user.country,
+        text: text,
+      })
+      .then(res => {
+        console.log(res.data)
+        user.setCaptionTranslate(res.data)
+        this.sendSignalUserChanged({ translateUpdate: true })
+      })
+  }
   updateSubscribers() {
     var subscribers = this.remotes
     this.setState(
@@ -263,9 +377,10 @@ class VideoRoom extends Component {
             isAudioActive: this.state.localUser.isAudioActive(),
             isVideoActive: this.state.localUser.isVideoActive(),
             speaking: this.state.localUser.isSpeaking(),
+            caption: this.state.localUser.getCaption(),
+            captionTranslate: this.state.localUser.getCaptionTranslate(),
             nickname: this.state.localUser.getNickname(),
             userOBJ: this.state.localUser.getUserOBJ(),
-            caption: this.state.localUser.getCaption(),
             captionOn: this.state.localUser.getCaptionOnOff(),
             isScreenShareActive: this.state.localUser.isScreenShareActive(),
           })
@@ -277,13 +392,16 @@ class VideoRoom extends Component {
 
   leaveSession() {
     const mySession = this.state.session
-
+    try {
+      mic.stop()
+    } catch {}
     if (mySession) {
       mySession.disconnect()
     }
 
     // Empty all properties...
     this.OV = null
+    this.OVScreen = null
     this.setState({
       session: undefined,
       subscribers: [],
@@ -309,19 +427,6 @@ class VideoRoom extends Component {
     this.setState({ localUser: localUser })
   }
 
-  captionChanged(value) {
-    let localUser = this.state.localUser
-    localUser.setCaption(value)
-    this.setState({ localUser: localUser })
-    this.sendSignalUserChanged({ caption: this.state.localUser.getCaption() })
-  }
-
-  captionOnOff(value) {
-    let localUser = this.state.localUser
-    localUser.setCaption(value)
-    this.setState({ localUser: localUser })
-    this.sendSignalUserChanged({ caption: this.state.localUser.getCaption() })
-  }
   nicknameChanged(nickname) {
     let localUser = this.state.localUser
     localUser.setNickname(nickname)
@@ -406,6 +511,9 @@ class VideoRoom extends Component {
           }
           if (data.caption !== undefined) {
             user.setCaption(data.caption)
+          }
+          if (data.caption !== undefined) {
+            this.captionTranslate(data.caption, user)
           }
           if (data.isScreenShareActive !== undefined) {
             user.setScreenShareActive(data.isScreenShareActive)
@@ -528,14 +636,14 @@ class VideoRoom extends Component {
   screenShare() {
     const videoSource =
       navigator.userAgent.indexOf('chrome') !== -1 ? 'window' : 'screen'
-    const publisher = this.OV.initPublisher(
+    const publisher = this.OVScreen.initPublisher(
       undefined,
       {
         videoSource: videoSource,
         audioSource: undefined,
         resolution: '1920x1080',
         publishAudio: true,
-        insertMode: 'PREPEND',
+        insertMode: 'APPEND',
         publishVideo: localUser.isVideoActive(),
         mirror: false,
       },
@@ -555,16 +663,18 @@ class VideoRoom extends Component {
     publisher.once('accessAllowed', () => {
       publisher.stream.getMediaStream().getVideoTracks()[0].contentHint =
         'motion' // 스크렌쉐어 낮은 fps 나오는거 문제 해결
-      this.state.session.unpublish(localUser.getStreamManager())
-      localUser.setStreamManager(publisher)
-      this.state.session.publish(localUser.getStreamManager()).then(() => {
-        localUser.setScreenShareActive(true)
-        this.setState({ localUser: localUser }, () => {
-          this.sendSignalUserChanged({
-            isScreenShareActive: localUser.isScreenShareActive(),
+      // this.state.session.unpublish(localUser.getStreamManager())
+      localUser.setScreenStreamManager(publisher)
+      this.state.screenSession
+        .publish(localUser.getScreenStreamManager())
+        .then(() => {
+          localUser.setScreenShareActive(true)
+          this.setState({ localUser: localUser }, () => {
+            this.sendSignalUserChanged({
+              isScreenShareActive: localUser.isScreenShareActive(),
+            })
           })
         })
-      })
 
       publisher.stream
         .getMediaStream()
@@ -586,7 +696,9 @@ class VideoRoom extends Component {
   }
 
   stopScreenShare() {
-    this.state.session.unpublish(localUser.getStreamManager())
+    localUser.setScreenShareActive(false)
+    this.state.screenSession.unpublish(localUser.getScreenStreamManager())
+    this.updateSubscribers()
     this.connectWebCam()
   }
 
@@ -763,7 +875,7 @@ class VideoRoom extends Component {
                       className="ml-auto font-bold text-primarytext mr-1"
                       onClick={() => this.setOpenModal()}
                     >
-                      이름 변경
+                      이름 변경 {this.props.user.location}
                     </div>
                     <div className=" mr-2">
                       {localUser && localUser.audioActive ? (
