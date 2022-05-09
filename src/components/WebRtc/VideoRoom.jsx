@@ -633,18 +633,27 @@ class VideoRoom extends Component {
     this.updateLayout()
   }
 
-  screenShare() {
-    const videoSource =
-      navigator.userAgent.indexOf('chrome') !== -1 ? 'window' : 'screen'
+  async screenShare() {
+    const stream = await navigator.mediaDevices.getDisplayMedia({
+      audio: {
+        autoGainControl: false,
+        echoCancellation: false,
+        googAutoGainControl: false,
+        noiseSuppression: false,
+      },
+      video: true,
+    })
+
+    // const videoSource =
+    //   navigator.userAgent.indexOf('chrome') !== -1 ? 'window' : 'screen'
+
     const publisher = this.OVScreen.initPublisher(
       undefined,
       {
-        videoSource: videoSource,
-        audioSource: undefined,
-        resolution: '1920x1080',
+        audioSource: stream.getAudioTracks()[0],
+        videoSource: stream.getVideoTracks()[0],
         publishAudio: true,
-        insertMode: 'APPEND',
-        publishVideo: localUser.isVideoActive(),
+        publishVideo: true,
         mirror: false,
       },
       error => {
@@ -661,9 +670,9 @@ class VideoRoom extends Component {
     )
 
     publisher.once('accessAllowed', () => {
-      publisher.stream.getMediaStream().getVideoTracks()[0].contentHint =
-        'motion' // 스크렌쉐어 낮은 fps 나오는거 문제 해결
       // this.state.session.unpublish(localUser.getStreamManager())
+      publisher.stream.getMediaStream().getVideoTracks()[0].contentHint =
+        'detail' // 스크렌쉐어 낮은 fps 나오는거 문제 해결
       localUser.setScreenStreamManager(publisher)
       this.state.screenSession
         .publish(localUser.getScreenStreamManager())
@@ -797,6 +806,9 @@ class VideoRoom extends Component {
                     <div key={i} className="custom-class" id="remoteUsers">
                       <StreamComponent
                         user={sub}
+                        isMute={
+                          sub.userOBJ.id === localUser.userOBJ.id ? true : false
+                        }
                         streamId={sub.streamManager.stream.streamId}
                       />
                     </div>
