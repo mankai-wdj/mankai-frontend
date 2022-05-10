@@ -34,6 +34,7 @@ import ChatMemo from './components/MyPage/ChatMemo'
 import './css/style.scss'
 import Profile from './components/MyPage/Profile'
 import YouPage from './components/MyPage/YouPage'
+import BoardMemoWindow from './components/MyPage/BoardMemoWindow'
 import GroupDetail from './components/GroupDetail'
 import firebase from 'firebase/app'
 import 'firebase/messaging'
@@ -225,6 +226,7 @@ function App() {
         <Route exact path="/chatting_memo" component={ChatMemo}></Route>
         {/* <Route exact path="/post_memo" component={PostMemo}></Route>
           <Route exact path="/my_memo_edit/:id" component={MyMemoEdit}></Route> */}
+        <Route path="/boardmemo/:memo_id" component={BoardMemoWindow}></Route>
 
         <Route exact path="/youProfile" component={YouPage}></Route>
 
