@@ -207,11 +207,14 @@ function BoardCard(props) {
 
   useEffect(() => {
     setIsLike(false)
-    likes.forEach(like => {
-      if (user.id == like.user_id) {
-        setIsLike(true)
-      }
-    })
+    if(user.id){
+      likes.forEach(like => {
+        if (user.id == like.user_id) {
+          setIsLike(true)
+        }
+      })
+    }
+
   }, [likes])
 
   // 통합 데이터 받기

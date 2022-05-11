@@ -39,7 +39,7 @@ function BoardCopy(props) {
   }
   // 라라벨 에서 데이터 받아 state 저장
   const ShowBoard = () => {
-    // console.log("showboard")
+    // console.logc("showboard")
     axios
       .post('/api/board/show/' + category + '?page=' + currentPage)
       .then(res => {
