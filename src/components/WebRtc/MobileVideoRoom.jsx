@@ -36,7 +36,7 @@ class MobileVideoRoom extends Component {
     this.OPENVIDU_SERVER_URL = process.env.REACT_APP_OPENVIDU_SERVER_URL
     this.OPENVIDU_SERVER_SECRET = process.env.REACT_APP_OPENVIDU_SERVER_SECRET
     this.hasBeenUpdated = false
-    this.layout = new OpenViduLayout()
+    this.initLayoutContainer = window.initLayoutContainer
     let sessionName = this.props.roomName
     let userName = this.props.user
       ? this.props.user.name
@@ -84,22 +84,36 @@ class MobileVideoRoom extends Component {
   }
 
   componentDidMount() {
-    const openViduLayoutOptions = {
-      maxRatio: 3 / 4,
-      minRatio: 9 / 16,
-      fixedRatio: true,
-      bigClass: 'OV_big',
-      bigPercentage: 0.7,
-      bigFixedRatio: true,
-      bigMaxRatio: 9 / 16,
-      bigMinRatio: 9 / 16,
-      bigFirst: true,
-      animate: true,
+    const options = {
+      maxRatio: 3 / 2, // The narrowest ratio that will be used (default 2x3)
+      minRatio: 9 / 16, // The widest ratio that will be used (default 16x9)
+      fixedRatio: false, // If this is true then the aspect ratio of the video is maintained and minRatio and maxRatio are ignored (default false)
+      scaleLastRow: true, // If there are less elements on the last row then we can scale them up to take up more space
+      alignItems: 'center', // Can be 'start', 'center' or 'end'. Determines where to place items when on a row or column that is not full
+      bigClass: 'OT_big', // The class to add to elements that should be sized bigger
+      bigPercentage: 0.8, // The maximum percentage of space the big ones should take up
+      minBigPercentage: 0, // If this is set then it will scale down the big space if there is left over whitespace down to this minimum size
+      bigFixedRatio: false, // fixedRatio for the big ones
+      bigScaleLastRow: true, // scale last row for the big elements
+      bigAlignItems: 'center', // How to align the big items
+      smallAlignItems: 'center', // How to align the small row or column of items if there is a big one
+      maxWidth: Infinity, // The maximum width of the elements
+      maxHeight: Infinity, // The maximum height of the elements
+      smallMaxWidth: Infinity, // The maximum width of the small elements
+      smallMaxHeight: Infinity, // The maximum height of the small elements
+      bigMaxWidth: Infinity, // The maximum width of the big elements
+      bigMaxHeight: Infinity, // The maximum height of the big elements
+      bigMaxRatio: 3 / 2, // The narrowest ratio to use for the big elements (default 2x3)
+      bigMinRatio: 9 / 16, // The widest ratio to use for the big elements (default 16x9)
+      bigFirst: true, // Whether to place the big one in the top left (true) or bottom right (false).
+      // You can also pass 'column' or 'row' to change whether big is first when you are in a row (bottom) or a column (right) layout
+      animate: true, // Whether you want to animate the transitions using jQuery (not recommended, use CSS transitions instead)
+      window: window, // Lets you pass in your own window object which should be the same window that the element is in
+      ignoreClass: 'OT_ignore', // Elements with this class will be ignored and not positioned. This lets you do things like picture-in-picture
+      onLayout: null, // A
     }
-    this.layout.initLayoutContainer(
-      document.getElementById('layout'),
-      openViduLayoutOptions
-    )
+    this.layoutContainer = document.getElementById('layout')
+    this.layout = this.initLayoutContainer(this.layoutContainer, options).layout
     window.addEventListener('beforeunload', this.onbeforeunload)
     window.addEventListener('resize', this.updateLayout)
     window.addEventListener('resize', this.checkSize)
@@ -462,7 +476,7 @@ class MobileVideoRoom extends Component {
 
   updateLayout() {
     setTimeout(() => {
-      this.layout.updateLayout()
+      this.layout()
     }, 20)
   }
 
@@ -549,19 +563,19 @@ class MobileVideoRoom extends Component {
     }
   }
   handleDblClick = e => {
-    const layoutDivs = document.querySelectorAll('.custom-class')
-    const el = e.target.closest('.custom-class')
+    const layoutDivs = document.querySelectorAll('.ot-layout')
+    const el = e.target.closest('.ot-layout')
 
-    if (el.classList.contains('OV_big')) {
-      el.classList.remove('OV_big')
+    if (el.classList.contains('OT_big')) {
+      el.classList.remove('OT_big')
     } else {
       for (let i = 0; i < layoutDivs.length; i++) {
-        layoutDivs[i].classList.remove('OV_big')
+        layoutDivs[i].classList.remove('OT_big')
       }
-      el.classList.add('OV_big')
+      el.classList.add('OT_big')
     }
 
-    this.updateLayout()
+    this.layout()
   }
 
   screenShare() {
@@ -636,19 +650,7 @@ class MobileVideoRoom extends Component {
     isScreenShared =
       this.state.subscribers.some(user => user.isScreenShareActive()) ||
       localUser.isScreenShareActive()
-    const openviduLayoutOptions = {
-      maxRatio: 3 / 4,
-      minRatio: 9 / 16,
-      fixedRatio: isScreenShared,
-      bigClass: 'OV_big',
-      bigPercentage: 0.7,
-      bigFixedRatio: false,
-      bigMaxRatio: 9 / 16,
-      bigMinRatio: 9 / 16,
-      bigFirst: true,
-      animate: true,
-    }
-    this.layout.setLayoutOptions(openviduLayoutOptions)
+
     this.updateLayout()
   }
 

@@ -39,8 +39,9 @@ import BoardMemoEditWindow from './components/MyPage/BoardMemoEditWindow'
 import GroupDetail from './components/GroupDetail'
 import firebase from 'firebase/app'
 import 'firebase/messaging'
-// axios.defaults.baseURL = 'http://api.mankai.shop/'
-axios.defaults.baseURL = 'http://localhost:8000/'
+import './App.css'
+
+axios.defaults.baseURL = 'http://api.mankai.shop/'
 axios.defaults.headers.post['Content-Type'] = 'application/json'
 axios.defaults.headers.post['Accept'] = 'application/json'
 axios.defaults.withCredentials = true
@@ -75,7 +76,8 @@ function App() {
   const dispatch = useDispatch()
   const currentUser = useSelector(state => state.Reducers.user)
   let firebaseMessaging = null
-  if (firebase.messaging.isSupported) {
+  var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+  if (firebase.messaging.isSupported && !isMobile) {
     firebaseMessaging = firebase.messaging()
   }
   const currentRoom = useSelector(state => state.Reducers.currentRoom)
@@ -125,64 +127,67 @@ function App() {
       return userNames
     }
   }
-  firebaseMessaging.onMessage(function (payload) {
-    if (
-      getCurrentRoom() == null ||
-      getCurrentRoom().id != JSON.parse(payload.data.room).id
-    ) {
-      // console.log(getCurrentRoom().id);
-      const room = JSON.parse(payload.data.room)
-      const sendUser = JSON.parse(payload.data.user)
-      toast(
-        <a href="https://mankai.shop/chat/">
-          <div className="w-full mb-1 font-bold">
-            {userName(room.type, room.users)}
-          </div>
-          <hr />
-          <div className="flex my-2">
-            <div className="">
-              {sendUser.profile ? (
-                <img
-                  src={sendUser.profile}
-                  alt="Avatar"
-                  className="w-10 h-10 rounded-full"
-                />
-              ) : (
-                <div className="flex items-center justify-center h-10 w-10 rounded-2xl bg-primary300 font-bold uppercase text-xl">
-                  {sendUser.name.substring(0, 1)}
+  if (firebase.messaging.isSupported && !isMobile) {
+    firebaseMessaging.onMessage(function (payload) {
+      if (
+        getCurrentRoom() == null ||
+        getCurrentRoom().id != JSON.parse(payload.data.room).id
+      ) {
+        // console.log(getCurrentRoom().id);
+        const room = JSON.parse(payload.data.room)
+        const sendUser = JSON.parse(payload.data.user)
+        toast(
+          <a href="https://mankai.shop/chat/">
+            <div className="w-full mb-1 font-bold">
+              {userName(room.type, room.users)}
+            </div>
+            <hr />
+            <div className="flex my-2">
+              <div className="">
+                {sendUser.profile ? (
+                  <img
+                    src={sendUser.profile}
+                    alt="Avatar"
+                    className="w-10 h-10 rounded-full"
+                  />
+                ) : (
+                  <div className="flex items-center justify-center h-10 w-10 rounded-2xl bg-primary300 font-bold uppercase text-xl">
+                    {sendUser.name.substring(0, 1)}
+                  </div>
+                )}
+              </div>
+              <div className="flex-col">
+                <div className="text-left ml-2 my-auto">
+                  <span className="font-bold">{sendUser.name}</span>
                 </div>
-              )}
-            </div>
-            <div className="flex-col">
-              <div className="text-left ml-2 my-auto">
-                <span className="font-bold">{sendUser.name}</span>
-              </div>
-              <div className="text-left ml-2 ">
-                {payload.data.type == 'memo'
-                  ? JSON.parse(payload.notification.body).memo_title +
-                    ' 메모가 도착했습니다'
-                  : payload.data.type == 'file'
-                  ? payload.notification.body.startsWith('[{')
-                    ? '파일이 도착했습니다'
-                    : '사진이 도착했습니다'
-                  : payload.notification.body}
+                <div className="text-left ml-2 ">
+                  {payload.data.type == 'memo'
+                    ? JSON.parse(payload.notification.body).memo_title +
+                      ' 메모가 도착했습니다'
+                    : payload.data.type == 'file'
+                    ? payload.notification.body.startsWith('[{')
+                      ? '파일이 도착했습니다'
+                      : '사진이 도착했습니다'
+                    : payload.notification.body}
+                </div>
               </div>
             </div>
-          </div>
-        </a>,
-        {
-          position: 'bottom-right',
-          autoClose: 2000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        }
-      )
-      //확인 후 toast 띄워주기
-    }
-  })
+          </a>,
+          {
+            position: 'bottom-right',
+            autoClose: 2000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          }
+        )
+        //확인 후 toast 띄워주기
+      }
+    })
+  }
+
   // useEffect(() => {
 
   //   console.log(notiToken);

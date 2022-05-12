@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import './StreamComponent.css'
 import OvVideoComponent from './OvVideo'
 
 import MicOff from '@mui/icons-material/MicOff'
@@ -41,10 +40,10 @@ export default class StreamComponent extends Component {
   }
   render() {
     return (
-      <div className="OT_widget-container rounded-2xl">
+      <div className=" rounded-2xl">
         {this.props.user !== undefined &&
         this.props.user.getStreamManager() !== undefined ? (
-          <div className="bg-black h-auto">
+          <div className="bg-black w-full">
             <OvVideoComponent
               user={this.props.user}
               mutedSound={this.state.mutedSound}

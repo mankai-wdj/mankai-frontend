@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import './StreamComponent.css'
 import Ratio from 'react-ratio'
 export default class OvVideoComponent extends Component {
   constructor(props) {
@@ -44,7 +43,7 @@ export default class OvVideoComponent extends Component {
             autoPlay={true}
             ref={this.videoRef}
             muted={this.props.mutedSound}
-            className=" h-full mx-auto"
+            className=" w-full h-full mx-auto "
           />
           {this.props.user.isSpeaking() ? (
             <div className="absolute bottom-0 rounded-xl  border   border-emerald-400 border-8  w-full h-full"></div>
