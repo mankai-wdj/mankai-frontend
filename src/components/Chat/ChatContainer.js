@@ -131,7 +131,7 @@ const speechModal = () => {
           type: 'message',
         })
         .then(res => {
-          transBotChat()
+          transBotChat(currentUser.name)
         })
       setCheckLag(null)
       setSendSpeech(false)
@@ -371,7 +371,7 @@ const speechModal = () => {
       return userNames
     }
   }
-  const transBotChat = () => {
+  const transBotChat = (name) => {
     let users = JSON.parse(currentChatRoom.users)
     for (let i = 0; i < users.length; i++) {
       if (users[i].position === 'official') {
@@ -386,6 +386,7 @@ const speechModal = () => {
             user_id: users[i].user_id,
             to_users: toUsers,
             type: 'message',
+            name : name
           })
           .then(res => {
             console.log(res.data)
@@ -424,7 +425,7 @@ const speechModal = () => {
         })
         .then(res => {
           console.log(res.data)
-          transBotChat()
+          transBotChat(currentUser.name);
           // if (document.getElementById('scrollableDiv').scrollTop != 0) {
           //   //메세지 왔을 때 밑에 띄워주는 newMsg에 메세지 저장
           //   document.getElementById('scrollableDiv').scrollTop =
