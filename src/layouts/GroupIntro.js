@@ -65,16 +65,15 @@ function GroupIntro(props)
     }
     const GroupIn = () =>{
         if(!props.group.password || props.group.password == postPass){  
-            
             alert("가입 되었습니다")
             setIsGroup(true)
-            dispatch({type:"GROUP_IN"})
             axios.post('/api/post/groupuser/',{
                 user_id:user.id,
                 group_id:props.group.id
             })
             .then(res=>{
                 console.log(res.data)
+                dispatch({type:"GROUP_IN"})
             })
         }
         else{
@@ -82,7 +81,6 @@ function GroupIntro(props)
         }
     }
     const GroupOut = () =>{
-        dispatch({type:"GROUP_OUT"})
         setIsGroup(false)
         axios.post('/api/delete/groupuser/',{
             user_id:user.id,
@@ -90,6 +88,7 @@ function GroupIntro(props)
         })
         .then(res=>{
             console.log(res.data)
+            dispatch({type:"GROUP_OUT"})
         })
     }
     const postIntro = () =>{

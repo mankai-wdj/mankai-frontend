@@ -1,15 +1,51 @@
-import { Grid, Link } from '@mui/material'
+import { CircularProgress, Grid, Link } from '@mui/material'
 import { useSelector } from 'react-redux'
 import VideoRoom from './VideoRoom'
 import { useFullScreenHandle } from 'react-full-screen'
+import {
+  BrowserView,
+  MobileView,
+  isBrowser,
+  isMobile,
+} from 'react-device-detect'
+import MobileVideoRoom from './MobileVideoRoom'
 function WaitRoom(props) {
   const user = useSelector(state => state.Reducers.user)
+  const loading = useSelector(state => state.Reducers.user_pending)
   const roomName = props.match.params.roomID
   const handle = useFullScreenHandle()
   return (
     <div>
-      {user ? (
-        <VideoRoom user={user} roomName={roomName} handle={handle}></VideoRoom>
+      {user && !loading ? (
+        <>
+          <BrowserView>
+            <VideoRoom
+              user={user}
+              roomName={roomName}
+              handle={handle}
+              location={user.country}
+            ></VideoRoom>
+          </BrowserView>
+          <MobileView>
+            <MobileVideoRoom
+              user={user}
+              roomName={roomName}
+              handle={handle}
+              location={user.country}
+            ></MobileVideoRoom>
+          </MobileView>
+        </>
+      ) : loading ? (
+        <CircularProgress
+          size={48}
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            marginTop: '-24px',
+            marginLeft: '-24px',
+          }}
+        />
       ) : (
         <Grid container component="main" sx={{ height: '100vh' }}>
           <div className="w-full  bg-blue-100 flex items-center p-5 lg:p-20 overflow-hidden relative">

@@ -89,7 +89,7 @@ function GroupDetail({match}) {
     } 
 
     useEffect(()=>{
-        setGroup_id(match.params.group_id)
+         setGroup_id(match.params.group_id)
          axios.get("/api/show/groupuser/"+match.params.group_id)
          .then(res=>{
              setGroupUsers(res.data)

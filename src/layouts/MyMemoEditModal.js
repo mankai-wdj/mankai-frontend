@@ -292,6 +292,8 @@ const fileDrop = (e) => {
         onClose={handleClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
+        sx={{ overflow:"scroll" }}
+            
       >
 
         <Box sx={style}>

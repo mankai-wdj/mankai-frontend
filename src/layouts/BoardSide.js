@@ -151,32 +151,27 @@ function BoardSide(props){
             ShowComment(current_page);
         })
     }
-    // 번역 api 부르기
-    const callPapago = (data) =>{
-        handleToggle()
-        axios.post("/api/show/papago",{
-            text:data,
-            mycountry:user.country
-        }).then(res=>{
-            if(res == "Error!!"){
-                setTranslatedText(translatedText=>"언어를 찾을 수 없습니다");
-            }
-            else{
-                setTranslatedText(translatedText=>res.data.message.result.translatedText);
-            }
-        })
-    }
     // 댓글 번역 api 
     const callCommentPapago =(comment)=>{
         axios.post("/api/show/papago",{
             text:comment.comment,
             mycountry:user.country
         }).then(res=>{
-            setTransComment(transComment =>
-                [{
-                    id:comment.id,
-                    text:res.data.message.result.translatedText,
-            }])
+            if(res.data){
+                setTransComment(transComment =>
+                    [{
+                        id:comment.id,
+                        text:res.data.message.result.translatedText,
+                }])
+            }
+            else
+            {
+                setTransComment(transComment =>
+                    [{
+                        id:0,
+                        text:"",
+                }])
+            }
         
         })
         console.log(transComment)
@@ -291,9 +286,14 @@ function BoardSide(props){
 
                                             {/* 상단 내용 */}
                                             <div className="flex">
-                                                <Avatar className='mr-3'>d</Avatar> 
-                                                <div className='flex w-full justify-between'>
-                                                    <div>
+                                                {
+                                                        (comment.profile) 
+                                                        ?<Avatar src={comment.profile} alt=""/>
+                                                        : (comment.name) && 
+                                                        <Avatar>{comment.name.charAt(0)}</Avatar>
+                                                }
+                                            <div className='flex w-full justify-between'>
+                                                <div>
                                                         <h3 className="text-md font-semibold ">{comment.name}</h3>
                                                         <div className='flex text-xs text-gray-500'>
                                                             {comment.updated_at != comment.created_at &&

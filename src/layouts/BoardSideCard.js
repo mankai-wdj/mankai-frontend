@@ -156,8 +156,8 @@ function BoardSideCard(props){
     useEffect(()=>{
         axios.get('/api/show/like/'+props.board.id)
             .then(res=>{
-                
                 setLikes(res.data)
+                setTranslated("")
             })
     },[sideData])
 

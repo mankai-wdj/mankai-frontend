@@ -3,9 +3,11 @@ import React, { useEffect, useRef, useState, Component } from 'react'
 import { OpenVidu } from 'openvidu-browser'
 import axios from 'axios'
 import StreamComponent from '../stream/StreamComponent'
-import './Room.css'
+import DialogExtensionComponent from '../dialog-extension/DialogExtension'
+import './MobileRoom.css'
+import OpenViduLayout from '../../layouts/mobile-layout'
 import UserModel from '../../models/user-model'
-import ToolbarComponent from '../toolbar/ToolbarComponent'
+import MobileToolbar from '../toolbar/MobileToolbar'
 import Header from '../../admin/layout/Header'
 import { IconButton } from '@mui/material'
 import ChangeNameModal from './ChangeNameModal'
@@ -17,15 +19,18 @@ import Videocam from '@mui/icons-material/Videocam'
 import VideocamOff from '@mui/icons-material/VideocamOff'
 
 import Ratio from 'react-ratio/lib/Ratio'
+import MiniPeople from './MiniPeople'
 var localUser = new UserModel()
 const RoomAxios = axios.create()
 const SpeechRecognition =
-  window.SpeechRecognition || window.webkitSpeechRecognition
+  window.webkitSpeechRecognition || window.SpeechRecognition
 const mic = new SpeechRecognition()
+
 mic.continuous = true
 mic.interimResults = false
+mic.lang = 'ko'
 
-class VideoRoom extends Component {
+class MobileVideoRoom extends Component {
   constructor(props) {
     super(props)
     this.OPENVIDU_SERVER_URL = process.env.REACT_APP_OPENVIDU_SERVER_URL
@@ -37,24 +42,24 @@ class VideoRoom extends Component {
       ? this.props.user.name
       : 'Mankai' + Math.floor(Math.random() * 100)
     let userInfo = this.props.user
+    let country = this.props.user.country
     this.remotes = []
     this.localUserAccessAllowed = false
     this.state = {
       mySessionId: sessionName,
       myUserName: userName,
       session: undefined,
-      screenSession: undefined,
       localUser: undefined,
       openModal: false,
       subscribers: [],
       chatDisplay: 'none',
+      userDisplay: 'none',
       userInfo: userInfo,
       currentVideoDevice: undefined,
       sst: undefined,
-      langCode: userInfo.country,
-      speaking: false,
-      tokenValue: undefined,
+      chatCount: 0,
     }
+
     this.joinSession = this.joinSession.bind(this)
     this.leaveSession = this.leaveSession.bind(this)
     this.onbeforeunload = this.onbeforeunload.bind(this)
@@ -70,6 +75,7 @@ class VideoRoom extends Component {
     this.stopScreenShare = this.stopScreenShare.bind(this)
     this.closeDialogExtension = this.closeDialogExtension.bind(this)
     this.toggleChat = this.toggleChat.bind(this)
+    this.toggleUser = this.toggleUser.bind(this)
     this.checkNotification = this.checkNotification.bind(this)
     this.checkSize = this.checkSize.bind(this)
     this.setOpenModal = this.setOpenModal.bind(this)
@@ -112,7 +118,6 @@ class VideoRoom extends Component {
     window.addEventListener('resize', this.updateLayout)
     window.addEventListener('resize', this.checkSize)
     this.getPermissions()
-    mic.lang = this.state.langCode
   }
 
   componentWillUnmount() {
@@ -129,7 +134,6 @@ class VideoRoom extends Component {
 
   joinSession() {
     this.OV = new OpenVidu()
-    this.OVScreen = new OpenVidu()
     this.OV.setAdvancedConfiguration({
       interval: 20, // Frequency of the polling of audio streams in ms (default 100)
       threshold: 50, // Threshold volume in dB (default -50)
@@ -137,12 +141,10 @@ class VideoRoom extends Component {
     this.setState(
       {
         session: this.OV.initSession(),
-        screenSession: this.OVScreen.initSession(),
       },
       () => {
         this.subscribeToStreamCreated()
         this.connectToSession()
-        this.screenConnectToSession()
       }
     )
   }
@@ -156,7 +158,6 @@ class VideoRoom extends Component {
         .then(token => {
           console.log(token)
           this.connect(token)
-          this.setState({ tokenValue: token })
         })
         .catch(error => {
           if (this.props.error) {
@@ -177,34 +178,6 @@ class VideoRoom extends Component {
     }
   }
 
-  screenConnectToSession() {
-    if (this.props.token !== undefined) {
-      console.log('token received: ', this.props.token)
-      this.connect(this.props.token)
-    } else {
-      this.getToken()
-        .then(token => {
-          console.log(token)
-          this.ScreenConnect(token)
-        })
-        .catch(error => {
-          if (this.props.error) {
-            this.props.error({
-              error: error.error,
-              messgae: error.message,
-              code: error.code,
-              status: error.status,
-            })
-          }
-          console.log(
-            'There was an error getting the token:',
-            error.code,
-            error.message
-          )
-          alert('There was an error getting the token:', error.message)
-        })
-    }
-  }
   connect(token) {
     this.state.session
       .connect(token, {
@@ -213,34 +186,6 @@ class VideoRoom extends Component {
       })
       .then(() => {
         this.connectWebCam()
-        this.layout()
-      })
-      .catch(error => {
-        if (this.props.error) {
-          this.props.error({
-            error: error.error,
-            messgae: error.message,
-            code: error.code,
-            status: error.status,
-          })
-        }
-        alert('There was an error connecting to the session:', error.message)
-        console.log(
-          'There was an error connecting to the session:',
-          error.code,
-          error.message
-        )
-      })
-  }
-
-  ScreenConnect(token) {
-    this.state.screenSession
-      .connect(token, {
-        clientData: this.props.user.name,
-        userOBJ: this.props.user,
-      })
-      .then(() => {
-        console.log('스크린 연결')
       })
       .catch(error => {
         if (this.props.error) {
@@ -282,28 +227,20 @@ class VideoRoom extends Component {
       publishVideo: localUser.isVideoActive(),
       resolution: '1920x1080',
       frameRate: 30,
-      insertMode: 'append',
-      mirror: true,
+      insertMode: 'APPEND',
+      mirror: false,
     })
     publisher.on('publisherStartSpeaking', event => {
-      if (this.state.speaking == false) {
-        try {
-          mic.start()
-          this.setState({ speaking: true })
-        } catch {}
-      }
+      try {
+        mic.start()
+      } catch {}
       console.log('로컬 유저')
       localUser.setSpeaking(true)
       this.sendSignalUserChanged({ speaking: true })
     })
 
     publisher.on('publisherStopSpeaking', event => {
-      if (this.state.speaking == true) {
-        try {
-          mic.stop()
-          this.setState({ speaking: false })
-        } catch {}
-      }
+      mic.stop()
       console.log('로컬 유저 말안함 ㅎ')
       localUser.setSpeaking(false)
       this.sendSignalUserChanged({ speaking: false })
@@ -325,11 +262,8 @@ class VideoRoom extends Component {
 
     mic.onstart = () => {
       console.log('mics on')
-      this.setState({ speaking: true })
     }
-    mic.onend = () => {
-      this.setState({ speaking: false })
-    }
+    mic.onend = () => {}
     mic.onresult = event => {
       const transcript = Array.from(event.results)
         .map(result => result[0])
@@ -375,7 +309,6 @@ class VideoRoom extends Component {
       .then(res => {
         console.log(res.data)
         user.setCaptionTranslate(res.data)
-        this.sendSignalUserChanged({ translateUpdate: true })
       })
   }
   updateSubscribers() {
@@ -411,12 +344,9 @@ class VideoRoom extends Component {
     if (mySession) {
       mySession.disconnect()
     }
-    if (this.state.screenSession) {
-      this.state.screenSession.disconnect()
-    }
+
     // Empty all properties...
     this.OV = null
-    this.OVScreen = null
     this.setState({
       session: undefined,
       subscribers: [],
@@ -498,7 +428,7 @@ class VideoRoom extends Component {
         this.checkSomeoneShareScreen()
       }, 20)
       event.preventDefault()
-      this.layout()
+      this.updateLayout()
     })
   }
 
@@ -648,27 +578,18 @@ class VideoRoom extends Component {
     this.layout()
   }
 
-  async screenShare() {
-    const stream = await navigator.mediaDevices.getDisplayMedia({
-      audio: {
-        autoGainControl: false,
-        echoCancellation: false,
-        googAutoGainControl: false,
-        noiseSuppression: false,
-      },
-      video: true,
-    })
-
-    // const videoSource =
-    //   navigator.userAgent.indexOf('chrome') !== -1 ? 'window' : 'screen'
-
-    const publisher = this.OVScreen.initPublisher(
+  screenShare() {
+    const videoSource =
+      navigator.userAgent.indexOf('chrome') !== -1 ? 'window' : 'screen'
+    const publisher = this.OV.initPublisher(
       undefined,
       {
-        audioSource: stream.getAudioTracks()[0],
-        videoSource: stream.getVideoTracks()[0],
+        videoSource: videoSource,
+        audioSource: undefined,
+        resolution: '1920x1080',
         publishAudio: true,
-        publishVideo: true,
+        insertMode: 'PREPEND',
+        publishVideo: localUser.isVideoActive(),
         mirror: false,
       },
       error => {
@@ -685,20 +606,18 @@ class VideoRoom extends Component {
     )
 
     publisher.once('accessAllowed', () => {
-      // this.state.session.unpublish(localUser.getStreamManager())
       publisher.stream.getMediaStream().getVideoTracks()[0].contentHint =
-        'detail' // 스크렌쉐어 낮은 fps 나오는거 문제 해결
-      localUser.setScreenStreamManager(publisher)
-      this.state.screenSession
-        .publish(localUser.getScreenStreamManager())
-        .then(() => {
-          localUser.setScreenShareActive(true)
-          this.setState({ localUser: localUser }, () => {
-            this.sendSignalUserChanged({
-              isScreenShareActive: localUser.isScreenShareActive(),
-            })
+        'motion' // 스크렌쉐어 낮은 fps 나오는거 문제 해결
+      this.state.session.unpublish(localUser.getStreamManager())
+      localUser.setStreamManager(publisher)
+      this.state.session.publish(localUser.getStreamManager()).then(() => {
+        localUser.setScreenShareActive(true)
+        this.setState({ localUser: localUser }, () => {
+          this.sendSignalUserChanged({
+            isScreenShareActive: localUser.isScreenShareActive(),
           })
         })
+      })
 
       publisher.stream
         .getMediaStream()
@@ -709,6 +628,7 @@ class VideoRoom extends Component {
           // You can send a signal with Session.signal method to warn other participants
         })
     })
+
     publisher.on('streamPlaying', () => {
       this.updateLayout()
       publisher.videos[0].video.parentElement.classList.remove('custom-class')
@@ -720,9 +640,7 @@ class VideoRoom extends Component {
   }
 
   stopScreenShare() {
-    localUser.setScreenShareActive(false)
-    this.state.screenSession.unpublish(localUser.getScreenStreamManager())
-    this.updateSubscribers()
+    this.state.session.unpublish(localUser.getStreamManager())
     this.connectWebCam()
   }
 
@@ -732,19 +650,7 @@ class VideoRoom extends Component {
     isScreenShared =
       this.state.subscribers.some(user => user.isScreenShareActive()) ||
       localUser.isScreenShareActive()
-    // const openviduLayoutOptions = {
-    //   maxRatio: 3 / 2,
-    //   minRatio: 9 / 16,
-    //   fixedRatio: isScreenShared,
-    //   bigClass: 'OV_big',
-    //   bigPercentage: 0.6,
-    //   bigFixedRatio: false,
-    //   bigMaxRatio: 3 / 2,
-    //   bigMinRatio: 9 / 16,
-    //   bigFirst: true,
-    //   animate: true,
-    // }
-    // this.layout.setLayoutOptions(openviduLayoutOptions)
+
     this.updateLayout()
   }
 
@@ -755,25 +661,43 @@ class VideoRoom extends Component {
       display = this.state.chatDisplay === 'none' ? 'block' : 'none'
     }
     if (display === 'block') {
-      this.setState({ chatDisplay: display, messageReceived: false })
+      this.setState({
+        chatDisplay: display,
+        messageReceived: false,
+        chatCount: 0,
+      })
     } else {
-      console.log('chat', display)
       this.setState({ chatDisplay: display })
     }
     this.updateLayout()
   }
 
+  toggleUser(property) {
+    let display = property
+
+    if (display === undefined) {
+      display = this.state.userDisplay === 'none' ? 'block' : 'none'
+    }
+    if (display === 'block') {
+      this.setState({ userDisplay: display })
+    } else {
+      this.setState({ userDisplay: display })
+    }
+    this.updateLayout()
+  }
   checkNotification(event) {
-    this.setState({
-      messageReceived: this.state.chatDisplay === 'none',
-    })
+    if (this.state.chatDisplay == 'none') {
+      this.setState({
+        chatCount: (this.state.chatCount += 1),
+        messageReceived: this.state.chatDisplay === 'none',
+      })
+    }
   }
   checkSize() {
     if (
       document.getElementById('layout').offsetWidth <= 700 &&
       !this.hasBeenUpdated
     ) {
-      this.toggleChat('none')
       this.hasBeenUpdated = true
     }
     if (
@@ -788,192 +712,91 @@ class VideoRoom extends Component {
     const mySessionId = this.state.mySessionId
     const localUser = this.state.localUser
     var chatDisplay = { display: this.state.chatDisplay }
-
+    var userDisplay = { display: this.state.userDisplay }
     return (
-      <div className="flex  h-screen overflow-hidden">
-        <div className="relative flex flex-col flex-1 h-screen  overflow-x-hidden">
-          {/*  Site header */}
-          <Header />
-          <ChangeNameModal
-            open={this.state.openModal}
-            user={localUser}
-            handleNickname={this.nicknameChanged}
-            handleClose={this.closeOpenModal}
-          />
-          <div className="flex w-full h-full">
-            <div className="flex flex-col w-full h-full">
-              <div id="container" className="flex flex-col h-full w-full">
-                <div
-                  id="layout"
-                  className="bounds"
-                  onDoubleClick={this.handleDblClick}
-                >
+      <>
+        <div class="h-[calc(100vh-calc(100vh-100%))] w-full">
+          <div class="bg-gray-800 h-screen mx-auto max-w-full">
+            <div className="flex w-full h-full">
+              <div className="flex flex-col w-full h-full">
+                <div>
+                  <ChangeNameModal
+                    open={this.state.openModal}
+                    user={localUser}
+                    handleNickname={this.nicknameChanged}
+                    handleClose={this.closeOpenModal}
+                  />
                   {localUser !== undefined &&
                     localUser.getStreamManager() !== undefined && (
-                      <div id="localUser" className="m-auto">
-                        <StreamComponent
-                          user={localUser}
-                          handleNickname={this.nicknameChanged}
+                      <div style={userDisplay}>
+                        <MiniPeople
+                          Display={this.state.userDisplay}
+                          localUser={this.state.localUser}
+                          subscribers={this.state.subscribers}
+                          handleOpen={this.setOpenModal}
+                          close={this.closeOpenModal}
                         />
                       </div>
                     )}
-                  {this.state.subscribers.map((sub, i) => (
-                    <div key={i} id="remoteUsers" className="m-auto">
-                      <StreamComponent
-                        user={sub}
-                        isMute={
-                          sub.userOBJ.id === localUser.userOBJ.id ? true : false
-                        }
-                        streamId={sub.streamManager.stream.streamId}
-                      />
-                    </div>
-                  ))}
-
-                  {localUser !== undefined &&
-                    localUser.getStreamManager() !== undefined && (
-                      <div
-                        className="OT_root OT_publisher custom-class"
-                        style={chatDisplay}
-                      >
-                        <div
-                          className="OT_root OT_publisher custom-class"
-                          style={chatDisplay}
-                        >
-                          <Ratio ratio={16 / 9}>
-                            <MiniChat
-                              user={localUser}
-                              chatDisplay={this.state.chatDisplay}
-                              close={this.toggleChat}
-                              messageReceived={this.checkNotification}
-                              roomID={this.props.roomName}
-                            />
-                          </Ratio>
-                        </div>
-                      </div>
-                    )}
                 </div>
-                <ToolbarComponent
-                  sessionId={mySessionId}
-                  user={localUser}
-                  showNotification={this.state.messageReceived}
-                  camStatusChanged={this.camStatusChanged}
-                  micStatusChanged={this.micStatusChanged}
-                  screenShare={this.screenShare}
-                  stopScreenShare={this.stopScreenShare}
-                  toggleFullscreen={this.toggleFullscreen}
-                  switchCamera={this.switchCamera}
-                  leaveSession={this.leaveSession}
-                  toggleChat={this.toggleChat}
-                />
-              </div>
-            </div>
-            <div className="w-full w-1/3 bg-videochatbg">
-              <div className=" font-bold text-sm text-left p-2">
-                <div className="flex w-full">
-                  <span className="px-2 py-1 text-sm font-bold text-blue-900  rounded-md ">
-                    {this.props.roomName} 대화상대{' '}
-                    {this.state.subscribers.length + 1}명
-                  </span>
-                  <button className="ml-auto p-1 text-sm font-medium text-blue-900 bg-blue-100 border border-transparent rounded-md hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500">
-                    방 공유
-                  </button>
-                </div>
-                <div className="text-sm  bg-white h-40 overflow-y-auto">
-                  <div className="flex items-center w-full bg-white">
-                    <IconButton
-                      className="inline-flex justify-center item  s-center group"
-                      aria-haspopup="true"
-                    >
-                      <div className="flex flex-row items-center text-center">
-                        <div className="flex items-center justify-center h-10 w-10 text-black rounded-2xl bg-primary300 font-bold uppercase text-xl">
-                          <span>
-                            {localUser ? localUser.nickname.substr(0, 1) : null}
-                          </span>
+                <div id="container" className="flex flex-col h-full w-full">
+                  <div
+                    id="layout"
+                    className="bounds2 "
+                    onDoubleClick={this.handleDblClick}
+                  >
+                    {localUser !== undefined &&
+                      localUser.getStreamManager() !== undefined && (
+                        <div className="custom-class " id="localUser">
+                          <StreamComponent
+                            user={localUser}
+                            handleNickname={this.nicknameChanged}
+                          />
                         </div>
+                      )}
+                    {this.state.subscribers.map((sub, i) => (
+                      <div key={i} className="custom-class" id="remoteUsers">
+                        <StreamComponent
+                          user={sub}
+                          streamId={sub.streamManager.stream.streamId}
+                        />
                       </div>
-                    </IconButton>
-
-                    <div className="text-xl block overflow-hidden text-ellipsis whitespace-nowrap ">
-                      {localUser ? localUser.nickname : null}
-                    </div>
-                    <div
-                      className="ml-auto font-bold text-primarytext mr-1"
-                      onClick={() => this.setOpenModal()}
-                    >
-                      이름 변경 {this.props.user.location}
-                    </div>
-                    <div className=" mr-2">
-                      {localUser && localUser.audioActive ? (
-                        <span>
-                          <Mic />
-                        </span>
-                      ) : (
-                        <span>
-                          <MicOff />
-                        </span>
-                      )}
-                      {localUser && localUser.videoActive ? (
-                        <span>
-                          <Videocam />
-                        </span>
-                      ) : (
-                        <span>
-                          <VideocamOff />
-                        </span>
-                      )}
-                    </div>
+                    ))}
                   </div>
-                  {this.state.subscribers.map((user, index) => (
-                    <div className="flex items-center w-full bg-white">
-                      <IconButton
-                        className="inline-flex justify-center item  s-center group"
-                        aria-haspopup="true"
-                      >
-                        <div className="flex flex-row items-center text-center">
-                          <div className="flex items-center justify-center h-10 w-10 text-black rounded-2xl bg-primary300 font-bold uppercase text-xl">
-                            <span>
-                              {user.userOBJ
-                                ? user.nickname.substr(0, 1)
-                                : user.nickname.substr(0, 1)}
-                            </span>
-                          </div>
+                  <div>
+                    {localUser !== undefined &&
+                      localUser.getStreamManager() !== undefined && (
+                        <div style={chatDisplay}>
+                          <MiniChat
+                            user={localUser}
+                            chatDisplay={this.state.chatDisplay}
+                            messageReceived={this.checkNotification}
+                            roomID={this.props.roomName}
+                          />
                         </div>
-                      </IconButton>
-
-                      <div className="text-xl block overflow-hidden text-ellipsis whitespace-nowrap ">
-                        {user.userOBJ ? user.nickname : user.nickname}
-                      </div>
-                      <div className="ml-auto mr-2">
-                        {user && user.audioActive ? (
-                          <span>
-                            <Mic />
-                          </span>
-                        ) : (
-                          <span>
-                            <MicOff />
-                          </span>
-                        )}
-                        {user && user.videoActive ? (
-                          <span>
-                            <Videocam />
-                          </span>
-                        ) : (
-                          <span>
-                            <VideocamOff />
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div className="pt-1">
-                  <Chat user={localUser} roomID={this.props.roomName}></Chat>
+                      )}
+                  </div>
+                  <MobileToolbar
+                    sessionId={mySessionId}
+                    user={localUser}
+                    showNotification={this.state.messageReceived}
+                    chatCount={this.state.chatCount}
+                    camStatusChanged={this.camStatusChanged}
+                    micStatusChanged={this.micStatusChanged}
+                    screenShare={this.screenShare}
+                    stopScreenShare={this.stopScreenShare}
+                    toggleFullscreen={this.toggleFullscreen}
+                    toggleUser={this.toggleUser}
+                    switchCamera={this.switchCamera}
+                    leaveSession={this.leaveSession}
+                    toggleChat={this.toggleChat}
+                  />
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </>
     )
   }
 
@@ -1067,4 +890,4 @@ class VideoRoom extends Component {
     })
   }
 }
-export default VideoRoom
+export default MobileVideoRoom

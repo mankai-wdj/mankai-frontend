@@ -9,8 +9,8 @@ import Echo from 'laravel-echo'
 import Pusher from 'pusher-js'
 import * as React from 'react'
 import { useTranslation } from 'react-i18next'
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 import RoomInviteUserModal from './RoomInviteUserModal'
 import { useDispatch, useSelector } from 'react-redux'
 import { getMessage } from '../../store/modules/getMessage'
@@ -107,12 +107,13 @@ function ChatContainer() {
       })
   }
 
-const speechModal = () => {
-  toast(<div>
-    <div>메세지를 보낼까요?</div>
-
-    </div>);
-}
+  const speechModal = () => {
+    toast(
+      <div>
+        <div>메세지를 보낼까요?</div>
+      </div>
+    )
+  }
 
   useEffect(() => {
     if (sendSpeech) {
@@ -173,8 +174,7 @@ const speechModal = () => {
           .then(res => {
             setSpeech(res.data)
             // speechModal();
-            setSendSpeech(true);
-
+            setSendSpeech(true)
           })
           .catch(err => {
             console.log(err)
@@ -207,7 +207,7 @@ const speechModal = () => {
       const channel = window.Echo.channel('room.' + currentChatRoom.id) // 채팅방 참여
         .listen('.send-message', e => {
           // e.message.read_users = "[]";
-          console.log(e.message);
+          console.log(e.message)
           dispatch({
             type: 'ADD_MESSAGE_REVERSE',
             payload: {
@@ -412,7 +412,6 @@ const speechModal = () => {
         })
         .then(res => {
           console.log(res.data)
-          changeVideo()
         })
     } else {
       axios
@@ -476,7 +475,6 @@ const speechModal = () => {
     }
   }, [currentChatRoom, currentUser])
   return (
-    
     <div className="w-full overflow-hidden">
       {currentChatRoom ? (
         <div className=" w-full ">
