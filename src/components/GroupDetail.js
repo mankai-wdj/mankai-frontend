@@ -85,7 +85,7 @@ function GroupDetail({match}) {
         })
     }
     const settingClick = (num) =>{
-        setSettingOption(num)
+    setSettingOption(num)
     } 
 
     useEffect(()=>{

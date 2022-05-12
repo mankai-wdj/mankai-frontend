@@ -71,7 +71,6 @@ function BoardMemoEditor ({content,memoId,memoTitle,modalClose}){
 
     return(
         <div>
-            
             <textarea ref={txtArea} defaultValue={content}/>
             <div className="flex justify-center">
             <button className="mt-3 p-2 rounded-xl bg-blue-200" onClick={PostUpload}><EditTwoToneIcon sx={{ mb:0.8, width:50  }}/>수정하기</button>

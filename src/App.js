@@ -35,10 +35,12 @@ import './css/style.scss'
 import Profile from './components/MyPage/Profile'
 import YouPage from './components/MyPage/YouPage'
 import BoardMemoWindow from './components/MyPage/BoardMemoWindow'
+import BoardMemoEditWindow from './components/MyPage/BoardMemoEditWindow'
 import GroupDetail from './components/GroupDetail'
 import firebase from 'firebase/app'
 import 'firebase/messaging'
-axios.defaults.baseURL = 'http://api.mankai.shop/'
+// axios.defaults.baseURL = 'http://api.mankai.shop/'
+axios.defaults.baseURL = 'http://localhost:8000/'
 axios.defaults.headers.post['Content-Type'] = 'application/json'
 axios.defaults.headers.post['Accept'] = 'application/json'
 axios.defaults.withCredentials = true
@@ -221,6 +223,7 @@ function App() {
         {/* <Route exact path="/post_memo" component={PostMemo}></Route>
           <Route exact path="/my_memo_edit/:id" component={MyMemoEdit}></Route> */}
         <Route path="/boardmemo/:memo_id" component={BoardMemoWindow}></Route>
+        <Route path="/boardmemoedit/:memo_id" component={BoardMemoEditWindow}></Route>
 
         <Route exact path="/youProfile" component={YouPage}></Route>
 

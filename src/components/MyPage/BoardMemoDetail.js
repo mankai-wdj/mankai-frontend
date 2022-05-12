@@ -82,11 +82,7 @@ function BoardMemoDetail(props){
   </button>
 </div>
 </div> 
-
                  </Box>
-
-
-
             </Modal>
             // ?! 모달이 정가운데 띄워지게 해보자.
     )

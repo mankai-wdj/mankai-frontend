@@ -31,7 +31,8 @@ function BoardMemoWindow({match}){
            hideToolbar
            height="500" 
            defaultValue={contentText}/>
-           :null
+           :
+           null
             }
         </div>
         
