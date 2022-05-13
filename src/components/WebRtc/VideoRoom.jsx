@@ -18,13 +18,11 @@ import VideocamOff from '@mui/icons-material/VideocamOff'
 
 import Ratio from 'react-ratio/lib/Ratio'
 import VideoOptionModal from './VideoOptionModal'
+import SpeechRecognition, {
+  useSpeechRecognition,
+} from 'react-speech-recognition'
 var localUser = new UserModel()
 const RoomAxios = axios.create()
-const SpeechRecognition =
-  window.SpeechRecognition || window.webkitSpeechRecognition
-const mic = new SpeechRecognition()
-mic.continuous = true
-mic.interimResults = false
 
 class VideoRoom extends Component {
   constructor(props) {
@@ -56,7 +54,7 @@ class VideoRoom extends Component {
       speaking: false,
       tokenValue: undefined,
       currentPage: 1,
-      subscribersPage: 1,
+      subscribersPage: 3,
       openVideoOptionModal: false,
       videoStream: undefined,
     }
@@ -120,7 +118,6 @@ class VideoRoom extends Component {
     window.addEventListener('beforeunload', this.onbeforeunload)
     window.addEventListener('resize', this.updateLayout)
     window.addEventListener('resize', this.checkSize)
-    mic.lang = this.state.langCode
   }
 
   componentWillUnmount() {
@@ -130,7 +127,11 @@ class VideoRoom extends Component {
 
     this.leaveSession()
   }
-
+  componentWillReceiveProps(subtitle) {
+    if (this.state.session) {
+      localUser.setCaption(this.props.subtitle)
+    }
+  }
   onbeforeunload(event) {
     this.leaveSession()
   }
@@ -189,6 +190,7 @@ class VideoRoom extends Component {
     this.setState({
       currentPage: Number(event),
     })
+    this.updateLayout()
   }
 
   handlePage(event) {
@@ -203,36 +205,9 @@ class VideoRoom extends Component {
       })
       console.log('+')
     }
+    this.updateLayout()
   }
 
-  screenConnectToSession() {
-    if (this.props.token !== undefined) {
-      console.log('token received: ', this.props.token)
-      this.connect(this.props.token)
-    } else {
-      this.getToken()
-        .then(token => {
-          console.log(token)
-          this.ScreenConnect(token)
-        })
-        .catch(error => {
-          if (this.props.error) {
-            this.props.error({
-              error: error.error,
-              messgae: error.message,
-              code: error.code,
-              status: error.status,
-            })
-          }
-          console.log(
-            'There was an error getting the token:',
-            error.code,
-            error.message
-          )
-          alert('There was an error getting the token:', error.message)
-        })
-    }
-  }
   connect(token) {
     this.state.session
       .connect(token, {
@@ -300,6 +275,35 @@ class VideoRoom extends Component {
         })
     })
   }
+
+  screenConnectToSession() {
+    if (this.props.token !== undefined) {
+      console.log('token received: ', this.props.token)
+      this.connect(this.props.token)
+    } else {
+      this.getToken()
+        .then(token => {
+          console.log(token)
+          this.ScreenConnect(token)
+        })
+        .catch(error => {
+          if (this.props.error) {
+            this.props.error({
+              error: error.error,
+              messgae: error.message,
+              code: error.code,
+              status: error.status,
+            })
+          }
+          console.log(
+            'There was an error getting the token:',
+            error.code,
+            error.message
+          )
+          alert('There was an error getting the token:', error.message)
+        })
+    }
+  }
   async connectWebCam() {
     var devices = await this.OV.getDevices()
     var videoDevices = devices.filter(device => device.kind === 'videoinput')
@@ -317,7 +321,10 @@ class VideoRoom extends Component {
     publisher.on('publisherStartSpeaking', event => {
       if (this.state.speaking == false) {
         try {
-          mic.start()
+          // SpeechRecognition.startListening({
+          //   continuous: true,
+          //   language: this.state.langCode,
+          // })
           this.setState({ speaking: true })
         } catch {}
       }
@@ -327,12 +334,13 @@ class VideoRoom extends Component {
     })
 
     publisher.on('publisherStopSpeaking', event => {
-      if (this.state.speaking == true) {
-        try {
-          mic.stop()
-          this.setState({ speaking: false })
-        } catch {}
+      // SpeechRecognition.stopListening()
+      if (this.props.subtitle.length >= 50) {
+        this.props.resetTranscript()
       }
+      this.sendSignalUserChanged({ caption: this.props.subtitle })
+      this.setState({ speaking: false })
+
       console.log('로컬 유저 말안함 ㅎ')
       localUser.setSpeaking(false)
       this.sendSignalUserChanged({ speaking: false })
@@ -352,24 +360,6 @@ class VideoRoom extends Component {
       })
     }
 
-    mic.onstart = () => {
-      console.log('mics on')
-      this.setState({ speaking: true })
-    }
-    mic.onend = () => {
-      this.setState({ speaking: false })
-    }
-    mic.onresult = event => {
-      const transcript = Array.from(event.results)
-        .map(result => result[0])
-        .map(result => result.transcript)
-        .join('')
-      this.sendSignalUserChanged({ caption: transcript })
-      localUser.setCaption(transcript)
-      mic.onerror = event => {
-        console.log(event.error)
-      }
-    }
     localUser.setNickname(this.state.myUserName)
     localUser.setUserOBJ(this.props.user)
     localUser.setConnectionId(this.state.session.connection.connectionId)
@@ -435,7 +425,7 @@ class VideoRoom extends Component {
   leaveSession() {
     const mySession = this.state.session
     try {
-      mic.stop()
+      SpeechRecognition.startListening()
     } catch {}
     if (mySession) {
       mySession.disconnect()
@@ -759,19 +749,6 @@ class VideoRoom extends Component {
     isScreenShared =
       this.state.subscribers.some(user => user.isScreenShareActive()) ||
       localUser.isScreenShareActive()
-    // const openviduLayoutOptions = {
-    //   maxRatio: 3 / 2,
-    //   minRatio: 9 / 16,
-    //   fixedRatio: isScreenShared,
-    //   bigClass: 'OV_big',
-    //   bigPercentage: 0.6,
-    //   bigFixedRatio: false,
-    //   bigMaxRatio: 3 / 2,
-    //   bigMinRatio: 9 / 16,
-    //   bigFirst: true,
-    //   animate: true,
-    // }
-    // this.layout.setLayoutOptions(openviduLayoutOptions)
     this.updateLayout()
   }
 

@@ -9,11 +9,44 @@ import {
   isMobile,
 } from 'react-device-detect'
 import MobileVideoRoom from './MobileVideoRoom'
+import SpeechRecognition, {
+  useSpeechRecognition,
+} from 'react-speech-recognition'
+import { useEffect, useState } from 'react'
 function WaitRoom(props) {
   const user = useSelector(state => state.Reducers.user)
   const loading = useSelector(state => state.Reducers.user_pending)
   const roomName = props.match.params.roomID
   const handle = useFullScreenHandle()
+  const [subtitle, setSubtitle] = useState(null)
+  const {
+    transcript,
+    listening,
+    resetTranscript,
+    browserSupportsSpeechRecognition,
+    finalTranscript,
+  } = useSpeechRecognition()
+
+  useEffect(() => {
+    if (listening && transcript) {
+      console.log('인식 중 ㅋ' + transcript)
+      setSubtitle(transcript)
+    }
+  }, [transcript, listening])
+  useEffect(() => {
+    if (subtitle) {
+      console.log('인식 중 전달')
+    }
+  }, [subtitle])
+  useEffect(() => {
+    if (user) {
+      SpeechRecognition.startListening({
+        continuous: true,
+        language: user.country,
+      })
+    }
+    SpeechRecognition.startListening({ continuous: true, language: 'ko' })
+  }, [user])
   return (
     <div>
       {user && !loading ? (
@@ -24,6 +57,8 @@ function WaitRoom(props) {
               roomName={roomName}
               handle={handle}
               location={user.country}
+              subtitle={subtitle}
+              resetTranscript={resetTranscript}
             ></VideoRoom>
           </BrowserView>
           <MobileView>
