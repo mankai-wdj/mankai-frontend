@@ -18,11 +18,17 @@ import VideocamOff from '@mui/icons-material/VideocamOff'
 
 import Ratio from 'react-ratio/lib/Ratio'
 import VideoOptionModal from './VideoOptionModal'
-import SpeechRecognition, {
-  useSpeechRecognition,
-} from 'react-speech-recognition'
 var localUser = new UserModel()
 const RoomAxios = axios.create()
+const SpeechRecognition =
+  window.SpeechRecognition ||
+  window.webkitSpeechRecognition ||
+  window.mozSpeechRecognition ||
+  window.msSpeechRecognition ||
+  window.oSpeechRecognition
+const mic = new SpeechRecognition()
+mic.continuous = true
+mic.interimResults = false
 
 class VideoRoom extends Component {
   constructor(props) {
@@ -57,6 +63,7 @@ class VideoRoom extends Component {
       subscribersPage: 3,
       openVideoOptionModal: false,
       videoStream: undefined,
+      recoding: false,
     }
     this.joinSession = this.joinSession.bind(this)
     this.leaveSession = this.leaveSession.bind(this)
@@ -81,6 +88,11 @@ class VideoRoom extends Component {
     this.closeOptionModal = this.closeOptionModal.bind(this)
     this.closeOpenModal = this.closeOpenModal.bind(this)
     this.getPermissions = this.getPermissions.bind(this)
+    this.onSpeak = this.onSpeak.bind(this)
+    this.micError = this.micError.bind(this)
+    this.micEnd = this.micEnd.bind(this)
+    this.onSpeech = this.onSpeech.bind(this)
+    this.onSpeechEnd = this.onSpeechEnd.bind(this)
   }
 
   componentDidMount() {
@@ -118,18 +130,33 @@ class VideoRoom extends Component {
     window.addEventListener('beforeunload', this.onbeforeunload)
     window.addEventListener('resize', this.updateLayout)
     window.addEventListener('resize', this.checkSize)
+    mic.addEventListener('result', this.onSpeak)
+    mic.addEventListener('error', this.micError)
+    mic.addEventListener('end', this.micEnd)
+    mic.addEventListener('speechstart', this.onSpeech)
+    mic.addEventListener('speechend', this.onSpeechEnd)
+    mic.addEventListener('soundend', this.onSpeechEnd)
+    mic.lang = this.state.langCode
   }
 
   componentWillUnmount() {
     window.removeEventListener('beforeunload', this.onbeforeunload)
     window.removeEventListener('resize', this.updateLayout)
     window.removeEventListener('resize', this.checkSize)
-
+    try {
+      mic.stop()
+    } catch {
+      console.log('마이크 끄기 에러')
+    }
     this.leaveSession()
   }
   componentWillReceiveProps(subtitle) {
     if (this.state.session) {
       localUser.setCaption(this.props.subtitle)
+      // if (this.props.subtilte && this.props.subtitle.length >= 5) {
+      //   console.log('삭제')
+      //   this.props.resetTranscript()
+      // }
     }
   }
   onbeforeunload(event) {
@@ -156,6 +183,43 @@ class VideoRoom extends Component {
     )
   }
 
+  onSpeak(e) {
+    var results = e.results
+    this.sendSignalUserChanged({
+      caption: e.results[e.results.length - 1][0].transcript,
+    })
+    localUser.setCaption(e.results[e.results.length - 1][0].transcript)
+  }
+
+  micError(e) {
+    var results = e
+    console.log(e.results)
+  }
+  micEnd(e) {
+    var results = e
+    console.log(results)
+  }
+  onSpeech() {
+    if (this.state.speaking == false) {
+      try {
+        this.setState({ speaking: true })
+      } catch {}
+    }
+
+    console.log('로컬 유저')
+    localUser.setSpeaking(true)
+    this.sendSignalUserChanged({ speaking: true })
+  }
+  onSpeechEnd() {
+    if (this.state.speaking == true) {
+      try {
+        this.setState({ speaking: false })
+      } catch {}
+    }
+    console.log('로컬 유저 말안함 ㅎ')
+    localUser.setSpeaking(false)
+    this.sendSignalUserChanged({ speaking: false })
+  }
   connectToSession() {
     if (this.props.token !== undefined) {
       console.log('token received: ', this.props.token)
@@ -268,6 +332,9 @@ class VideoRoom extends Component {
         .getUserMedia({ video: true, audio: true })
         .then(stream => {
           this.joinSession()
+          try {
+            mic.start()
+          } catch {}
         })
         .catch(err => {
           alert('카메라나 오디오 권한을 확인해주세요 게스트모드로 접근')
@@ -321,31 +388,25 @@ class VideoRoom extends Component {
     publisher.on('publisherStartSpeaking', event => {
       if (this.state.speaking == false) {
         try {
-          // SpeechRecognition.startListening({
-          //   continuous: true,
-          //   language: this.state.langCode,
-          // })
           this.setState({ speaking: true })
         } catch {}
       }
+
       console.log('로컬 유저')
       localUser.setSpeaking(true)
       this.sendSignalUserChanged({ speaking: true })
     })
 
     publisher.on('publisherStopSpeaking', event => {
-      // SpeechRecognition.stopListening()
-      if (this.props.subtitle.length >= 50) {
-        this.props.resetTranscript()
+      if (this.state.speaking == true) {
+        try {
+          this.setState({ speaking: false })
+        } catch {}
       }
-      this.sendSignalUserChanged({ caption: this.props.subtitle })
-      this.setState({ speaking: false })
-
       console.log('로컬 유저 말안함 ㅎ')
       localUser.setSpeaking(false)
       this.sendSignalUserChanged({ speaking: false })
     })
-
     if (this.state.session.capabilities.publish) {
       publisher.on('accessAllowed', () => {
         let transcript = null
@@ -358,6 +419,16 @@ class VideoRoom extends Component {
           }
         })
       })
+    }
+    mic.onstart = () => {
+      console.log('mics on')
+    }
+    mic.onend = () => {
+      if (localUser.isAudioActive() == true) {
+        try {
+          mic.start()
+        } catch {}
+      }
     }
 
     localUser.setNickname(this.state.myUserName)
@@ -424,11 +495,12 @@ class VideoRoom extends Component {
 
   leaveSession() {
     const mySession = this.state.session
-    try {
-      SpeechRecognition.startListening()
-    } catch {}
+
     if (mySession) {
       mySession.disconnect()
+      try {
+        mic.stop()
+      } catch {}
     }
     if (this.state.screenSession) {
       this.state.screenSession.disconnect()
@@ -459,6 +531,18 @@ class VideoRoom extends Component {
     localUser.getStreamManager().publishAudio(localUser.isAudioActive())
     this.sendSignalUserChanged({ isAudioActive: localUser.isAudioActive() })
     this.setState({ localUser: localUser })
+    console.log(localUser.isAudioActive())
+    if (localUser.isAudioActive() == false) {
+      try {
+        mic.stop()
+        console.log('인식 종료')
+      } catch {}
+    } else {
+      try {
+        mic.start()
+        console.log('인식 다시 ')
+      } catch {}
+    }
   }
 
   nicknameChanged(nickname) {
