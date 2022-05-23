@@ -17,10 +17,15 @@ import Videocam from '@mui/icons-material/Videocam'
 import VideocamOff from '@mui/icons-material/VideocamOff'
 
 import Ratio from 'react-ratio/lib/Ratio'
+import VideoOptionModal from './VideoOptionModal'
 var localUser = new UserModel()
 const RoomAxios = axios.create()
 const SpeechRecognition =
-  window.SpeechRecognition || window.webkitSpeechRecognition
+  window.SpeechRecognition ||
+  window.webkitSpeechRecognition ||
+  window.mozSpeechRecognition ||
+  window.msSpeechRecognition ||
+  window.oSpeechRecognition
 const mic = new SpeechRecognition()
 mic.continuous = true
 mic.interimResults = false
@@ -54,13 +59,19 @@ class VideoRoom extends Component {
       langCode: userInfo.country,
       speaking: false,
       tokenValue: undefined,
+      currentPage: 1,
+      subscribersPage: 3,
+      openVideoOptionModal: false,
+      videoStream: undefined,
+      recoding: false,
     }
     this.joinSession = this.joinSession.bind(this)
     this.leaveSession = this.leaveSession.bind(this)
     this.onbeforeunload = this.onbeforeunload.bind(this)
     this.updateLayout = this.updateLayout.bind(this)
     this.camStatusChanged = this.camStatusChanged.bind(this)
-
+    this.handlePaginate = this.handlePaginate.bind(this)
+    this.handlePage = this.handlePage.bind(this)
     this.micStatusChanged = this.micStatusChanged.bind(this)
     this.captionTranslate = this.captionTranslate.bind(this)
     this.nicknameChanged = this.nicknameChanged.bind(this)
@@ -73,8 +84,15 @@ class VideoRoom extends Component {
     this.checkNotification = this.checkNotification.bind(this)
     this.checkSize = this.checkSize.bind(this)
     this.setOpenModal = this.setOpenModal.bind(this)
+    this.setOptionModal = this.setOptionModal.bind(this)
+    this.closeOptionModal = this.closeOptionModal.bind(this)
     this.closeOpenModal = this.closeOpenModal.bind(this)
     this.getPermissions = this.getPermissions.bind(this)
+    this.onSpeak = this.onSpeak.bind(this)
+    this.micError = this.micError.bind(this)
+    this.micEnd = this.micEnd.bind(this)
+    this.onSpeech = this.onSpeech.bind(this)
+    this.onSpeechEnd = this.onSpeechEnd.bind(this)
   }
 
   componentDidMount() {
@@ -101,17 +119,23 @@ class VideoRoom extends Component {
       bigMinRatio: 9 / 16, // The widest ratio to use for the big elements (default 16x9)
       bigFirst: true, // Whether to place the big one in the top left (true) or bottom right (false).
       // You can also pass 'column' or 'row' to change whether big is first when you are in a row (bottom) or a column (right) layout
-      animate: true, // Whether you want to animate the transitions using jQuery (not recommended, use CSS transitions instead)
+      animate: false, // Whether you want to animate the transitions using jQuery (not recommended, use CSS transitions instead)
       window: window, // Lets you pass in your own window object which should be the same window that the element is in
       ignoreClass: 'OT_ignore', // Elements with this class will be ignored and not positioned. This lets you do things like picture-in-picture
       onLayout: null, // A
     }
     this.layoutContainer = document.getElementById('layout')
     this.layout = this.initLayoutContainer(this.layoutContainer, options).layout
+    this.getPermissions()
     window.addEventListener('beforeunload', this.onbeforeunload)
     window.addEventListener('resize', this.updateLayout)
     window.addEventListener('resize', this.checkSize)
-    this.getPermissions()
+    mic.addEventListener('result', this.onSpeak)
+    mic.addEventListener('error', this.micError)
+    mic.addEventListener('end', this.micEnd)
+    mic.addEventListener('speechstart', this.onSpeech)
+    mic.addEventListener('speechend', this.onSpeechEnd)
+    mic.addEventListener('soundend', this.onSpeechEnd)
     mic.lang = this.state.langCode
   }
 
@@ -119,10 +143,22 @@ class VideoRoom extends Component {
     window.removeEventListener('beforeunload', this.onbeforeunload)
     window.removeEventListener('resize', this.updateLayout)
     window.removeEventListener('resize', this.checkSize)
-
+    try {
+      mic.stop()
+    } catch {
+      console.log('마이크 끄기 에러')
+    }
     this.leaveSession()
   }
-
+  componentWillReceiveProps(subtitle) {
+    if (this.state.session) {
+      localUser.setCaption(this.props.subtitle)
+      // if (this.props.subtilte && this.props.subtitle.length >= 5) {
+      //   console.log('삭제')
+      //   this.props.resetTranscript()
+      // }
+    }
+  }
   onbeforeunload(event) {
     this.leaveSession()
   }
@@ -147,6 +183,43 @@ class VideoRoom extends Component {
     )
   }
 
+  onSpeak(e) {
+    var results = e.results
+    this.sendSignalUserChanged({
+      caption: e.results[e.results.length - 1][0].transcript,
+    })
+    localUser.setCaption(e.results[e.results.length - 1][0].transcript)
+  }
+
+  micError(e) {
+    var results = e
+    console.log(e.results)
+  }
+  micEnd(e) {
+    var results = e
+    console.log(results)
+  }
+  onSpeech() {
+    if (this.state.speaking == false) {
+      try {
+        this.setState({ speaking: true })
+      } catch {}
+    }
+
+    console.log('로컬 유저')
+    localUser.setSpeaking(true)
+    this.sendSignalUserChanged({ speaking: true })
+  }
+  onSpeechEnd() {
+    if (this.state.speaking == true) {
+      try {
+        this.setState({ speaking: false })
+      } catch {}
+    }
+    console.log('로컬 유저 말안함 ㅎ')
+    localUser.setSpeaking(false)
+    this.sendSignalUserChanged({ speaking: false })
+  }
   connectToSession() {
     if (this.props.token !== undefined) {
       console.log('token received: ', this.props.token)
@@ -177,34 +250,28 @@ class VideoRoom extends Component {
     }
   }
 
-  screenConnectToSession() {
-    if (this.props.token !== undefined) {
-      console.log('token received: ', this.props.token)
-      this.connect(this.props.token)
-    } else {
-      this.getToken()
-        .then(token => {
-          console.log(token)
-          this.ScreenConnect(token)
-        })
-        .catch(error => {
-          if (this.props.error) {
-            this.props.error({
-              error: error.error,
-              messgae: error.message,
-              code: error.code,
-              status: error.status,
-            })
-          }
-          console.log(
-            'There was an error getting the token:',
-            error.code,
-            error.message
-          )
-          alert('There was an error getting the token:', error.message)
-        })
-    }
+  handlePaginate(event) {
+    this.setState({
+      currentPage: Number(event),
+    })
+    this.updateLayout()
   }
+
+  handlePage(event) {
+    if (event == 'minus') {
+      this.setState({
+        currentPage: this.state.currentPage - 1,
+      })
+      console.log('-')
+    } else {
+      this.setState({
+        currentPage: this.state.currentPage + 1,
+      })
+      console.log('+')
+    }
+    this.updateLayout()
+  }
+
   connect(token) {
     this.state.session
       .connect(token, {
@@ -265,6 +332,9 @@ class VideoRoom extends Component {
         .getUserMedia({ video: true, audio: true })
         .then(stream => {
           this.joinSession()
+          try {
+            mic.start()
+          } catch {}
         })
         .catch(err => {
           alert('카메라나 오디오 권한을 확인해주세요 게스트모드로 접근')
@@ -272,9 +342,39 @@ class VideoRoom extends Component {
         })
     })
   }
+
+  screenConnectToSession() {
+    if (this.props.token !== undefined) {
+      console.log('token received: ', this.props.token)
+      this.connect(this.props.token)
+    } else {
+      this.getToken()
+        .then(token => {
+          console.log(token)
+          this.ScreenConnect(token)
+        })
+        .catch(error => {
+          if (this.props.error) {
+            this.props.error({
+              error: error.error,
+              messgae: error.message,
+              code: error.code,
+              status: error.status,
+            })
+          }
+          console.log(
+            'There was an error getting the token:',
+            error.code,
+            error.message
+          )
+          alert('There was an error getting the token:', error.message)
+        })
+    }
+  }
   async connectWebCam() {
     var devices = await this.OV.getDevices()
     var videoDevices = devices.filter(device => device.kind === 'videoinput')
+    this.setState({ videoStream: videoDevices[0] })
     let publisher = this.OV.initPublisher(undefined, {
       audioSource: undefined,
       videoSource: videoDevices[0].deviceId,
@@ -288,10 +388,10 @@ class VideoRoom extends Component {
     publisher.on('publisherStartSpeaking', event => {
       if (this.state.speaking == false) {
         try {
-          mic.start()
           this.setState({ speaking: true })
         } catch {}
       }
+
       console.log('로컬 유저')
       localUser.setSpeaking(true)
       this.sendSignalUserChanged({ speaking: true })
@@ -300,7 +400,6 @@ class VideoRoom extends Component {
     publisher.on('publisherStopSpeaking', event => {
       if (this.state.speaking == true) {
         try {
-          mic.stop()
           this.setState({ speaking: false })
         } catch {}
       }
@@ -308,7 +407,6 @@ class VideoRoom extends Component {
       localUser.setSpeaking(false)
       this.sendSignalUserChanged({ speaking: false })
     })
-
     if (this.state.session.capabilities.publish) {
       publisher.on('accessAllowed', () => {
         let transcript = null
@@ -322,25 +420,17 @@ class VideoRoom extends Component {
         })
       })
     }
-
     mic.onstart = () => {
       console.log('mics on')
-      this.setState({ speaking: true })
     }
     mic.onend = () => {
-      this.setState({ speaking: false })
-    }
-    mic.onresult = event => {
-      const transcript = Array.from(event.results)
-        .map(result => result[0])
-        .map(result => result.transcript)
-        .join('')
-      this.sendSignalUserChanged({ caption: transcript })
-      localUser.setCaption(transcript)
-      mic.onerror = event => {
-        console.log(event.error)
+      if (localUser.isAudioActive() == true) {
+        try {
+          mic.start()
+        } catch {}
       }
     }
+
     localUser.setNickname(this.state.myUserName)
     localUser.setUserOBJ(this.props.user)
     localUser.setConnectionId(this.state.session.connection.connectionId)
@@ -405,11 +495,12 @@ class VideoRoom extends Component {
 
   leaveSession() {
     const mySession = this.state.session
-    try {
-      mic.stop()
-    } catch {}
+
     if (mySession) {
       mySession.disconnect()
+      try {
+        mic.stop()
+      } catch {}
     }
     if (this.state.screenSession) {
       this.state.screenSession.disconnect()
@@ -440,6 +531,18 @@ class VideoRoom extends Component {
     localUser.getStreamManager().publishAudio(localUser.isAudioActive())
     this.sendSignalUserChanged({ isAudioActive: localUser.isAudioActive() })
     this.setState({ localUser: localUser })
+    console.log(localUser.isAudioActive())
+    if (localUser.isAudioActive() == false) {
+      try {
+        mic.stop()
+        console.log('인식 종료')
+      } catch {}
+    } else {
+      try {
+        mic.start()
+        console.log('인식 다시 ')
+      } catch {}
+    }
   }
 
   nicknameChanged(nickname) {
@@ -556,6 +659,12 @@ class VideoRoom extends Component {
   closeOpenModal = () => {
     this.setState({ openModal: false })
   }
+  setOptionModal = () => {
+    this.setState({ openVideoOptionModal: true })
+  }
+  closeOptionModal = () => {
+    this.setState({ openVideoOptionModal: false })
+  }
   sendSignalUserChanged(data) {
     const signalOptions = {
       data: JSON.stringify(data),
@@ -595,39 +704,29 @@ class VideoRoom extends Component {
     }
   }
 
-  async switchCamera() {
+  async switchCamera(videoDevice, audioDevice) {
     try {
-      const devices = await this.OV.getDevices()
-      var videoDevices = devices.filter(device => device.kind === 'videoinput')
+      this.setState({ videoStream: videoDevice })
+      // Creating a new publisher with specific videoSource
+      // In mobile devices the default and first camera is the front one
+      var newPublisher = this.OV.initPublisher(undefined, {
+        audioSource: undefined,
+        videoSource: videoDevice,
+        publishAudio: localUser.isAudioActive(),
+        publishVideo: localUser.isVideoActive(),
+        mirror: false,
+      })
 
-      if (videoDevices && videoDevices.length > 1) {
-        var newVideoDevice = videoDevices.filter(
-          device => device.deviceId !== this.state.currentVideoDevice.deviceId
-        )
-
-        if (newVideoDevice.length > 0) {
-          // Creating a new publisher with specific videoSource
-          // In mobile devices the default and first camera is the front one
-          var newPublisher = this.OV.initPublisher(undefined, {
-            audioSource: undefined,
-            videoSource: newVideoDevice[0].deviceId,
-            publishAudio: localUser.isAudioActive(),
-            publishVideo: localUser.isVideoActive(),
-            mirror: false,
-          })
-
-          //newPublisher.once("accessAllowed", () => {
-          await this.state.session.unpublish(
-            this.state.localUser.getStreamManager()
-          )
-          await this.state.session.publish(newPublisher)
-          this.state.localUser.setStreamManager(newPublisher)
-          this.setState({
-            currentVideoDevice: newVideoDevice,
-            localUser: localUser,
-          })
-        }
-      }
+      //newPublisher.once("accessAllowed", () => {
+      await this.state.session.unpublish(
+        this.state.localUser.getStreamManager()
+      )
+      await this.state.session.publish(newPublisher)
+      this.state.localUser.setStreamManager(newPublisher)
+      this.setState({
+        currentVideoDevice: videoDevice,
+        localUser: localUser,
+      })
     } catch (e) {
       console.error(e)
     }
@@ -693,6 +792,7 @@ class VideoRoom extends Component {
         .publish(localUser.getScreenStreamManager())
         .then(() => {
           localUser.setScreenShareActive(true)
+          this.layout()
           this.setState({ localUser: localUser }, () => {
             this.sendSignalUserChanged({
               isScreenShareActive: localUser.isScreenShareActive(),
@@ -724,6 +824,7 @@ class VideoRoom extends Component {
     this.state.screenSession.unpublish(localUser.getScreenStreamManager())
     this.updateSubscribers()
     this.connectWebCam()
+    this.layout()
   }
 
   checkSomeoneShareScreen() {
@@ -732,19 +833,6 @@ class VideoRoom extends Component {
     isScreenShared =
       this.state.subscribers.some(user => user.isScreenShareActive()) ||
       localUser.isScreenShareActive()
-    // const openviduLayoutOptions = {
-    //   maxRatio: 3 / 2,
-    //   minRatio: 9 / 16,
-    //   fixedRatio: isScreenShared,
-    //   bigClass: 'OV_big',
-    //   bigPercentage: 0.6,
-    //   bigFixedRatio: false,
-    //   bigMaxRatio: 3 / 2,
-    //   bigMinRatio: 9 / 16,
-    //   bigFirst: true,
-    //   animate: true,
-    // }
-    // this.layout.setLayoutOptions(openviduLayoutOptions)
     this.updateLayout()
   }
 
@@ -788,7 +876,37 @@ class VideoRoom extends Component {
     const mySessionId = this.state.mySessionId
     const localUser = this.state.localUser
     var chatDisplay = { display: this.state.chatDisplay }
+    const { subscribers, currentPage, subscribersPage } = this.state
+    // Logic for displaying current todos
+    const indexOfLastSubscribers = currentPage * subscribersPage
+    const indexOfFirstSubscribers = indexOfLastSubscribers - subscribersPage
+    const currentSubscribers = subscribers.slice(
+      indexOfFirstSubscribers,
+      indexOfLastSubscribers
+    )
 
+    // Logic for displaying page numbers
+    const pageNumbers = []
+    for (let i = 1; i <= Math.ceil(subscribers.length / subscribersPage); i++) {
+      pageNumbers.push(i)
+    }
+
+    const renderPageNumbers = pageNumbers.map(number => {
+      return (
+        <button
+          key={number}
+          id={number}
+          onClick={() => this.handlePaginate(number)}
+          class={
+            currentPage == number
+              ? 'w-3 h-3 flex justify-center items-center  cursor-pointer leading-5 transition duration-150 ease-in rounded-full bg-gray-800 text-white hover:text-gray-50 hover:bg-gray-700'
+              : 'w-3 h-3 flex justify-center items-center  cursor-pointer leading-5 transition duration-150 ease-in bg-gray-200 rounded-full hover:bg-gray-400 hover:text-gray-50 '
+          }
+        >
+          &nbsp;
+        </button>
+      )
+    })
     return (
       <div className="flex  h-screen overflow-hidden">
         <div className="relative flex flex-col flex-1 h-screen  overflow-x-hidden">
@@ -800,14 +918,71 @@ class VideoRoom extends Component {
             handleNickname={this.nicknameChanged}
             handleClose={this.closeOpenModal}
           />
+          <VideoOptionModal
+            open={this.state.openVideoOptionModal}
+            handleCamera={this.switchCamera}
+            selectedCamera={this.state.videoStream}
+            handleClose={this.closeOptionModal}
+          />
           <div className="flex w-full h-full">
             <div className="flex flex-col w-full h-full">
               <div id="container" className="flex flex-col h-full w-full">
                 <div
                   id="layout"
-                  className="bounds"
+                  className="bounds "
                   onDoubleClick={this.handleDblClick}
                 >
+                  {currentPage - 1 >= Number(pageNumbers[0]) ? (
+                    <div className="opacity-60 bg-primarybg text-3xl font-bold border-r-4 border-primary text-orange-dark p-2 OT_ignore fixed absolute top-1/2 left-0 z-50 my-auto">
+                      <button
+                        className="bg-red"
+                        onClick={() => this.handlePage('minus')}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="100%"
+                          height="100%"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          class="feather feather-chevron-left w-6 h-6"
+                        >
+                          <polyline points="15 18 9 12 15 6"></polyline>
+                        </svg>
+                      </button>
+                    </div>
+                  ) : null}
+
+                  {currentPage + 1 <=
+                  Number(pageNumbers[pageNumbers.length - 1]) ? (
+                    <div className="opacity-60 bg-primarybg text-3xl font-bold border-r-4 border-primary text-orange-dark p-2 OT_ignore fixed absolute top-1/2 right-0 z-50 my-auto">
+                      <button
+                        className="bg-red  "
+                        onClick={() => this.handlePage('plus')}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="100%"
+                          height="100%"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          class="feather feather-chevron-right w-6 h-6"
+                        >
+                          <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                      </button>
+                    </div>
+                  ) : null}
+                  <div class="flex h-12 font-medium rounded-full space-x-3 absolute bottom-0 justify-center items-center w-full OT_ignore z-50">
+                    {renderPageNumbers}
+                  </div>
                   {localUser !== undefined &&
                     localUser.getStreamManager() !== undefined && (
                       <div id="localUser" className="m-auto">
@@ -817,7 +992,7 @@ class VideoRoom extends Component {
                         />
                       </div>
                     )}
-                  {this.state.subscribers.map((sub, i) => (
+                  {currentSubscribers.map((sub, i) => (
                     <div key={i} id="remoteUsers" className="m-auto">
                       <StreamComponent
                         user={sub}
@@ -876,6 +1051,12 @@ class VideoRoom extends Component {
                   </span>
                   <button className="ml-auto p-1 text-sm font-medium text-blue-900 bg-blue-100 border border-transparent rounded-md hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500">
                     방 공유
+                  </button>
+                  <button
+                    className="ml-auto p-1 text-sm font-medium text-blue-900 bg-blue-100 border border-transparent rounded-md hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
+                    onClick={() => this.setOptionModal(true)}
+                  >
+                    설정
                   </button>
                 </div>
                 <div className="text-sm  bg-white h-40 overflow-y-auto">

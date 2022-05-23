@@ -9,11 +9,17 @@ import {
   isMobile,
 } from 'react-device-detect'
 import MobileVideoRoom from './MobileVideoRoom'
+import SpeechRecognition, {
+  useSpeechRecognition,
+} from 'react-speech-recognition'
+import { useEffect, useState } from 'react'
 function WaitRoom(props) {
   const user = useSelector(state => state.Reducers.user)
   const loading = useSelector(state => state.Reducers.user_pending)
   const roomName = props.match.params.roomID
   const handle = useFullScreenHandle()
+  const [subtitle, setSubtitle] = useState(null)
+
   return (
     <div>
       {user && !loading ? (
@@ -24,6 +30,7 @@ function WaitRoom(props) {
               roomName={roomName}
               handle={handle}
               location={user.country}
+              subtitle={subtitle}
             ></VideoRoom>
           </BrowserView>
           <MobileView>
@@ -32,6 +39,7 @@ function WaitRoom(props) {
               roomName={roomName}
               handle={handle}
               location={user.country}
+              subtitle={subtitle}
             ></MobileVideoRoom>
           </MobileView>
         </>

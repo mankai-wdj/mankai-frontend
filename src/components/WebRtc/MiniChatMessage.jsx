@@ -1,7 +1,6 @@
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import DownloadIcon from '@mui/icons-material/Download'
-import './MiniChat3.css'
 import Moment from 'react-moment'
 import 'moment-timezone'
 import { FileIcon, defaultStyles } from 'react-file-icon'
