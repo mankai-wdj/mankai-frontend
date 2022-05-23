@@ -37,6 +37,8 @@ import YouPage from './components/MyPage/YouPage'
 import BoardMemoWindow from './components/MyPage/BoardMemoWindow'
 import BoardMemoEditWindow from './components/MyPage/BoardMemoEditWindow'
 import GroupDetail from './components/GroupDetail'
+import GroupBoardWeb from './layouts/GroupBoardWeb'
+import GroupIntroWeb from './layouts/GroupIntroWeb'
 import firebase from 'firebase/app'
 import 'firebase/messaging'
 import './App.css'
@@ -210,6 +212,8 @@ function App() {
         <Route exact path="/login">
           {true ? <Login /> : <Redirect to="/" />}
         </Route>
+        <Route exact path="/groupintro/webview/:group_id" component={GroupIntroWeb}></Route>
+        <Route exact path="/groupboard/webview/:board_id" component={GroupBoardWeb}></Route>
         <Route exact path="/register" component={Register}></Route>
         <Route exact path="/dashboard" component={Dashboard}></Route>
         <Route exact path="/dashboard/user" component={DashboardUser}></Route>
