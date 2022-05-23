@@ -37,14 +37,18 @@ function BoardMemoWindow({match}){
         .catch((err)=>{
           console.log(err)
         })
-    } 
+        window.BRIDGE.editclick();
+        //안드로이드의 함수를 실행하기 위함이다.
+      } 
 
     const PostDelete = () => {
       axios.post('/api/deletememos/'+memoId)
       .then((res)=>{
         console.log(res);
+        window.BRIDGE.deleteclick();
       })
       .catch((err)=>{})
+        //안드로이드의 함수를 실행하기 위함이다.
     }
    
     useEffect(() => {
