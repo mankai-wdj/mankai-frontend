@@ -53,19 +53,12 @@ axios.interceptors.request.use(function (config) {
   config.headers.Authorization = [token ? `Bearer ${token}` : '']
   return config
 })
-
 window.Pusher = require('pusher-js')
 window.Echo = new Echo({
   broadcaster: 'pusher',
-  key: 'anykey',
+  key: process.env.REACT_APP_PUSHER_KEY,
   cluster: 'ap3',
-  forceTLS: true,
-  wsHost: 'api.mankai.shop',
-  wsPort: 6001,
-  wssPort: 6001,
-  authEndpoint: '/broadcasting/auth',
-  disableStats: true,
-  enabledTransports: ['ws', 'wss'],
+  forceTLS: false,
   auth: {
     headers: {
       Authorization: 'Bearer ' + localStorage.getItem('auth_token'),
@@ -212,8 +205,16 @@ function App() {
         <Route exact path="/login">
           {true ? <Login /> : <Redirect to="/" />}
         </Route>
-        <Route exact path="/groupintro/webview/:group_id" component={GroupIntroWeb}></Route>
-        <Route exact path="/groupboard/webview/:board_id" component={GroupBoardWeb}></Route>
+        <Route
+          exact
+          path="/groupintro/webview/:group_id"
+          component={GroupIntroWeb}
+        ></Route>
+        <Route
+          exact
+          path="/groupboard/webview/:board_id"
+          component={GroupBoardWeb}
+        ></Route>
         <Route exact path="/register" component={Register}></Route>
         <Route exact path="/dashboard" component={Dashboard}></Route>
         <Route exact path="/dashboard/user" component={DashboardUser}></Route>
@@ -232,7 +233,10 @@ function App() {
         {/* <Route exact path="/post_memo" component={PostMemo}></Route>
           <Route exact path="/my_memo_edit/:id" component={MyMemoEdit}></Route> */}
         <Route path="/boardmemo/:memo_id" component={BoardMemoWindow}></Route>
-        <Route path="/boardmemoedit/:memo_id" component={BoardMemoEditWindow}></Route>
+        <Route
+          path="/boardmemoedit/:memo_id"
+          component={BoardMemoEditWindow}
+        ></Route>
 
         <Route exact path="/youProfile" component={YouPage}></Route>
 
