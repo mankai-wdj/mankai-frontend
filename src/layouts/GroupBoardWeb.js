@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 function GroupBoardWeb({match}){
     const [groupIntro,setGroupIntro] = useState("");
     const GroupStart = () =>{
-        axios.get("/api/show/groupnoticeweb/6")
+        axios.get("/api/show/groupnoticeweb/"+match.params.board_id)
         .then(res=>{
             setGroupIntro(res.data[0]);
         })
