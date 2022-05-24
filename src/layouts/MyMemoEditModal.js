@@ -67,9 +67,10 @@ export default function MyMemoEditModal(props) {
           for(let i = 0 ; i < res.data.length ; i++){
             if(res.data[i].url.includes('.jpg')){
               setFileType(file => [...file,'image/jpeg'])
+              setSelectedImageCallBack(res.data[i].url);
+             
             }
-            setSelectedImage(images => [...images, res.data[i].url]);
-            setImageToServer(images => [...images, res.data[i].url])
+            
           }            
           }
           console.log(res.data)
@@ -82,6 +83,12 @@ export default function MyMemoEditModal(props) {
       setImageToServer([])
     }
   },[modalOpen])
+
+  //콜백으로 ImageType을 할당한 뒤에 이미지를 할당시켰다.
+  const setSelectedImageCallBack = (imageUrl) =>{
+    setSelectedImage(images => [...images, imageUrl])
+    setImageToServer(images => [...images, imageUrl])
+  }
 
   useEffect(()=>{ 
     console.log("fileType:",fileType)

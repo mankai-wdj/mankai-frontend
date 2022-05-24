@@ -21,9 +21,21 @@ function BoardMemoWindow({match}){
 
     const dispatch = useDispatch();
 
+    useEffect(()=>{
+      axios.get('/api/boardmemoedit/'+match.params.memo_id)
+      .then(res=>{ 
+          setContentText(res.data.content_text);
+          setMemoId(res.data.id);
+          setMemoTitle(res.data.memo_title);
+      })
+      .catch(err=>{
+          console.log(err);
+      })
+    },[])
+
     const PostUpload = (e) =>{
         console.log("editor.current.getContents():",editor.current.getContents())
-        axios.post('/api/updatememo',{
+        axios.post('/api/boardmemoedit',{
           content_text : editor.current.getContents(),
           memo_id : memoId,
           memo_title : memoTitle
@@ -37,14 +49,18 @@ function BoardMemoWindow({match}){
         .catch((err)=>{
           console.log(err)
         })
-    } 
+        window.BRIDGE.editclick();
+        //안드로이드의 함수를 실행하기 위함이다.
+      } 
 
     const PostDelete = () => {
       axios.post('/api/deletememos/'+memoId)
       .then((res)=>{
         console.log(res);
+        window.BRIDGE.deleteclick();
       })
       .catch((err)=>{})
+        //안드로이드의 함수를 실행하기 위함이다.
     }
    
     useEffect(() => {
@@ -83,17 +99,7 @@ function BoardMemoWindow({match}){
       console.log("contentText",contentText);
     },[contentText]) 
 
-    useEffect(()=>{
-      axios.get('/api/boardmemoedit/'+match.params.memo_id)
-      .then(res=>{ 
-          setContentText(res.data.content_text);
-          setMemoId(res.data.id);
-          setMemoTitle(res.data.memo_title);
-      })
-      .catch(err=>{
-          console.log(err);
-      })
-    },[])
+    
 
 
     return(

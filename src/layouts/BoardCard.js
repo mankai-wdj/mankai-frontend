@@ -214,7 +214,6 @@ function BoardCard(props) {
         }
       })
     }
-
   }, [likes])
 
   // 통합 데이터 받기
