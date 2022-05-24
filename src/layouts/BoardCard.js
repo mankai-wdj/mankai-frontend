@@ -207,11 +207,7 @@ function BoardCard(props) {
 
   useEffect(() => {
     setIsLike(false)
-<<<<<<< HEAD
     if (user && user.id) {
-=======
-    if( user && user.id){
->>>>>>> 5a83b6ea4521d6359bd079fad6a30b8646f0c2b2
       likes.forEach(like => {
         if (user.id == like.user_id) {
           setIsLike(true)
