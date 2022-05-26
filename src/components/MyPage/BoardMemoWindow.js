@@ -29,6 +29,7 @@ function BoardMemoWindow({match}){
                 <SunEditor 
            readOnly
            hideToolbar
+           disable
            height="500" 
            defaultValue={contentText}/>
            :

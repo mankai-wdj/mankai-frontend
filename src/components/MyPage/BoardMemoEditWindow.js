@@ -50,7 +50,6 @@ function BoardMemoWindow({match}){
           console.log(err)
         })
         window.BRIDGE.editclick();
-        //안드로이드의 함수를 실행하기 위함이다.
       } 
 
     const PostDelete = () => {
@@ -62,6 +61,7 @@ function BoardMemoWindow({match}){
       .catch((err)=>{})
         //안드로이드의 함수를 실행하기 위함이다.
     }
+
    
     useEffect(() => {
 
