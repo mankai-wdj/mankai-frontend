@@ -5,7 +5,6 @@ import { getMemo } from './getMemo'
 import { Users } from './getUsers'
 import firebase from 'firebase/app'
 import 'firebase/messaging'
-import { setFcmToken } from './setFcmToken'
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
   authDomain: 'mankai-project.firebaseapp.com',
@@ -53,7 +52,7 @@ export const User = () => async dispatch => {
           return firebaseMessaging.getToken() // 등록 토큰 받기
         })
         .then(function (token) {
-          dispatch(setFcmToken(res.data.id, token))
+          dispatch({ type: 'SET_NOTI_TOKEN', payload: { noti_token: token } })
           console.log(token) //토큰 출력
         })
         .catch(function (error) {
