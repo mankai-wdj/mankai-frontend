@@ -35,7 +35,7 @@ function BoardMemoWindow({match}){
 
     const PostUpload = (e) =>{
         console.log("editor.current.getContents():",editor.current.getContents())
-        axios.post('/api/boardmemoedit',{
+        axios.post('/api/updatememo',{
           content_text : editor.current.getContents(),
           memo_id : memoId,
           memo_title : memoTitle

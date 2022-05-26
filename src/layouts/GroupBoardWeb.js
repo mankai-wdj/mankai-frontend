@@ -1,6 +1,7 @@
 import axios from "axios"
 import SunEditor from "suneditor-react"
 import { useEffect, useState } from "react";
+import GroupIntro from "./GroupIntro";
 
 // +match.params.board_id
 
@@ -13,6 +14,14 @@ function GroupBoardWeb({match}){
         })
         .catch()
     }
+    const ClickTranslate = (str) =>{
+        console.log(str)
+        var Array = str.split
+        axios.get("https://api.mankai.shop/api/show/noticeTranlate/"+match.params.board_id)
+        .then(res=>{
+            console.log(res)
+        })
+    }
     useEffect(()=>{
         GroupStart()
     },[match.params.board_id])
@@ -22,10 +31,14 @@ function GroupBoardWeb({match}){
             <p className="px-5 py-2 w-full bg-gray-100 font-bold">
                 {groupIntro.title}
             </p>
-            {groupIntro &&     
+            <p className="px-5 py-2 w-full bg-gray-100 font-bold">
+                {groupIntro.updated_at}
+            </p>
+           {groupIntro &&     
                 <SunEditor 
                     defaultValue={groupIntro.content}
-                    readOnly 
+                    readOnly
+                    disable 
                     hideToolbar
                     height="100%"
                 >

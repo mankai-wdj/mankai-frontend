@@ -22,6 +22,7 @@ function GroupIntroWeb({match}){
                 <SunEditor 
                     defaultValue={groupIntro.intro}
                     readOnly 
+                    disable
                     hideToolbar
                     height="100%"
                 >
