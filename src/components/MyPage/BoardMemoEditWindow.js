@@ -31,6 +31,9 @@ function BoardMemoWindow({match}){
       .catch(err=>{
           console.log(err);
       })
+      window.addEventListener("android",async (e)=>{
+        PostUpload();
+      })
     },[])
 
     const PostUpload = (e) =>{
