@@ -24,12 +24,18 @@ function MemoReadModal(props) {
   const currentUser = useSelector(state => state.Reducers.user)
   const [memoTitle, setMemoTitle] = useState(null);
   const [selectedImage,setSelectedImage] = useState([])
-
+  const [memo, setMemo] = useState(null);
   useEffect(() => {
     if(props.memo) {
       setMemoTitle(props.memo.memo_title);
     }
   },[props])
+
+  useEffect(() => {
+    if(memo != null) {
+      setMemoTitle(memo.memo_title);
+    }
+  },[memo])
 
   useEffect(() => {
     console.log(memoTitle);
@@ -38,6 +44,12 @@ function MemoReadModal(props) {
   useEffect(()=>{
     if(props.open === true){
       console.log(props.memo.id)
+      axios.get('/api/get/memo/'+props.memo.id)
+      .then((res) => {
+        console.log(res.data);
+        setMemo(res.data);
+      });
+
     axios.get('/api/getmemoimages/'+props.memo.id)
       .then((res)=>{
         if(res.data.length == 0)
@@ -63,9 +75,9 @@ function MemoReadModal(props) {
     console.log(props.memo);
     axios.post('api/storememo', {
       user_id : currentUser.id,
-      content_text : props.memo.content_text,
+      content_text : memo.content_text,
       memo_title : memoTitle,
-      memo_type : props.memo.type
+      memo_type : memo.type
     })
     .then(res => {
       console.log(res.data);
@@ -138,7 +150,7 @@ function MemoReadModal(props) {
                   </svg>
                 </button>
               </div>
-              <div className="container mx-auto">
+              <div className="mx-auto">
                 <div className="font-bold text-xl p-2 oveflow-x-auto">
                 <input value={memoTitle} onChange={e => setMemoTitle(e.target.value)} />
                 </div>
@@ -158,10 +170,10 @@ function MemoReadModal(props) {
                         :<div></div>
                   } */}
                   {
-                    props.memo ?  
-                      props.memo.type === 'SNS' ?
+                    memo ?  
+                      memo.type === 'SNS' ?
                       <div>
-                        {props.memo.content_text}
+                        {memo.content_text}
                         {selectedImage == ''
                         ?<div className='flex justify-center'><Skeleton variant="rectangular" width={595} height={400} /></div>
                         :selectedImage != 'No Data'
@@ -172,7 +184,7 @@ function MemoReadModal(props) {
                       readOnly
                       hideToolbar 
                       height="500" 
-                      defaultValue={props.memo.content_text}/>
+                      defaultValue={memo.content_text}/>
                       
                     : ''  
                   }

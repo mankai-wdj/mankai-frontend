@@ -124,7 +124,7 @@ function MemosModal(props) {
                   </svg>
                 </button>
               </div>
-              <div className="container mx-auto">
+              <div className="mx-auto">
                 <div className="font-bold text-xl p-2 oveflow-x-auto">
                   내 메모
                 </div>
