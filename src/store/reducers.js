@@ -109,11 +109,11 @@ const initialState = {
   sideLikeData: [],
   sideImageList: [],
   isOpen: false,
-  to_users : null,
-  chat_list_index : 0,
-  users_country : [],
-  noti_token : null,
-
+  to_users: null,
+  chat_list_index: 0,
+  users_country: [],
+  noti_token: null,
+  mobile_chat_count: 0,
   likeData: [],
   memoUpdate: [],
   likeUpdate: 0,
@@ -127,9 +127,9 @@ const initialState = {
   followId: 0,
   followerFollower: null,
   followerFollowing: null,
-  room_files : [],
-  room_images : [],
-  room_memos : [],
+  room_files: [],
+  room_images: [],
+  room_memos: [],
 }
 
 export default handleActions(
@@ -476,18 +476,17 @@ export default handleActions(
           ...state.rooms.filter(room => {
             if (room.id == action.payload.room_id) {
               room.updated_at = action.payload.updated_at
-              if(action.payload.type == 'memo') {
+              if (action.payload.type == 'memo') {
                 room.last_message = 'MEMO가 도착했습니다'
-              }else if(action.payload.type == 'file'){
-                if(action.payload.last_message.startsWith('[{')) {
+              } else if (action.payload.type == 'file') {
+                if (action.payload.last_message.startsWith('[{')) {
                   room.last_message = '파일이 도착했습니다'
-                }else {
-                  room.last_message = "사진이 도착했습니다"
+                } else {
+                  room.last_message = '사진이 도착했습니다'
                 }
-              }else {
+              } else {
                 room.last_message = action.payload.last_message
               }
-
             }
             return room.id == action.payload.room_id
           }),
@@ -577,7 +576,6 @@ export default handleActions(
       }
     },
 
-
     [SET_FOLLOWID]: (state, action) => {
       return {
         ...state,
@@ -594,36 +592,39 @@ export default handleActions(
       var plus = true
       var i = 0
 
-      
-      if(state.followerFollower){
-      var copiedfollowerFollower = [...state.followerFollower]
-      copiedfollowerFollower.forEach(follower => {
-        if (follower.id === action.payload.followerFollower.id) {
-          copiedfollowerFollower.splice(i, 1)
-          plus = false
-        }
-        i++
-      })
-      if(plus === true){
-        return{
-          ...state,
-          followerFollower: [...state.followerFollower, action.payload.followerFollower],
+      if (state.followerFollower) {
+        var copiedfollowerFollower = [...state.followerFollower]
+        copiedfollowerFollower.forEach(follower => {
+          if (follower.id === action.payload.followerFollower.id) {
+            copiedfollowerFollower.splice(i, 1)
+            plus = false
+          }
+          i++
+        })
+        if (plus === true) {
+          return {
+            ...state,
+            followerFollower: [
+              ...state.followerFollower,
+              action.payload.followerFollower,
+            ],
+          }
         }
       }
-    }
       if (plus === true) {
-        return{
+        return {
           ...state,
-        followerFollower: [...state.followerFollower, action.payload.followerFollower],
-      }
+          followerFollower: [
+            ...state.followerFollower,
+            action.payload.followerFollower,
+          ],
+        }
       }
       return {
         ...state,
         followerFollower: copiedfollowerFollower,
       }
     },
-
-
 
     [DELETE_FOLLOWS]: (state, action) => {
       return {
@@ -777,27 +778,27 @@ export default handleActions(
     [SET_TO_USERS]: (state, action) => {
       return {
         ...state,
-        to_users : action.payload.toUsers,
+        to_users: action.payload.toUsers,
       }
     },
     [SET_CHAT_LIST_INDEX]: (state, action) => {
       return {
         ...state,
-        chat_list_index : action.payload.index,
+        chat_list_index: action.payload.index,
       }
     },
     [SET_CHAT_ROOMS]: (state, action) => {
       return {
         ...state,
-        rooms : action.payload.rooms,
+        rooms: action.payload.rooms,
       }
     },
-    [SET_NOTI_TOKEN] : (state, action) => {
+    [SET_NOTI_TOKEN]: (state, action) => {
       return {
         ...state,
-        noti_token : action.payload.noti_token,
+        noti_token: action.payload.noti_token,
       }
-    }
+    },
   },
   initialState
 )

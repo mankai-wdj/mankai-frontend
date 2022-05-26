@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import DownloadIcon from '@mui/icons-material/Download'
-
+import { Avatar } from '@mui/material'
 import Moment from 'react-moment'
 import 'moment-timezone'
 import { FileIcon, defaultStyles } from 'react-file-icon'
@@ -114,11 +114,9 @@ function ChatMessage({ message: msg, user: user, date: date }) {
         <div className="flex p-1 mr-2 justify-start relative  max-w-[80%]">
           <div className="">
             {message.user.profile ? (
-              <img
-                src={message.user.profile}
-                alt="Avatar"
-                className="w-10 h-10 rounded-full"
-              />
+              <Avatar>
+                <img src={message.user.profile} alt="" />
+              </Avatar>
             ) : (
               <div className="flex items-center justify-center h-10 w-10 rounded-2xl bg-primary300 font-bold uppercase text-xl">
                 {message.nickname.substring(0, 1)}

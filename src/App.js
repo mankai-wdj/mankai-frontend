@@ -41,7 +41,6 @@ import GroupBoardWeb from './layouts/GroupBoardWeb'
 import GroupIntroWeb from './layouts/GroupIntroWeb'
 import firebase from 'firebase/app'
 import 'firebase/messaging'
-import './App.css'
 
 axios.defaults.baseURL = 'http://api.mankai.shop/'
 axios.defaults.headers.post['Content-Type'] = 'application/json'
@@ -82,6 +81,7 @@ function App() {
       const channel = window.Echo.channel('user.' + currentUser.id) // 채팅방 참여
         .listen('.user-connect', e => {
           // 여기서 fcm으로 보내주기 방번호 꼭 보내주기
+
           if (currentUser.id != e.message.user_id) {
             axios
               .post('api/fcm/message', {
@@ -122,8 +122,10 @@ function App() {
       return userNames
     }
   }
-  if (firebase.messaging.isSupported && !isMobile) {
+
+  !isMobile &&
     firebaseMessaging.onMessage(function (payload) {
+      console.log('왔어영')
       if (
         getCurrentRoom() == null ||
         getCurrentRoom().id != JSON.parse(payload.data.room).id
@@ -181,7 +183,6 @@ function App() {
         //확인 후 toast 띄워주기
       }
     })
-  }
 
   // useEffect(() => {
 

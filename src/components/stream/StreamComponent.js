@@ -43,7 +43,7 @@ export default class StreamComponent extends Component {
       <div className=" rounded-2xl">
         {this.props.user !== undefined &&
         this.props.user.getStreamManager() !== undefined ? (
-          <div className="bg-black w-full">
+          <div className="bg-black w-full m-auto">
             <OvVideoComponent
               user={this.props.user}
               mutedSound={this.state.mutedSound}

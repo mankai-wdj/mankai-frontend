@@ -113,13 +113,6 @@ export default class MobileToolbar extends Component {
             )}
           </IconButton>
 
-          <IconButton
-            color="inherit"
-            className="navButton"
-            onClick={this.switchCamera}
-          >
-            <SwitchVideoIcon />
-          </IconButton>
           <IconButton color="inherit" onClick={this.toggleChat}>
             <MessageOutlined />
             {this.props.showNotification && <div id="point" className="" />}

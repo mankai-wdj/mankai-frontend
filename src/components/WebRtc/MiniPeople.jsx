@@ -20,6 +20,12 @@ function MiniPeople(props) {
         <button className="ml-auto p-1 text-sm font-medium text-blue-900 bg-blue-100 border border-transparent rounded-md hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500">
           방 공유
         </button>
+        <button
+          className="ml-auto p-1 text-sm font-medium text-blue-900 bg-blue-100 border border-transparent rounded-md hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
+          onClick={() => props.open()}
+        >
+          설정
+        </button>
       </div>
       <div className="text-sm  bg-white h-25 overflow-y-auto">
         <div className="flex items-center w-full bg-white">

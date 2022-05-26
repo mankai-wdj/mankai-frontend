@@ -5,7 +5,6 @@ import axios from 'axios'
 import StreamComponent from '../stream/StreamComponent'
 import DialogExtensionComponent from '../dialog-extension/DialogExtension'
 import './MobileRoom.css'
-import OpenViduLayout from '../../layouts/mobile-layout'
 import UserModel from '../../models/user-model'
 import MobileToolbar from '../toolbar/MobileToolbar'
 import Header from '../../admin/layout/Header'
@@ -20,15 +19,12 @@ import VideocamOff from '@mui/icons-material/VideocamOff'
 
 import Ratio from 'react-ratio/lib/Ratio'
 import MiniPeople from './MiniPeople'
+import VideoOptionModal from './VideoOptionModal'
+import SpeechRecognition, {
+  useSpeechRecognition,
+} from 'react-speech-recognition'
 var localUser = new UserModel()
 const RoomAxios = axios.create()
-const SpeechRecognition =
-  window.webkitSpeechRecognition || window.SpeechRecognition
-const mic = new SpeechRecognition()
-
-mic.continuous = true
-mic.interimResults = false
-mic.lang = 'ko'
 
 class MobileVideoRoom extends Component {
   constructor(props) {
@@ -42,13 +38,13 @@ class MobileVideoRoom extends Component {
       ? this.props.user.name
       : 'Mankai' + Math.floor(Math.random() * 100)
     let userInfo = this.props.user
-    let country = this.props.user.country
     this.remotes = []
     this.localUserAccessAllowed = false
     this.state = {
       mySessionId: sessionName,
       myUserName: userName,
       session: undefined,
+      screenSession: undefined,
       localUser: undefined,
       openModal: false,
       subscribers: [],
@@ -57,15 +53,22 @@ class MobileVideoRoom extends Component {
       userInfo: userInfo,
       currentVideoDevice: undefined,
       sst: undefined,
+      langCode: userInfo.country,
+      speaking: false,
+      tokenValue: undefined,
+      currentPage: 1,
+      subscribersPage: 2,
+      openVideoOptionModal: false,
+      videoStream: undefined,
       chatCount: 0,
     }
-
     this.joinSession = this.joinSession.bind(this)
     this.leaveSession = this.leaveSession.bind(this)
     this.onbeforeunload = this.onbeforeunload.bind(this)
     this.updateLayout = this.updateLayout.bind(this)
     this.camStatusChanged = this.camStatusChanged.bind(this)
-
+    this.handlePaginate = this.handlePaginate.bind(this)
+    this.handlePage = this.handlePage.bind(this)
     this.micStatusChanged = this.micStatusChanged.bind(this)
     this.captionTranslate = this.captionTranslate.bind(this)
     this.nicknameChanged = this.nicknameChanged.bind(this)
@@ -75,12 +78,14 @@ class MobileVideoRoom extends Component {
     this.stopScreenShare = this.stopScreenShare.bind(this)
     this.closeDialogExtension = this.closeDialogExtension.bind(this)
     this.toggleChat = this.toggleChat.bind(this)
-    this.toggleUser = this.toggleUser.bind(this)
     this.checkNotification = this.checkNotification.bind(this)
     this.checkSize = this.checkSize.bind(this)
     this.setOpenModal = this.setOpenModal.bind(this)
+    this.setOptionModal = this.setOptionModal.bind(this)
+    this.closeOptionModal = this.closeOptionModal.bind(this)
     this.closeOpenModal = this.closeOpenModal.bind(this)
     this.getPermissions = this.getPermissions.bind(this)
+    this.toggleUser = this.toggleUser.bind(this)
   }
 
   componentDidMount() {
@@ -107,17 +112,17 @@ class MobileVideoRoom extends Component {
       bigMinRatio: 9 / 16, // The widest ratio to use for the big elements (default 16x9)
       bigFirst: true, // Whether to place the big one in the top left (true) or bottom right (false).
       // You can also pass 'column' or 'row' to change whether big is first when you are in a row (bottom) or a column (right) layout
-      animate: true, // Whether you want to animate the transitions using jQuery (not recommended, use CSS transitions instead)
+      animate: false, // Whether you want to animate the transitions using jQuery (not recommended, use CSS transitions instead)
       window: window, // Lets you pass in your own window object which should be the same window that the element is in
       ignoreClass: 'OT_ignore', // Elements with this class will be ignored and not positioned. This lets you do things like picture-in-picture
       onLayout: null, // A
     }
     this.layoutContainer = document.getElementById('layout')
     this.layout = this.initLayoutContainer(this.layoutContainer, options).layout
+    this.getPermissions()
     window.addEventListener('beforeunload', this.onbeforeunload)
     window.addEventListener('resize', this.updateLayout)
     window.addEventListener('resize', this.checkSize)
-    this.getPermissions()
   }
 
   componentWillUnmount() {
@@ -131,9 +136,15 @@ class MobileVideoRoom extends Component {
   onbeforeunload(event) {
     this.leaveSession()
   }
-
+  componentWillReceiveProps(subtitle) {
+    if (this.state.session) {
+      console.log('props 도착')
+      localUser.setCaption(this.props.subtitle)
+    }
+  }
   joinSession() {
     this.OV = new OpenVidu()
+    this.OVScreen = new OpenVidu()
     this.OV.setAdvancedConfiguration({
       interval: 20, // Frequency of the polling of audio streams in ms (default 100)
       threshold: 50, // Threshold volume in dB (default -50)
@@ -141,10 +152,12 @@ class MobileVideoRoom extends Component {
     this.setState(
       {
         session: this.OV.initSession(),
+        screenSession: this.OVScreen.initSession(),
       },
       () => {
         this.subscribeToStreamCreated()
         this.connectToSession()
+        this.screenConnectToSession()
       }
     )
   }
@@ -158,6 +171,7 @@ class MobileVideoRoom extends Component {
         .then(token => {
           console.log(token)
           this.connect(token)
+          this.setState({ tokenValue: token })
         })
         .catch(error => {
           if (this.props.error) {
@@ -178,6 +192,42 @@ class MobileVideoRoom extends Component {
     }
   }
 
+  toggleUser(property) {
+    let display = property
+
+    if (display === undefined) {
+      display = this.state.userDisplay === 'none' ? 'block' : 'none'
+    }
+    if (display === 'block') {
+      this.setState({ userDisplay: display })
+    } else {
+      this.setState({ userDisplay: display })
+    }
+    this.updateLayout()
+  }
+
+  handlePaginate(event) {
+    this.setState({
+      currentPage: Number(event),
+    })
+    this.updateLayout()
+  }
+
+  handlePage(event) {
+    if (event == 'minus') {
+      this.setState({
+        currentPage: this.state.currentPage - 1,
+      })
+      console.log('-')
+    } else {
+      this.setState({
+        currentPage: this.state.currentPage + 1,
+      })
+      console.log('+')
+    }
+    this.updateLayout()
+  }
+
   connect(token) {
     this.state.session
       .connect(token, {
@@ -186,6 +236,34 @@ class MobileVideoRoom extends Component {
       })
       .then(() => {
         this.connectWebCam()
+        this.layout()
+      })
+      .catch(error => {
+        if (this.props.error) {
+          this.props.error({
+            error: error.error,
+            messgae: error.message,
+            code: error.code,
+            status: error.status,
+          })
+        }
+        alert('There was an error connecting to the session:', error.message)
+        console.log(
+          'There was an error connecting to the session:',
+          error.code,
+          error.message
+        )
+      })
+  }
+
+  ScreenConnect(token) {
+    this.state.screenSession
+      .connect(token, {
+        clientData: this.props.user.name,
+        userOBJ: this.props.user,
+      })
+      .then(() => {
+        console.log('스크린 연결')
       })
       .catch(error => {
         if (this.props.error) {
@@ -217,9 +295,39 @@ class MobileVideoRoom extends Component {
         })
     })
   }
+
+  screenConnectToSession() {
+    if (this.props.token !== undefined) {
+      console.log('token received: ', this.props.token)
+      this.connect(this.props.token)
+    } else {
+      this.getToken()
+        .then(token => {
+          console.log(token)
+          this.ScreenConnect(token)
+        })
+        .catch(error => {
+          if (this.props.error) {
+            this.props.error({
+              error: error.error,
+              messgae: error.message,
+              code: error.code,
+              status: error.status,
+            })
+          }
+          console.log(
+            'There was an error getting the token:',
+            error.code,
+            error.message
+          )
+          alert('There was an error getting the token:', error.message)
+        })
+    }
+  }
   async connectWebCam() {
     var devices = await this.OV.getDevices()
     var videoDevices = devices.filter(device => device.kind === 'videoinput')
+    this.setState({ videoStream: videoDevices[0] })
     let publisher = this.OV.initPublisher(undefined, {
       audioSource: undefined,
       videoSource: videoDevices[0].deviceId,
@@ -227,20 +335,32 @@ class MobileVideoRoom extends Component {
       publishVideo: localUser.isVideoActive(),
       resolution: '1920x1080',
       frameRate: 30,
-      insertMode: 'APPEND',
-      mirror: false,
+      insertMode: 'append',
+      mirror: true,
     })
     publisher.on('publisherStartSpeaking', event => {
-      try {
-        mic.start()
-      } catch {}
+      if (this.state.speaking == false) {
+        try {
+          // SpeechRecognition.startListening({
+          //   continuous: true,
+          //   language: this.state.langCode,
+          // })
+          this.setState({ speaking: true })
+        } catch {}
+      }
       console.log('로컬 유저')
       localUser.setSpeaking(true)
       this.sendSignalUserChanged({ speaking: true })
     })
 
     publisher.on('publisherStopSpeaking', event => {
-      mic.stop()
+      // SpeechRecognition.stopListening()
+      if (this.props.subtitle && this.props.subtitle.length >= 50) {
+        this.props.resetTranscript()
+      }
+      this.sendSignalUserChanged({ caption: this.props.subtitle })
+      this.setState({ speaking: false })
+
       console.log('로컬 유저 말안함 ㅎ')
       localUser.setSpeaking(false)
       this.sendSignalUserChanged({ speaking: false })
@@ -260,21 +380,6 @@ class MobileVideoRoom extends Component {
       })
     }
 
-    mic.onstart = () => {
-      console.log('mics on')
-    }
-    mic.onend = () => {}
-    mic.onresult = event => {
-      const transcript = Array.from(event.results)
-        .map(result => result[0])
-        .map(result => result.transcript)
-        .join('')
-      this.sendSignalUserChanged({ caption: transcript })
-      localUser.setCaption(transcript)
-      mic.onerror = event => {
-        console.log(event.error)
-      }
-    }
     localUser.setNickname(this.state.myUserName)
     localUser.setUserOBJ(this.props.user)
     localUser.setConnectionId(this.state.session.connection.connectionId)
@@ -309,6 +414,7 @@ class MobileVideoRoom extends Component {
       .then(res => {
         console.log(res.data)
         user.setCaptionTranslate(res.data)
+        this.sendSignalUserChanged({ translateUpdate: true })
       })
   }
   updateSubscribers() {
@@ -339,14 +445,17 @@ class MobileVideoRoom extends Component {
   leaveSession() {
     const mySession = this.state.session
     try {
-      mic.stop()
+      SpeechRecognition.stopListening()
     } catch {}
     if (mySession) {
       mySession.disconnect()
     }
-
+    if (this.state.screenSession) {
+      this.state.screenSession.disconnect()
+    }
     // Empty all properties...
     this.OV = null
+    this.OVScreen = null
     this.setState({
       session: undefined,
       subscribers: [],
@@ -428,7 +537,7 @@ class MobileVideoRoom extends Component {
         this.checkSomeoneShareScreen()
       }, 20)
       event.preventDefault()
-      this.updateLayout()
+      this.layout()
     })
   }
 
@@ -486,6 +595,12 @@ class MobileVideoRoom extends Component {
   closeOpenModal = () => {
     this.setState({ openModal: false })
   }
+  setOptionModal = () => {
+    this.setState({ openVideoOptionModal: true })
+  }
+  closeOptionModal = () => {
+    this.setState({ openVideoOptionModal: false })
+  }
   sendSignalUserChanged(data) {
     const signalOptions = {
       data: JSON.stringify(data),
@@ -525,39 +640,29 @@ class MobileVideoRoom extends Component {
     }
   }
 
-  async switchCamera() {
+  async switchCamera(videoDevice, audioDevice) {
     try {
-      const devices = await this.OV.getDevices()
-      var videoDevices = devices.filter(device => device.kind === 'videoinput')
+      this.setState({ videoStream: videoDevice })
+      // Creating a new publisher with specific videoSource
+      // In mobile devices the default and first camera is the front one
+      var newPublisher = this.OV.initPublisher(undefined, {
+        audioSource: undefined,
+        videoSource: videoDevice,
+        publishAudio: localUser.isAudioActive(),
+        publishVideo: localUser.isVideoActive(),
+        mirror: false,
+      })
 
-      if (videoDevices && videoDevices.length > 1) {
-        var newVideoDevice = videoDevices.filter(
-          device => device.deviceId !== this.state.currentVideoDevice.deviceId
-        )
-
-        if (newVideoDevice.length > 0) {
-          // Creating a new publisher with specific videoSource
-          // In mobile devices the default and first camera is the front one
-          var newPublisher = this.OV.initPublisher(undefined, {
-            audioSource: undefined,
-            videoSource: newVideoDevice[0].deviceId,
-            publishAudio: localUser.isAudioActive(),
-            publishVideo: localUser.isVideoActive(),
-            mirror: false,
-          })
-
-          //newPublisher.once("accessAllowed", () => {
-          await this.state.session.unpublish(
-            this.state.localUser.getStreamManager()
-          )
-          await this.state.session.publish(newPublisher)
-          this.state.localUser.setStreamManager(newPublisher)
-          this.setState({
-            currentVideoDevice: newVideoDevice,
-            localUser: localUser,
-          })
-        }
-      }
+      //newPublisher.once("accessAllowed", () => {
+      await this.state.session.unpublish(
+        this.state.localUser.getStreamManager()
+      )
+      await this.state.session.publish(newPublisher)
+      this.state.localUser.setStreamManager(newPublisher)
+      this.setState({
+        currentVideoDevice: videoDevice,
+        localUser: localUser,
+      })
     } catch (e) {
       console.error(e)
     }
@@ -578,18 +683,27 @@ class MobileVideoRoom extends Component {
     this.layout()
   }
 
-  screenShare() {
-    const videoSource =
-      navigator.userAgent.indexOf('chrome') !== -1 ? 'window' : 'screen'
-    const publisher = this.OV.initPublisher(
+  async screenShare() {
+    const stream = await navigator.mediaDevices.getDisplayMedia({
+      audio: {
+        autoGainControl: false,
+        echoCancellation: false,
+        googAutoGainControl: false,
+        noiseSuppression: false,
+      },
+      video: true,
+    })
+
+    // const videoSource =
+    //   navigator.userAgent.indexOf('chrome') !== -1 ? 'window' : 'screen'
+
+    const publisher = this.OVScreen.initPublisher(
       undefined,
       {
-        videoSource: videoSource,
-        audioSource: undefined,
-        resolution: '1920x1080',
+        audioSource: stream.getAudioTracks()[0],
+        videoSource: stream.getVideoTracks()[0],
         publishAudio: true,
-        insertMode: 'PREPEND',
-        publishVideo: localUser.isVideoActive(),
+        publishVideo: true,
         mirror: false,
       },
       error => {
@@ -606,18 +720,21 @@ class MobileVideoRoom extends Component {
     )
 
     publisher.once('accessAllowed', () => {
+      // this.state.session.unpublish(localUser.getStreamManager())
       publisher.stream.getMediaStream().getVideoTracks()[0].contentHint =
-        'motion' // 스크렌쉐어 낮은 fps 나오는거 문제 해결
-      this.state.session.unpublish(localUser.getStreamManager())
-      localUser.setStreamManager(publisher)
-      this.state.session.publish(localUser.getStreamManager()).then(() => {
-        localUser.setScreenShareActive(true)
-        this.setState({ localUser: localUser }, () => {
-          this.sendSignalUserChanged({
-            isScreenShareActive: localUser.isScreenShareActive(),
+        'detail' // 스크렌쉐어 낮은 fps 나오는거 문제 해결
+      localUser.setScreenStreamManager(publisher)
+      this.state.screenSession
+        .publish(localUser.getScreenStreamManager())
+        .then(() => {
+          localUser.setScreenShareActive(true)
+          this.layout()
+          this.setState({ localUser: localUser }, () => {
+            this.sendSignalUserChanged({
+              isScreenShareActive: localUser.isScreenShareActive(),
+            })
           })
         })
-      })
 
       publisher.stream
         .getMediaStream()
@@ -628,7 +745,6 @@ class MobileVideoRoom extends Component {
           // You can send a signal with Session.signal method to warn other participants
         })
     })
-
     publisher.on('streamPlaying', () => {
       this.updateLayout()
       publisher.videos[0].video.parentElement.classList.remove('custom-class')
@@ -640,8 +756,11 @@ class MobileVideoRoom extends Component {
   }
 
   stopScreenShare() {
-    this.state.session.unpublish(localUser.getStreamManager())
+    localUser.setScreenShareActive(false)
+    this.state.screenSession.unpublish(localUser.getScreenStreamManager())
+    this.updateSubscribers()
     this.connectWebCam()
+    this.layout()
   }
 
   checkSomeoneShareScreen() {
@@ -650,7 +769,6 @@ class MobileVideoRoom extends Component {
     isScreenShared =
       this.state.subscribers.some(user => user.isScreenShareActive()) ||
       localUser.isScreenShareActive()
-
     this.updateLayout()
   }
 
@@ -661,30 +779,14 @@ class MobileVideoRoom extends Component {
       display = this.state.chatDisplay === 'none' ? 'block' : 'none'
     }
     if (display === 'block') {
-      this.setState({
-        chatDisplay: display,
-        messageReceived: false,
-        chatCount: 0,
-      })
+      this.setState({ chatDisplay: display, messageReceived: false })
     } else {
+      console.log('chat', display)
       this.setState({ chatDisplay: display })
     }
     this.updateLayout()
   }
 
-  toggleUser(property) {
-    let display = property
-
-    if (display === undefined) {
-      display = this.state.userDisplay === 'none' ? 'block' : 'none'
-    }
-    if (display === 'block') {
-      this.setState({ userDisplay: display })
-    } else {
-      this.setState({ userDisplay: display })
-    }
-    this.updateLayout()
-  }
   checkNotification(event) {
     if (this.state.chatDisplay == 'none') {
       this.setState({
@@ -698,6 +800,7 @@ class MobileVideoRoom extends Component {
       document.getElementById('layout').offsetWidth <= 700 &&
       !this.hasBeenUpdated
     ) {
+      this.toggleChat('none')
       this.hasBeenUpdated = true
     }
     if (
@@ -713,6 +816,37 @@ class MobileVideoRoom extends Component {
     const localUser = this.state.localUser
     var chatDisplay = { display: this.state.chatDisplay }
     var userDisplay = { display: this.state.userDisplay }
+    const { subscribers, currentPage, subscribersPage } = this.state
+    // Logic for displaying current todos
+    const indexOfLastSubscribers = currentPage * subscribersPage
+    const indexOfFirstSubscribers = indexOfLastSubscribers - subscribersPage
+    const currentSubscribers = subscribers.slice(
+      indexOfFirstSubscribers,
+      indexOfLastSubscribers
+    )
+
+    // Logic for displaying page numbers
+    const pageNumbers = []
+    for (let i = 1; i <= Math.ceil(subscribers.length / subscribersPage); i++) {
+      pageNumbers.push(i)
+    }
+
+    const renderPageNumbers = pageNumbers.map(number => {
+      return (
+        <button
+          key={number}
+          id={number}
+          onClick={() => this.handlePaginate(number)}
+          class={
+            currentPage == number
+              ? 'w-3 h-3 flex justify-center items-center  cursor-pointer leading-5 transition duration-150 ease-in rounded-full bg-gray-800 text-white hover:text-gray-50 hover:bg-gray-700'
+              : 'w-3 h-3 flex justify-center items-center  cursor-pointer leading-5 transition duration-150 ease-in bg-gray-200 rounded-full hover:bg-gray-400 hover:text-gray-50 '
+          }
+        >
+          &nbsp;
+        </button>
+      )
+    })
     return (
       <>
         <div class="h-[calc(100vh-calc(100vh-100%))] w-full">
@@ -726,6 +860,12 @@ class MobileVideoRoom extends Component {
                     handleNickname={this.nicknameChanged}
                     handleClose={this.closeOpenModal}
                   />
+                  <VideoOptionModal
+                    open={this.state.openVideoOptionModal}
+                    handleCamera={this.switchCamera}
+                    selectedCamera={this.state.videoStream}
+                    handleClose={this.closeOptionModal}
+                  />
                   {localUser !== undefined &&
                     localUser.getStreamManager() !== undefined && (
                       <div style={userDisplay}>
@@ -734,6 +874,7 @@ class MobileVideoRoom extends Component {
                           localUser={this.state.localUser}
                           subscribers={this.state.subscribers}
                           handleOpen={this.setOpenModal}
+                          open={this.setOptionModal}
                           close={this.closeOpenModal}
                         />
                       </div>
@@ -745,6 +886,57 @@ class MobileVideoRoom extends Component {
                     className="bounds2 "
                     onDoubleClick={this.handleDblClick}
                   >
+                    {currentPage - 1 >= Number(pageNumbers[0]) ? (
+                      <div className="opacity-60 bg-primarybg text-3xl font-bold border-r-4 border-primary text-orange-dark p-2 OT_ignore fixed absolute top-1/2 left-0 z-50 my-auto">
+                        <button
+                          className="bg-red"
+                          onClick={() => this.handlePage('minus')}
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="100%"
+                            height="100%"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            class="feather feather-chevron-left w-6 h-6"
+                          >
+                            <polyline points="15 18 9 12 15 6"></polyline>
+                          </svg>
+                        </button>
+                      </div>
+                    ) : null}
+
+                    {currentPage + 1 <=
+                    Number(pageNumbers[pageNumbers.length - 1]) ? (
+                      <div className="opacity-60 bg-primarybg text-3xl font-bold border-r-4 border-primary text-orange-dark p-2 OT_ignore fixed absolute top-1/2 right-0 z-50 my-auto">
+                        <button
+                          className="bg-red  "
+                          onClick={() => this.handlePage('plus')}
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="100%"
+                            height="100%"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            class="feather feather-chevron-right w-6 h-6"
+                          >
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                          </svg>
+                        </button>
+                      </div>
+                    ) : null}
+                    <div class="flex h-12 font-medium rounded-full space-x-3 absolute bottom-0 justify-center items-center w-full OT_ignore z-50">
+                      {renderPageNumbers}
+                    </div>
                     {localUser !== undefined &&
                       localUser.getStreamManager() !== undefined && (
                         <div className="custom-class " id="localUser">
@@ -754,7 +946,7 @@ class MobileVideoRoom extends Component {
                           />
                         </div>
                       )}
-                    {this.state.subscribers.map((sub, i) => (
+                    {currentSubscribers.map((sub, i) => (
                       <div key={i} className="custom-class" id="remoteUsers">
                         <StreamComponent
                           user={sub}

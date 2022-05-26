@@ -31,22 +31,12 @@
   padding: 0;
 }
 
-.bounds {
-  background-color: #b2c7d9;
-  overflow: hidden;
-  position: relative;
-  top: 0px;
-  bottom: 0px;
-  height: inherit;
-  min-width: 400px !important;
-  width: inherit;
-}
-
 .bounds2 {
   background-color: #b2c7d9;
   overflow: hidden;
   position: relative;
   top: 0px;
+  margin-top: 10px;
   bottom: 0px;
   height: inherit;
   width: inherit;

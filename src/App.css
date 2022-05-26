@@ -159,9 +159,9 @@
 
 .profile_image1 {
   /* border-radius: 50%;
-  width:50%;
-  height:30%;
-  object-fit: cover; */
+    width:50%;
+    height:30%;
+    object-fit: cover; */
   width: 50%;
   border-radius: 50%;
   display: block;
@@ -205,37 +205,6 @@
   min-height: 100%;
 }
 
-/* opentok layout css */
-.container {
-  height: 100%;
-}
-
-.container {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ddd;
-}
-
-.container > div {
-  background-color: #000;
-  display: inline-block;
-  border: 1px solid #fff;
-
-  transition-property: all;
-  transition-duration: 0.5s;
-  -webkit-transition: all 0.5s ease;
-  transition: all 0.5s ease;
-  width: 0;
-  height: 0;
-  opacity: 0;
-}
-
-.container > .ot-layout {
-  opacity: 1;
-}
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);

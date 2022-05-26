@@ -43,10 +43,10 @@ export default class OvVideoComponent extends Component {
             autoPlay={true}
             ref={this.videoRef}
             muted={this.props.mutedSound}
-            className=" w-full h-full mx-auto "
+            className=" w-full h-full mx-auto"
           />
           {this.props.user.isSpeaking() ? (
-            <div className="absolute bottom-0 rounded-xl  border   border-emerald-400 border-8  w-full h-full"></div>
+            <div className="absolute bottom-0   border   border-emerald-400 border-8  w-full h-full"></div>
           ) : null}
         </Ratio>
       </>

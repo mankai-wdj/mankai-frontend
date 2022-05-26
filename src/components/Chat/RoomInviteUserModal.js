@@ -55,24 +55,26 @@ function RoomInviteUserModal(props) {
           // props.newRoomList(res.data);
           console.log(res.data)
           setComplete(false)
-          if(currentRoom.id != res.data.id) {
-              dispatch({ type: 'ADD_ROOM', payload: { room: res.data } })
-              dispatch({type : 'SET_CHAT_LIST_INDEX', payload : {index : 1}})
-              dispatch({ type: 'SET_CURRENT_CHATROOM', payload: { room: res.data } })
+          if (currentRoom.id != res.data.id) {
+            dispatch({ type: 'ADD_ROOM', payload: { room: res.data } })
+            dispatch({ type: 'SET_CHAT_LIST_INDEX', payload: { index: 1 } })
+            dispatch({
+              type: 'SET_CURRENT_CHATROOM',
+              payload: { room: res.data },
+            })
           }
           // dispatch({ type: 'SET_CURRENT_CHATROOM', payload: { room: res.data } })
           // dispatch({ type: 'CHAT_PAGE_ONE' })
           dispatch(getCurrentRoom(res.data.id))
           setInviteMessage(true)
           setCheckedInviteUsers([])
-          
         })
     }
   }, [checkedInviteUsers, complete])
 
   React.useEffect(() => {
-    if(toUser && inviteMessage && currentRoom.type != 'dm') {
-      console.log(currentRoom);
+    if (toUser && inviteMessage && currentRoom.type != 'dm') {
+      console.log(currentRoom)
       let toUsers = []
       for (let i = 0; i < toUser.length; i++) {
         toUsers.push(toUser[i]['user_id'])
@@ -83,12 +85,10 @@ function RoomInviteUserModal(props) {
           room_id: currentRoom.id,
           to_users: toUsers,
           user_id: currentUser.id,
-          type : 'message'
+          type: 'message',
         })
-        .then(res => {
-          
-        })
-        setInviteMessage(false)
+        .then(res => {})
+      setInviteMessage(false)
     }
   }, [inviteMessage])
 
@@ -165,7 +165,7 @@ function RoomInviteUserModal(props) {
                   </svg>
                 </button>
               </div>
-              <div className="container mx-auto">
+              <div className=" mx-auto">
                 <div className="font-bold text-xl p-2 oveflow-x-auto">
                   초대하기
                 </div>

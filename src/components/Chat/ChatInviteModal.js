@@ -37,35 +37,36 @@ function ChatInviteModal(props) {
   }
   function newRoomList(newRoom) {
     if (rooms.find(room => room.id == newRoom.id)) {
-        return;
+      return
     } else {
       dispatch({ type: 'ADD_ROOM', payload: { room: newRoom } })
     }
   }
   React.useEffect(() => {
-
     if (complete) {
       axios
         .post('/api/room/create', {
           users: checkedInviteUsers,
         })
         .then(res => {
-            newRoomList(res.data)
+          newRoomList(res.data)
           // console.log(res.data)
           setComplete(false)
-          if(res.data.type != 'group') {
-            dispatch({type : 'SET_CHAT_LIST_INDEX', payload : {index : 0}})
+          if (res.data.type != 'group') {
+            dispatch({ type: 'SET_CHAT_LIST_INDEX', payload: { index: 0 } })
             console.log('0')
-          }else {
-            dispatch({type : 'SET_CHAT_LIST_INDEX', payload : {index : 1}})
+          } else {
+            dispatch({ type: 'SET_CHAT_LIST_INDEX', payload: { index: 1 } })
             console.log('1')
           }
-          dispatch({ type: 'SET_CURRENT_CHATROOM', payload: { room: res.data } })
+          dispatch({
+            type: 'SET_CURRENT_CHATROOM',
+            payload: { room: res.data },
+          })
           dispatch({ type: 'CHAT_PAGE_ONE' })
-          
+
           setCheckedInviteUsers([])
         })
-        
     }
   }, [checkedInviteUsers])
 
@@ -142,7 +143,7 @@ function ChatInviteModal(props) {
                   </svg>
                 </button>
               </div>
-              <div className="container mx-auto">
+              <div className=" mx-auto">
                 <div className="font-bold text-xl p-2 oveflow-x-auto">
                   대화상대선택
                 </div>

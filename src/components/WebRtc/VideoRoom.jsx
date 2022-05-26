@@ -133,7 +133,7 @@ class VideoRoom extends Component {
     mic.addEventListener('result', this.onSpeak)
     mic.addEventListener('error', this.micError)
     mic.addEventListener('end', this.micEnd)
-    mic.addEventListener('speechstart', this.onSpeech)
+    mic.addEventListener('soundstart', this.onSpeech)
     mic.addEventListener('speechend', this.onSpeechEnd)
     mic.addEventListener('soundend', this.onSpeechEnd)
     mic.lang = this.state.langCode
@@ -204,11 +204,11 @@ class VideoRoom extends Component {
       try {
         this.setState({ speaking: true })
       } catch {}
+      localUser.setSpeaking(true)
+      this.sendSignalUserChanged({ speaking: true })
     }
 
     console.log('로컬 유저')
-    localUser.setSpeaking(true)
-    this.sendSignalUserChanged({ speaking: true })
   }
   onSpeechEnd() {
     if (this.state.speaking == true) {
