@@ -82,18 +82,18 @@ function App() {
       const channel = window.Echo.channel('user.' + currentUser.id) // 채팅방 참여
         .listen('.user-connect', e => {
           // 여기서 fcm으로 보내주기 방번호 꼭 보내주기
-          if (currentUser.id != e.message.user_id) {
-            axios
-              .post('api/fcm/message', {
-                token: notiToken,
-                body: e.message.message,
-                user_id: e.message.user_id,
-                room_id: e.message.room_id,
-                type: e.message.type,
-                serverKey: process.env.REACT_APP_FIREBASE_SERVER_KEY,
-              })
-              .then(res => {})
-          }
+          // if (currentUser.id != e.message.user_id) {
+          //   axios
+          //     .post('api/fcm/message', {
+          //       token: notiToken,
+          //       body: e.message.message,
+          //       user_id: e.message.user_id,
+          //       room_id: e.message.room_id,
+          //       type: e.message.type,
+          //       serverKey: process.env.REACT_APP_FIREBASE_SERVER_KEY,
+          //     })
+          //     .then(res => {})
+          // }
         })
       return () => {
         channel.subscription.unbind(
